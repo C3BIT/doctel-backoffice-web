@@ -3,7 +3,7 @@ name: Deploy doctel backoffice
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
