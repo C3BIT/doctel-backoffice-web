@@ -1,4 +1,4 @@
-name: Deploy Doctel Backoffice Web
+name: Deploy doctel backoffice
 
 on:
   push:
