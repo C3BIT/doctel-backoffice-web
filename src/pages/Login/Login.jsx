@@ -2,22 +2,20 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png';
-import { savePhone, sendOtp } from '../../redux/auth/authSlice';
+import { errorClean, savePhone, sendOtp } from '../../redux/auth/authSlice';
 import './auth.css';
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [phone, setPhone] = useState('');
-  const { isLoading, success, error, errorMessage, } = useSelector((state) => state.user); 
-
+  const { isLoading, success, error, errorMessage, } = useSelector((state) => state.user);
   const handlePhoneChange = (e) => {
     const input = e.target.value;
     if (input.length <= 11) {
       setPhone(input);
     }
   };
-
   const handleLogin = async () => {
     if (phone.length === 11) {
       dispatch(savePhone(phone));
@@ -25,10 +23,16 @@ const Login = () => {
     }
   };
   useEffect(() => {
-    if (success) {
-        navigate('/verify-otp');
+    if (error) {
+      const timer = setTimeout(() => {
+        dispatch(errorClean());
+      }, 2000);
+      return () => clearTimeout(timer);
     }
-}, [navigate, success]);
+    if (success) {
+      navigate('/verify-otp');
+    }
+  }, [navigate, success, dispatch, error]);
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
       <div className="w-full max-w-md">
@@ -93,5 +97,4 @@ const Login = () => {
     </div>
   );
 };
-
 export default Login;
