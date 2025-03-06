@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Layout from '../layout/Layout';
 import OtpVerify from '../pages/auth/OtpVerify';
+import Dashboard from '../pages/dashboard/Dashboard';
 
 const Home = React.lazy(() => import('../pages/Home/Home'));
 const Login = React.lazy(() => import('../pages/Login/Login'));
@@ -12,6 +13,7 @@ const AppRoutes = () => (
       <Route path="/" element={<Layout><Home /></Layout>} />
       <Route path="/login" element={<Layout><Login /></Layout>} />
       <Route path="/verify-otp" element={<Layout><OtpVerify /></Layout>} />
+      <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
       <Route path="*" element={<Layout><NotFound /></Layout>} />
     </Routes>
   </Suspense>
