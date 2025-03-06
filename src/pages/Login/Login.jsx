@@ -1,35 +1,39 @@
-import { useState } from 'react';
-import logo from '../../assets/logo.png'
-import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import logo from '../../assets/logo.png';
+import { savePhone, sendOtp } from '../../redux/auth/authSlice';
 import './auth.css';
-import { savePhone } from '../../redux/auth/authSlice';
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [phone, setPhone] = useState('');
+  const { isLoading, success, error, errorMessage, } = useSelector((state) => state.user); 
+
   const handlePhoneChange = (e) => {
     const input = e.target.value;
     if (input.length <= 11) {
       setPhone(input);
     }
   };
-  const handleLogin = () => {
+
+  const handleLogin = async () => {
     if (phone.length === 11) {
       dispatch(savePhone(phone));
-      navigate('/otp');
+      dispatch(sendOtp(phone));
     }
   };
+  useEffect(() => {
+    if (success) {
+        navigate('/verify-otp');
+    }
+}, [navigate, success]);
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
       <div className="w-full max-w-md">
         <div className="mb-16">
-          <img
-            src={logo}
-            alt="Doctor Logo"
-            className="w-24 h-10"
-          />
+          <img src={logo} alt="Doctor Logo" className="w-24 h-10" />
         </div>
         <div className="mb-6">
           <h2
@@ -62,14 +66,19 @@ const Login = () => {
 
           <button
             onClick={handleLogin}
-            disabled={phone.length !== 11}
-            className={`w-full py-3 rounded font-medium flex items-center justify-center ${phone.length === 11
+            disabled={phone.length !== 11 || isLoading}
+            className={`w-full py-3 rounded font-medium flex items-center justify-center ${phone.length === 11 && !isLoading
               ? 'bg-[#0052A8] text-white'
               : 'bg-gray-300 text-gray-500'
               }`}
           >
-            Login Now
+            {isLoading ? 'Loading...' : 'Login Now'}
           </button>
+          {error && (
+            <p className="text-red-500 text-sm mt-2 text-start">
+              {errorMessage}
+            </p>
+          )}
         </div>
         <div className='mt-12'>
           <div className="border-t border-gray-200 my-4"></div>

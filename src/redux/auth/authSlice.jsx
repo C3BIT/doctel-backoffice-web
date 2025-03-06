@@ -1,17 +1,28 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { publicPost } from '../../services/apiCaller';
-export const createPatientLogin = createAsyncThunk(
-  "user/login",
-  async (data, { rejectWithValue }) => {
+export const sendOtp = createAsyncThunk(
+  "auth/sendOtp",
+  async (phone, { rejectWithValue }) => {
     try {
-      const response = await publicPost("/patient/login", data); // Replace with your API endpoint
+      console.log("phone",phone)
+      const response = await publicPost("/otp/send", { phone });
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response);
     }
   }
 );
-
+export const createPatientLogin = createAsyncThunk(
+  "user/login",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await publicPost("/patient/login", data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response);
+    }
+  }
+);
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -20,12 +31,12 @@ const authSlice = createSlice({
     user: {},
     error: false,
     errorMessage: "",
-    phone: "", 
+    phone: "",
   },
   reducers: {
     savePhone: (state, action) => {
       state.phone = action.payload;
-      localStorage.setItem("phone", action.payload); 
+      localStorage.setItem("phone", action.payload);
     },
     clearPhone: (state) => {
       state.phone = "";
@@ -42,7 +53,7 @@ const authSlice = createSlice({
       state.token = "";
       state.error = false;
       state.errorMessage = "";
-      localStorage.removeItem("phone"); // Clear phone on logout
+      localStorage.removeItem("phone");
     },
     errorClean: (state) => {
       state.error = false;
@@ -67,6 +78,26 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.error = true;
       state.errorMessage = action.payload?.data?.message || "OTP verification failed";
+    });
+
+    // New sendOtp cases
+    builder.addCase(sendOtp.pending, (state) => {
+      state.isLoading = true;
+      state.success = false;
+      state.error = false;
+      state.errorMessage = "";
+    });
+    builder.addCase(sendOtp.fulfilled, (state) => {
+      state.isLoading = false;
+      state.success = true;
+      state.error = false;
+      state.errorMessage = "";
+    });
+    builder.addCase(sendOtp.rejected, (state, action) => {
+      state.isLoading = false;
+      state.success = false;
+      state.error = true;
+      state.errorMessage = action.payload?.data?.message || "Failed to send OTP";
     });
   },
 });
