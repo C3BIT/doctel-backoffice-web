@@ -49,7 +49,7 @@ const DoctorProfile = () => {
   };
 
   const handleSkip = () => {
-    navigate('/dashboard');
+    navigate('/');
   };
 
   useEffect(() => {
