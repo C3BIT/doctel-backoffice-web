@@ -1,12 +1,21 @@
 import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import logo from '../../assets/logo.png';
+
 import '../Login/auth.css';
+import { verifyOtp } from "../../redux/auth/authSlice";
 
 const OtpVerify = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [otp, setOtp] = useState(["", "", "", ""]);
     const [timer, setTimer] = useState(59);
     const [isInputDisabled, setIsInputDisabled] = useState(false);
     const inputRefs = [useRef(), useRef(), useRef(), useRef()];
+    const phone = localStorage.getItem("phone"); // Get phone from localStorage
+    const { isAuthenticated, isLoading, error, errorMessage } = useSelector((state) => state.user);
+
     const handleChange = (index, value) => {
         if (value.length <= 1) {
             const newOtp = [...otp];
@@ -17,11 +26,13 @@ const OtpVerify = () => {
             }
         }
     };
+
     const handleKeyDown = (index, e) => {
         if (e.key === "Backspace" && otp[index] === "" && index > 0) {
             inputRefs[index - 1].current.focus();
         }
     };
+
     useEffect(() => {
         const interval = setInterval(() => {
             setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
@@ -32,10 +43,26 @@ const OtpVerify = () => {
 
         return () => clearInterval(interval);
     }, [timer]);
+
     const handleVerify = () => {
-        setIsInputDisabled(true);
-        console.log("OTP submitted:", otp.join(""));
+        const otpCode = otp.join("");
+        const data = { phone, otp: otpCode };
+        dispatch(verifyOtp(data)); 
     };
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => {
+                // dispatch(errorClean());
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [error, dispatch]);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/dashboard");
+        }
+    }, [isAuthenticated, navigate]);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
@@ -63,7 +90,7 @@ const OtpVerify = () => {
                 <div className="mb-8">
                     <p className="text-sm text-gray-500 mb-4 text-start">
                         Please enter the OTP sent to{" "}
-                        <span className="text-[#0052A8]">+8801710575743</span>
+                        <span className="text-[#0052A8]">+{phone}</span>
                     </p>
 
                     <div className="flex justify-between mb-6">
@@ -77,23 +104,34 @@ const OtpVerify = () => {
                                 value={digit}
                                 onChange={(e) => handleChange(index, e.target.value)}
                                 onKeyDown={(e) => handleKeyDown(index, e)}
-                                disabled={isInputDisabled}
+                                disabled={isInputDisabled || isLoading}
                             />
                         ))}
                     </div>
                     <button
                         className="w-full bg-[#0052A8] text-white py-3 rounded font-medium"
                         onClick={handleVerify}
-                        disabled={isInputDisabled}
+                        disabled={isInputDisabled || isLoading}
                     >
-                        Verify
+                        {isLoading ? "Verifying..." : "Verify"}
                     </button>
                 </div>
+
+                {/* Error Message */}
+                {error && (
+                    <p className="text-red-500 text-sm mt-2 text-center">
+                        {errorMessage}
+                    </p>
+                )}
+
+                {/* Retry OTP */}
                 <div className="text-center text-sm text-gray-500">
                     Did not receive OTP?{" "}
                     <span className="text-blue-600 font-medium">Retry</span> in {timer}{" "}
                     sec
                 </div>
+
+                {/* Footer */}
                 <div className='mt-12'>
                     <div className="border-t border-gray-200 my-4"></div>
                     <div className="text-start">
@@ -107,4 +145,5 @@ const OtpVerify = () => {
         </div>
     );
 };
+
 export default OtpVerify;

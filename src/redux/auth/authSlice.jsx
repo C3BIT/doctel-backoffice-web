@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { publicPost } from '../../services/apiCaller';
-export const createPatientLogin = createAsyncThunk(
+export const verifyOtp = createAsyncThunk(
   "user/login",
   async (data, { rejectWithValue }) => {
     try {
@@ -50,11 +50,11 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(createPatientLogin.pending, (state) => {
+    builder.addCase(verifyOtp.pending, (state) => {
       state.isLoading = true;
       state.error = false;
     });
-    builder.addCase(createPatientLogin.fulfilled, (state, action) => {
+    builder.addCase(verifyOtp.fulfilled, (state, action) => {
       state.isLoading = false;
       state.error = null;
       state.isAuthenticated = true;
@@ -63,7 +63,7 @@ const authSlice = createSlice({
       state.token = action.payload.token;
       localStorage.removeItem("phone");
     });
-    builder.addCase(createPatientLogin.rejected, (state, action) => {
+    builder.addCase(verifyOtp.rejected, (state, action) => {
       state.isLoading = false;
       state.error = true;
       state.errorMessage = action.payload?.data?.message || "OTP verification failed";
