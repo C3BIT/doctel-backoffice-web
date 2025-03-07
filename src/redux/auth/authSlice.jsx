@@ -4,7 +4,7 @@ export const sendOtp = createAsyncThunk(
   "auth/sendOtp",
   async (phone, { rejectWithValue }) => {
     try {
-      console.log("phone",phone)
+      console.log("phone", phone);
       const response = await publicPost("/otp/send", { phone });
       return response.data;
     } catch (err) {
@@ -32,6 +32,8 @@ const authSlice = createSlice({
     error: false,
     errorMessage: "",
     phone: "",
+    success: false,
+    token: "",
   },
   reducers: {
     savePhone: (state, action) => {
@@ -53,6 +55,8 @@ const authSlice = createSlice({
       state.token = "";
       state.error = false;
       state.errorMessage = "";
+      state.phone = "";
+      state.success = false;
       localStorage.removeItem("phone");
     },
     errorClean: (state) => {
@@ -101,6 +105,5 @@ const authSlice = createSlice({
     });
   },
 });
-
 export const { savePhone, clearPhone, login, logout, errorClean } = authSlice.actions;
 export default authSlice.reducer;

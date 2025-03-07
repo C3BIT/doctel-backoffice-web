@@ -2,11 +2,11 @@ import { Routes, Route } from 'react-router-dom';
 import { Box } from '@mui/system';
 import ProtectedRoute from './routes/ProtectedRoute';
 import Layout from './layout/Layout';
-import Home from './pages/Home/Home';
 import Login from './pages/Login/Login';
 import NotFound from './pages/NotFound/NotFound';
 import OtpVerify from './pages/auth/OtpVerify';
 import DoctorProfile from './pages/DoctorProfile/DoctorProfile';
+import Home from './pages/Home/Home';
 const App = () => {
   return (
     <Box className="App">
