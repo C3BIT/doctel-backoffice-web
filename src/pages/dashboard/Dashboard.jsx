@@ -4,10 +4,9 @@ import ServiceCard from "./ServiceCard";
 import PrescriptionSection from "./PrescriptionSection";
 import LabReportSection from "./LabReportSection";
 import PaperPrescriptionSection from "./PaperPrescriptionSection";
-
 const Dashboard = () => {
     return (
-        <div className="bg-white min-h-screen p-4 font-sans">
+        <div className="bg-white min-h-screen p-4 font-sans mt-4 md:mt-12">
             <div className="max-w-5xl xl:max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-2 space-y-4">
                     <ProfileSection />

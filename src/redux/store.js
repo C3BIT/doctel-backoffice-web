@@ -13,8 +13,7 @@ const combinedReducer = {
  
 };
 const middlewares = [];
-if (process.env.NODE_ENV === "development") {
-  // const { logger } = require("redux-logger");
+if (import.meta.env.NODE_ENV === "development") {
   middlewares.push(logger);
 }
 export const store = configureStore({

@@ -1,1 +1,1 @@
-export const api = 'https://doc.bloomattires.com/api'
+export const api = 'https://api.bloomattires.com/api'

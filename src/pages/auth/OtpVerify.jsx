@@ -1,12 +1,21 @@
 import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import logo from '../../assets/logo.png';
 import '../Login/auth.css';
+import { errorClean, createPatientLogin } from "../../redux/auth/authSlice";
+import Loader from "../../components/loader/Loader";
 
 const OtpVerify = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [otp, setOtp] = useState(["", "", "", ""]);
     const [timer, setTimer] = useState(59);
     const [isInputDisabled, setIsInputDisabled] = useState(false);
+    const [isOtpIncomplete, setIsOtpIncomplete] = useState(false);
     const inputRefs = [useRef(), useRef(), useRef(), useRef()];
+    const phone = localStorage.getItem("phone");
+    const { isAuthenticated, isLoading, error, errorMessage } = useSelector((state) => state.user);
     const handleChange = (index, value) => {
         if (value.length <= 1) {
             const newOtp = [...otp];
@@ -16,6 +25,7 @@ const OtpVerify = () => {
                 inputRefs[index + 1].current.focus();
             }
         }
+        setIsOtpIncomplete(false);
     };
     const handleKeyDown = (index, e) => {
         if (e.key === "Backspace" && otp[index] === "" && index > 0) {
@@ -33,17 +43,35 @@ const OtpVerify = () => {
         return () => clearInterval(interval);
     }, [timer]);
     const handleVerify = () => {
-        setIsInputDisabled(true);
-        console.log("OTP submitted:", otp.join(""));
+        const otpCode = otp.join("");
+        if (otpCode.length !== 4) {
+            setIsOtpIncomplete(true);
+            return;
+        }
+        const data = { phone, otp: otpCode };
+        dispatch(createPatientLogin(data));
     };
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => {
+                dispatch(errorClean());
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [error, dispatch]);
 
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/");
+        }
+    }, [isAuthenticated, navigate]);
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
+            <Loader open={isLoading} />
             <div className="w-full max-w-md">
                 <div className="mb-16">
                     <img src={logo} alt="Doctor Logo" className="w-24 h-10" />
                 </div>
-
                 <div className="mb-6">
                     <h2
                         className="text-start border-b-2 inline-block pb-2 mb-4 login-text"
@@ -58,14 +86,11 @@ const OtpVerify = () => {
                         Video consultation 24 x 7
                     </p>
                 </div>
-
-                {/* OTP Input */}
                 <div className="mb-8">
                     <p className="text-sm text-gray-500 mb-4 text-start">
                         Please enter the OTP sent to{" "}
-                        <span className="text-[#0052A8]">+8801710575743</span>
+                        <span className="text-[#0052A8]">+{phone}</span>
                     </p>
-
                     <div className="flex justify-between mb-6">
                         {otp.map((digit, index) => (
                             <input
@@ -73,21 +98,37 @@ const OtpVerify = () => {
                                 ref={inputRefs[index]}
                                 type="text"
                                 maxLength={1}
-                                className="w-16 h-12 border border-gray-300 rounded text-center text-lg focus:border-blue-300 focus:outline-none text-gray-900"
+                                className={`w-16 h-12 border rounded text-center text-lg focus:outline-none text-gray-900 
+                                    ${error || isOtpIncomplete ? "border-red-500" : "border-gray-300 focus:border-blue-300"}
+                                `}
                                 value={digit}
                                 onChange={(e) => handleChange(index, e.target.value)}
                                 onKeyDown={(e) => handleKeyDown(index, e)}
-                                disabled={isInputDisabled}
+                                disabled={isInputDisabled || isLoading}
                             />
                         ))}
                     </div>
                     <button
-                        className="w-full bg-[#0052A8] text-white py-3 rounded font-medium"
                         onClick={handleVerify}
-                        disabled={isInputDisabled}
+                        disabled={isInputDisabled || isLoading}
+                        className={`w-full py-3 rounded font-medium flex items-center justify-center bg-[#0052A8] text-white transition-all duration-200
+                            ${isInputDisabled || isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#003f7f] active:bg-[#002a5f] '}
+                        `}
                     >
-                        Verify
+                        {isLoading ? "Verifying..." : "Verify"}
                     </button>
+                </div>
+                <div className="h-6 mb-2">
+                    {error && (
+                        <p className="text-red-500 text-sm text-start">
+                            {errorMessage}
+                        </p>
+                    )}
+                    {isOtpIncomplete && ( // Show error message if OTP is incomplete
+                        <p className="text-red-500 text-sm text-start">
+                            Please enter all 4 digits of the OTP.
+                        </p>
+                    )}
                 </div>
                 <div className="text-center text-sm text-gray-500">
                     Did not receive OTP?{" "}

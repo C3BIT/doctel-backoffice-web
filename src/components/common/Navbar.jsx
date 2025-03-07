@@ -1,7 +1,14 @@
-import { Bell, MessageSquare } from 'lucide-react';
+import { Bell, LogOut } from 'lucide-react';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../redux/auth/authSlice';
 const Navbar = () => {
     const [notificationCount] = useState(3);
+    const dispatch = useDispatch();
+    const handleLogout = () => {
+        dispatch(logout());
+
+    };
     return (
         <nav className=" bg-[#0052A8]">
             <div className='flex items-center justify-between w-full text-white max-w-5xl xl:max-w-7xl mx-auto py-4 px-4 md:px-0'>
@@ -23,8 +30,8 @@ const Navbar = () => {
                             </div>
                         )}
                     </div>
-                    <button className="p-1 rounded-full hover:bg-blue-500 transition-colors">
-                        <MessageSquare size={20} />
+                    <button className="p-1 rounded-full hover:bg-blue-500 transition-colors" onClick={handleLogout}>
+                        <LogOut size={20} />
                     </button>
                 </div>
             </div>
