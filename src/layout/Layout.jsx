@@ -4,7 +4,7 @@ import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 
 const Layout = () => {
-    const navbarHeight = 64; 
+    const navbarHeight = 44; 
 
     return (
         <Box
@@ -29,7 +29,7 @@ const Layout = () => {
                 }}
             >
                 <Container
-                    maxWidth="lg"
+                    maxWidth="xl"
                     sx={{
                         flexGrow: 1,
                         display: 'flex',
