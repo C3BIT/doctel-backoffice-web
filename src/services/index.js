@@ -1,1 +1,1 @@
-export const api = 'http://localhost:8088'
+export const api = 'https://api.bloomattires.com/api'

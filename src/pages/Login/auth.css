@@ -1,0 +1,25 @@
+.login-text {
+    color: #0052A8;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 30px;
+    letter-spacing: 0.25%;
+
+}
+.premium-text{
+font-weight: 700;
+font-size: 40px;
+line-height: 52px;
+letter-spacing: 0%;
+color: #375560;
+}
+.videconsultation-text{
+font-weight: 700;
+font-size: 22px;
+line-height: 22px;
+letter-spacing: 0%;
+color:#0052A8;
+}
+.auth-button{
+background-color: #0052A8;
+}
