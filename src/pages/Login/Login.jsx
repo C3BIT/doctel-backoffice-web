@@ -18,7 +18,6 @@ import { errorClean, savePhone, sendOtp } from '../../redux/auth/authSlice';
 import logo from '../../assets/logo.png';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-// Create a theme with Montserrat font
 const theme = createTheme({
   typography: {
     fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -40,7 +39,6 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  // const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   
   const [phone, setPhone] = useState('');
   const { isLoading, success, error, errorMessage } = useSelector((state) => state.user);
