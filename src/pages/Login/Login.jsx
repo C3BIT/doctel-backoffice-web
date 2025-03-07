@@ -17,6 +17,7 @@ import {
 import { errorClean, savePhone, sendOtp } from '../../redux/auth/authSlice';
 import logo from '../../assets/logo.png';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Loader from '../../components/loader/Loader';
 
 const theme = createTheme({
   typography: {
@@ -83,6 +84,7 @@ const Login = () => {
           px: { xs: 2, sm: 3, md: 4 }
         }}
       >
+        <Loader open={isLoading}/>
         <Container maxWidth="sm" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           <Box sx={{ mb: { xs: 4, sm: 5, md: 6 }, alignSelf: 'flex-start' }}>
             <img 
@@ -212,7 +214,7 @@ const Login = () => {
                   }
                 }}
               >
-                {isLoading ? 'Loading...' : 'Login Now'}
+               Login Now
               </Button>
 
               {error && (

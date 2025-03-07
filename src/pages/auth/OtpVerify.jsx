@@ -16,8 +16,8 @@ import {
 import { errorClean, createPatientLogin } from '../../redux/auth/authSlice';
 import logo from '../../assets/logo.png';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Loader from '../../components/loader/Loader';
 
-// Create a theme with Montserrat font
 const theme = createTheme({
   typography: {
     fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -105,7 +105,7 @@ const OtpVerify = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      navigate('/');
     }
   }, [isAuthenticated, navigate]);
 
@@ -123,6 +123,7 @@ const OtpVerify = () => {
           px: { xs: 2, sm: 3, md: 4 }
         }}
       >
+        <Loader open={isLoading}/>
         <Container maxWidth="sm" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           <Box sx={{ mb: { xs: 4, sm: 5, md: 6 }, alignSelf: 'flex-start' }}>
             <img 
@@ -208,7 +209,7 @@ const OtpVerify = () => {
                   component="span" 
                   sx={{ color: '#0052A8', fontWeight: 500 }}
                 >
-                  +{phone || '8801710575743'}
+                  {phone}
                 </Typography>
               </Typography>
 
@@ -267,7 +268,7 @@ const OtpVerify = () => {
                   }
                 }}
               >
-                {isLoading ? 'Verifying...' : 'Verify'}
+                Verify
               </Button>
             </Box>
 
