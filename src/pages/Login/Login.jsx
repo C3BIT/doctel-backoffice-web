@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png';
 import { errorClean, savePhone, sendOtp } from '../../redux/auth/authSlice';
 import './auth.css';
-
+import Loader from '../../components/loader/Loader';
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [phone, setPhone] = useState('');
-  const { isLoading, success, error, errorMessage, } = useSelector((state) => state.user);
+  const { isLoading, success, error, errorMessage } = useSelector((state) => state.user);
   const handlePhoneChange = (e) => {
     const input = e.target.value;
     if (input.length <= 11) {
@@ -35,6 +35,7 @@ const Login = () => {
   }, [navigate, success, dispatch, error]);
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
+      <Loader open={isLoading} />
       <div className="w-full max-w-md">
         <div className="mb-16">
           <img src={logo} alt="Doctor Logo" className="w-24 h-10" />
@@ -57,7 +58,6 @@ const Login = () => {
           <p className="text-sm text-gray-500 mb-4 text-start">
             Talk to a doctor, therapist or medical expert anywhere you are by phone or video.
           </p>
-
           <div className="mb-6">
             <input
               type="text"
@@ -67,14 +67,12 @@ const Login = () => {
               className="w-full px-3 py-3 border border-[#E0E0E0] rounded-lg text-[#34495E] placeholder-[#A0A0A0] bg-[#F9F9F9] focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
           <button
             onClick={handleLogin}
-            disabled={phone.length !== 11 || isLoading}
-            className={`w-full py-3 rounded font-medium flex items-center justify-center ${phone.length === 11 && !isLoading
-              ? 'bg-[#0052A8] text-white'
-              : 'bg-gray-300 text-gray-500'
-              }`}
+            disabled={isLoading || phone.length !== 11}
+            className={`w-full py-3 rounded font-medium flex items-center justify-center bg-[#0052A8] text-white transition-all duration-200
+              ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#003f7f] active:bg-[#002a5f] focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'}
+            `}
           >
             {isLoading ? 'Loading...' : 'Login Now'}
           </button>
