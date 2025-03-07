@@ -1,6 +1,6 @@
 const DoctorOnDemand = () => {
     return (
-      <div className="bg-[#0052A8] rounded-lg p-6 flex items-center justify-between text-white">
+      <div className="bg-[#0052A8] rounded-lg p-4 md:p-12 flex items-center justify-between text-white">
         <div className="flex items-center">
           <div className="bg-blue-700 p-2 rounded-full mr-4">
             <svg
