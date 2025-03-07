@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import { Box } from '@mui/system';
 import ProtectedRoute from './routes/ProtectedRoute';
 import Layout from './layout/Layout';
 import Home from './pages/Home/Home';
@@ -7,8 +8,7 @@ import NotFound from './pages/NotFound/NotFound';
 import OtpVerify from './pages/auth/OtpVerify';
 const App = () => {
   return (
-    <div className='app'>
-      <Router>
+    <Box className="App">
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Layout />} >
@@ -17,11 +17,9 @@ const App = () => {
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/verify-otp" element={<OtpVerify />} />
-          <Route path="*" element={<Layout><NotFound /></Layout>} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
-      </Router>
-
-    </div>
+    </Box>
   );
 };
 export default App;
