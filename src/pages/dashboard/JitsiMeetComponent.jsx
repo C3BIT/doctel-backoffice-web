@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import { Box, IconButton, Typography } from "@mui/material";
@@ -19,11 +20,18 @@ const JitsiMeetComponent = ({
   const jitsiContainerRef = useRef(null);
   const audioRef = useRef(null);
   const jitsiApiRef = useRef(null);
+  const initializationAttemptedRef = useRef(false);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const [isCallConnected, setIsCallConnected] = useState(false);
 
   useEffect(() => {
+    if (initializationAttemptedRef.current) {
+      return;
+    }
+    
+    initializationAttemptedRef.current = true;
+    
     const loadJitsiScript = () => {
       return new Promise((resolve, reject) => {
         if (window.JitsiMeetExternalAPI) {
@@ -69,7 +77,11 @@ const JitsiMeetComponent = ({
             prejoinPageEnabled: false,
             disableDeepLinking: true,
             defaultLanguage: "en",
-            toolbarButtons: ["microphone", "camera", "hangup"],
+            enableClosePage: false,
+            disableInviteFunctions: true,
+            toolbarButtons: [],
+            notifications: [],
+            disableInitialGUM: false,
           },
           interfaceConfigOverwrite: {
             SHOW_JITSI_WATERMARK: false,
@@ -79,10 +91,41 @@ const JitsiMeetComponent = ({
             HIDE_INVITE_MORE_HEADER: true,
             MOBILE_APP_PROMO: false,
             SHOW_CHROME_EXTENSION_BANNER: false,
-            TOOLBAR_BUTTONS: ["microphone", "camera", "hangup"],
+            TOOLBAR_BUTTONS: [],
             TOOLBAR_ALWAYS_VISIBLE: false,
+            DISABLE_FOCUS_INDICATOR: true,
+            DISABLE_VIDEO_BACKGROUND: false,
+            DISABLE_DOMINANT_SPEAKER_INDICATOR: true,
+            DISPLAY_WELCOME_PAGE_CONTENT: false,
+            DISPLAY_WELCOME_PAGE_TOOLBAR_ADDITIONAL_CONTENT: false,
+            SETTINGS_SECTIONS: [],
+            VIDEO_LAYOUT_FIT: 'both',
+            HIDE_KICK_BUTTON_FOR_GUESTS: true,
+            DISABLE_TRANSCRIPTION_SUBTITLES: true,
+            DISABLE_REMOTE_VIDEO_MENU: true,
+            DISABLE_RINGING: true,
+            filmStripOnly: false,
+            VERTICAL_FILMSTRIP: true,
+            CLOSE_PAGE_GUEST_HINT: false,
+            SHOW_PROMOTIONAL_CLOSE_PAGE: false,
+            SHOW_BRAND_WATERMARK: false,
+            GENERATE_ROOMNAMES_ON_WELCOME_PAGE: false,
+            DISPLAY_WELCOME_FOOTER: false,
+            SHOW_POWERED_BY: false,
+            APP_NAME: 'Video Call',
+            NATIVE_APP_NAME: 'Video Call',
+            PROVIDER_NAME: '',
+            LANG_DETECTION: false,
+            INVITATION_POWERED_BY: false,
+            AUTHENTICATION_ENABLE: false,
+            RECENT_LIST_ENABLED: false,
           },
-          userInfo: { displayName },
+          userInfo: { 
+            displayName,
+            email: '',
+          },
+          jwt: null,
+          noSsl: false,
         };
 
         const api = new window.JitsiMeetExternalAPI(domain, options);
@@ -95,6 +138,8 @@ const JitsiMeetComponent = ({
             audioRef.current.pause();
             audioRef.current.currentTime = 0;
           }
+          
+          api.executeCommand("subject", "");
         });
 
         api.addEventListener("audioMuteStatusChanged", (muted) => {
@@ -108,8 +153,15 @@ const JitsiMeetComponent = ({
         api.addEventListener("readyToClose", () => {
           if (onLeave) onLeave();
         });
-
+        
         api.executeCommand("subject", "");
+        api.executeCommand("setNotificationsEnabled", false);
+        api.executeCommand("setFilmstripConfig", { 
+          filmstripConfig: { 
+            enabled: true,
+            persistentLabels: false
+          }
+        });
       } catch (error) {
         console.error("Error initializing Jitsi:", error);
       }
@@ -125,19 +177,39 @@ const JitsiMeetComponent = ({
       if (audioRef.current) {
         audioRef.current.pause();
       }
+      initializationAttemptedRef.current = false;
     };
   }, [roomName, displayName, onLeave]);
 
+  useEffect(() => {
+    if (jitsiApiRef.current && onLeave) {
+      const handleReadyToClose = () => onLeave();
+      jitsiApiRef.current.addListener("readyToClose", handleReadyToClose);
+      
+      return () => {
+        if (jitsiApiRef.current) {
+          jitsiApiRef.current.removeListener("readyToClose", handleReadyToClose);
+        }
+      };
+    }
+  }, [onLeave]);
+
   const toggleAudio = () => {
-    jitsiApiRef.current?.executeCommand("toggleAudio");
+    if (jitsiApiRef.current) {
+      jitsiApiRef.current.executeCommand("toggleAudio");
+    }
   };
 
   const toggleVideo = () => {
-    jitsiApiRef.current?.executeCommand("toggleVideo");
+    if (jitsiApiRef.current) {
+      jitsiApiRef.current.executeCommand("toggleVideo");
+    }
   };
 
   const leaveCall = () => {
-    jitsiApiRef.current?.executeCommand("hangup");
+    if (jitsiApiRef.current) {
+      jitsiApiRef.current.executeCommand("hangup");
+    }
     if (onLeave) onLeave();
   };
 
@@ -168,6 +240,9 @@ const JitsiMeetComponent = ({
             border: "none",
             width: "100%",
             height: "100%",
+          },
+          "& .new-toolbox, & .toolbox-button-wth-dialog": {
+            display: "none !important",
           },
         }}
       />
@@ -246,7 +321,7 @@ const JitsiMeetComponent = ({
           }}
         >
           <Typography variant="h6">
-            {isIncoming ? "Connecting to call..." : "Calling..."}
+            {isIncoming ?  "Calling..." : "Connecting to call..."}
           </Typography>
         </Box>
       )}

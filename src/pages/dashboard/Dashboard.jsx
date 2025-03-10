@@ -77,26 +77,26 @@ const Dashboard = () => {
     stopRingtone();
   };
 
-  const handleCallDoctor = (doctor) => {
-    setCallTarget({
-      name: doctor.name,
-      id: doctor.id,
-      image: doctor.image
-    });
-    setCallingScreen(true);
-    playRingtone();
-    socket.emit("call:initiate");
-    socket.once("call:initiated", (data) => {
-      console.log("Call initiated with data:", data);
-      setJitsiRoom(data.jitsiRoom);
-      socket.once("call:accepted", () => {
-        console.log("Call was accepted by the doctor");
-        setIsInCall(true);
-        setCallingScreen(false);
-        stopRingtone();
-      });
-    });
-  };
+  // const handleCallDoctor = (doctor) => {
+  //   setCallTarget({
+  //     name: doctor.name,
+  //     id: doctor.id,
+  //     image: doctor.image
+  //   });
+  //   setCallingScreen(true);
+  //   playRingtone();
+  //   socket.emit("call:initiate");
+  //   socket.once("call:initiated", (data) => {
+  //     console.log("Call initiated with data:", data);
+  //     setJitsiRoom(data.jitsiRoom);
+  //     socket.once("call:accepted", () => {
+  //       console.log("Call was accepted by the doctor");
+  //       setIsInCall(true);
+  //       setCallingScreen(false);
+  //       stopRingtone();
+  //     });
+  //   });
+  // };
 
   const isCallingScreenActive = () => callingScreen || !!incomingCall;
 
@@ -106,7 +106,7 @@ const Dashboard = () => {
         <Grid item xs={12} md={isInCall ? 6 : 8}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <ProfileSection />
-            <DoctorOnDemand onCallDoctor={handleCallDoctor} />
+            <DoctorOnDemand />
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <ServiceCard
