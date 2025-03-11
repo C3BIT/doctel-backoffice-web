@@ -22,14 +22,36 @@ const Dashboard = () => {
     if (incomingCall) {
       console.log("📞 Incoming Call Request:", incomingCall);
       setCallTarget({
-        name: incomingCall.patientName || `Patient ${incomingCall.patientId}`,
+        name: incomingCall.patientName || `${incomingCall.patientId}`,
         id: incomingCall.patientId,
         image: "https://avatars.githubusercontent.com/u/50502837?v=4"
       });
       setCallingScreen(true);
       playRingtone();
+    } else {
+      if (callingScreen) {
+        console.log("🔄 Call state changed, closing calling screen");
+        setCallingScreen(false);
+        stopRingtone();
+      }
     }
-  }, [incomingCall]);
+  }, [callingScreen, incomingCall]);
+
+  useEffect(() => {
+    if (!socket) return;
+    const handleCallReassigned = (data) => {
+      console.log("🔄 Call reassigned (Dashboard handler):", data);
+      setCallingScreen(false);
+      setCallTarget(null);
+      stopRingtone();
+    };
+
+    socket.on("call:reassigned", handleCallReassigned);
+
+    return () => {
+      socket.off("call:reassigned", handleCallReassigned);
+    };
+  }, [socket]);
 
   const playRingtone = () => {
     if (audioRef.current) {
@@ -77,28 +99,7 @@ const Dashboard = () => {
     stopRingtone();
   };
 
-  // const handleCallDoctor = (doctor) => {
-  //   setCallTarget({
-  //     name: doctor.name,
-  //     id: doctor.id,
-  //     image: doctor.image
-  //   });
-  //   setCallingScreen(true);
-  //   playRingtone();
-  //   socket.emit("call:initiate");
-  //   socket.once("call:initiated", (data) => {
-  //     console.log("Call initiated with data:", data);
-  //     setJitsiRoom(data.jitsiRoom);
-  //     socket.once("call:accepted", () => {
-  //       console.log("Call was accepted by the doctor");
-  //       setIsInCall(true);
-  //       setCallingScreen(false);
-  //       stopRingtone();
-  //     });
-  //   });
-  // };
-
-  const isCallingScreenActive = () => callingScreen || !!incomingCall;
+  const isCallingScreenActive = () => callingScreen && !!incomingCall;
 
   return (
     <Box sx={{ backgroundColor: "white", minHeight: "100vh", p: 4, borderRadius: 4, fontFamily: "sans-serif" }}>

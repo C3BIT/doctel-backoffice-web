@@ -25,7 +25,7 @@ export const WebSocketProvider = ({ children }) => {
             socket.disconnect();
             clearInterval(reconnectInterval.current);
         }
-        
+
         const newSocket = io(URL, {
             transports: ["websocket"],
             query: { token },
@@ -68,6 +68,11 @@ export const WebSocketProvider = ({ children }) => {
 
         newSocket.on("call:reject", (data) => {
             console.log("❌ Call rejected:", data);
+            setIncomingCall(null);
+        });
+
+        newSocket.on("call:reassigned", (data) => {
+            console.log("🔄 Call reassigned:", data);
             setIncomingCall(null);
         });
 
