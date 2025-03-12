@@ -1,12 +1,10 @@
 import React from "react";
 import {
     ChevronLeft,
-    ChevronRight,
     Visibility,
     Edit,
     Delete,
 } from "@mui/icons-material";
-import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import {
     Box,
     Button,
@@ -18,7 +16,8 @@ import {
     useMediaQuery,
     useTheme,
 } from "@mui/material";
-
+import vector5 from '../../assets/Vector(5).png';
+import vector6 from '../../assets/Vector (6).png';
 const LabReport = () => {
     const labReports = [
         { id: 1, date: "12 October 2022" },
@@ -34,37 +33,13 @@ const LabReport = () => {
         { id: 11, date: "12 December 2022" },
         { id: 12, date: "19 December 2022" },
     ];
-
-    // Current page state
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 4;
-
-    // Calculate total pages
     const totalPages = Math.ceil(labReports.length / itemsPerPage);
-
-    // Get current lab reports
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = labReports.slice(indexOfFirstItem, indexOfLastItem);
-
-    // Change page
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-    // Previous page
-    const goToPreviousPage = () => {
-        if (currentPage > 1) {
-            setCurrentPage(currentPage - 1);
-        }
-    };
-
-    // Next page
-    const goToNextPage = () => {
-        if (currentPage < totalPages) {
-            setCurrentPage(currentPage + 1);
-        }
-    };
-
-    // Responsive width
     const theme = useTheme();
     const isLargeDevice = useMediaQuery(theme.breakpoints.up("lg"));
 
@@ -77,6 +52,7 @@ const LabReport = () => {
                 fontFamily: "sans-serif",
             }}
         >
+            {/* Header with back button */}
             <Box
                 sx={{
                     display: "flex",
@@ -102,7 +78,12 @@ const LabReport = () => {
                     </Button>
                     <Typography
                         variant="h4"
-                        sx={{ color: "#10b981", fontWeight: "500", marginBottom: "4px", marginTop: "15px" }}
+                        sx={{
+                            color: "#10b981",
+                            fontWeight: "500",
+                            marginBottom: "4px",
+                            marginTop: "15px",
+                        }}
                     >
                         Lab Report
                     </Typography>
@@ -147,17 +128,47 @@ const LabReport = () => {
                         }}
                     >
                         <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                            <PermIdentityIcon
+                            <Box
                                 sx={{
-                                    width: "40px",
-                                    height: "40px",
-                                    backgroundColor: "white",
-                                    border: "1px solid #3b82f6",
+                                    width: "30px",
+                                    height: "30px",
                                     borderRadius: "6px",
-                                    color: "#3b82f6",
-                                    padding: "8px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+
                                 }}
-                            />
+                            >
+                                <Box
+                                    sx={{
+                                        position: "relative",
+                                        display: "inline-block",
+                                    }}
+                                >
+                                    <Box
+                                        component="img"
+                                        src={vector5}
+                                        alt="Document"
+                                        sx={{
+                                            width: "30px",
+                                            height: "30px",
+                                        }}
+                                    />
+                                    <Box
+                                        component="img"
+                                        src={vector6}
+                                        alt="Rx Symbol"
+                                        sx={{
+                                            position: "absolute",
+                                            top: "50%",
+                                            left: "50%",
+                                            transform: "translate(-50%, -50%)",
+                                            width: "20px",
+                                            height: "20px",
+                                        }}
+                                    />
+                                </Box>
+                            </Box>
                             <Typography
                                 variant="body1"
                                 sx={{ color: "#3b82f6", fontWeight: "500" }}
@@ -214,26 +225,8 @@ const LabReport = () => {
                     justifyContent: "flex-end",
                     alignItems: "center",
                     marginTop: "24px",
-                    gap: "8px",
                 }}
             >
-                {/* Previous Button */}
-                <IconButton
-                    onClick={goToPreviousPage}
-                    disabled={currentPage === 1}
-                    sx={{
-                        width: "32px",
-                        height: "32px",
-                        border: "1px solid #d1d5db",
-                        color: "#6b7280",
-                        borderRadius: "4px",
-                        "&:hover": { backgroundColor: "#f3f4f6" },
-                    }}
-                >
-                    <ChevronLeft fontSize="small" />
-                </IconButton>
-
-                {/* Pagination */}
                 <Pagination
                     count={totalPages}
                     page={currentPage}
@@ -247,35 +240,19 @@ const LabReport = () => {
                             minWidth: "32px",
                             height: "32px",
                             borderRadius: "4px",
+                            margin: "0 4px",
                             "&:hover": { backgroundColor: "#f3f4f6" },
                         },
                         "& .Mui-selected": {
-                            backgroundColor: "#3b82f6",
+                            backgroundColor: "#0052A8",
                             color: "white",
                             border: "none",
                             "&:hover": { backgroundColor: "#2563eb" },
                         },
                     }}
                 />
-
-                {/* Next Button */}
-                <IconButton
-                    onClick={goToNextPage}
-                    disabled={currentPage === totalPages}
-                    sx={{
-                        width: "32px",
-                        height: "32px",
-                        border: "1px solid #d1d5db",
-                        color: "#6b7280",
-                        borderRadius: "4px",
-                        "&:hover": { backgroundColor: "#f3f4f6" },
-                    }}
-                >
-                    <ChevronRight fontSize="small" />
-                </IconButton>
             </Box>
         </Box>
     );
 };
-
 export default LabReport;
