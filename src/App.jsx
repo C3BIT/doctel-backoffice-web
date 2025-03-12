@@ -7,6 +7,7 @@ import NotFound from './pages/NotFound/NotFound';
 import OtpVerify from './pages/auth/OtpVerify';
 import DoctorProfile from './pages/DoctorProfile/DoctorProfile';
 import Home from './pages/Home/Home';
+import Profile from './pages/profile/Profile';
 const App = () => {
   return (
     <Box className="App">
@@ -14,6 +15,7 @@ const App = () => {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Layout />} >
               <Route index element={<Home />} />
+              <Route path="/doctor/profile" element={<Profile />} />
             </Route>
           </Route>
           <Route path="/login" element={<Login />} />

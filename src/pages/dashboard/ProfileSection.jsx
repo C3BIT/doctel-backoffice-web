@@ -1,14 +1,15 @@
 import { useSelector } from "react-redux";
-import { 
-  Box, 
-  Typography, 
-  Button, 
-  Card, 
+import {
+  Box,
+  Typography,
+  Button,
+  Card,
   CardContent,
   Avatar,
   Stack,
   styled
 } from '@mui/material';
+import { Link } from "react-router-dom";
 
 const ProfileCard = styled(Card)(({ theme }) => ({
   backgroundColor: '#F5F6F8',
@@ -45,33 +46,33 @@ const ProfileSection = () => {
             alt="Profile"
             variant="square"
           />
-          
+
           <Stack spacing={0.5} sx={{ mt: { xs: 2, md: 0 } }}>
             <Typography variant="caption" color="text.secondary" align="left">
               Welcome
             </Typography>
-            
+
             <Typography variant="h6" color="primary" fontWeight="medium" align="left">
               Ahmed Ali
             </Typography>
-            
+
             <Typography variant="body2" color="text.secondary" align="left">
               {user?.phone || '8801710575743'}
             </Typography>
-            
+
             <Typography variant="body2" color="text.secondary" align="left" sx={{ mt: 1 }}>
               You are subscribe on <Box component="span" fontWeight="medium">Monthly Pack.</Box>
             </Typography>
-            
+
             <Typography variant="body2" color="text.secondary" align="left">
               Next renewal <Box component="span" color="primary.main" fontWeight="medium">31 December 2022</Box>
             </Typography>
           </Stack>
         </Box>
-        
-        <DetailsButton variant="outlined">
-          Details
-        </DetailsButton>
+        <Link to='/doctor/profile'>
+          <DetailsButton variant="outlined">
+            Details
+          </DetailsButton></Link>
       </CardContent>
     </ProfileCard>
   );
