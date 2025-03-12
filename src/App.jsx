@@ -8,6 +8,7 @@ import OtpVerify from './pages/auth/OtpVerify';
 import DoctorProfile from './pages/DoctorProfile/DoctorProfile';
 import Home from './pages/Home/Home';
 import Profile from './pages/profile/Profile';
+import LabReport from './pages/LabReport/LabReport';
 const App = () => {
   return (
     <Box className="App">
@@ -16,6 +17,7 @@ const App = () => {
             <Route path="/" element={<Layout />} >
               <Route index element={<Home />} />
               <Route path="/doctor/profile" element={<Profile />} />
+              <Route path="/lab/report" element={<LabReport />} />
             </Route>
           </Route>
           <Route path="/login" element={<Login />} />
