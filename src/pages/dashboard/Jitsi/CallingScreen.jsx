@@ -53,7 +53,7 @@ const CallingScreen = ({
     console.log("Accept button pressed");
     stopAudio();
     onAccept();
-    onClose(); // Close the modal when the call is accepted
+    onClose();
   };
 
   const handleReject = () => {
