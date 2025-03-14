@@ -1,18 +1,77 @@
+import PropTypes from "prop-types";
+import { Card, CardContent, Typography, Button, Box } from "@mui/material";
+
 const ServiceCard = ({ image, title, description, buttonText }) => {
-    return (
-      <div className="bg-[#F5F6F8] rounded-lg p-6 flex flex-col justify-between">
-        <div>
-          <img src={image} alt={title} className="h-32 w-32 object-cover rounded-lg mb-4" />
-          <h3 className="font-medium text-lg mb-2 text-start text-gray-600">{title}</h3>
-          <p className="text-gray-600 text-sm mb-6 text-start">{description}</p>
-        </div>
-        <div className="flex justify-end">
-          <button className="w-1/3 border border-blue-500 text-gray-700 font-semibold rounded-lg py-2 text-sm bg-[#E2F1FF]">
-            {buttonText}
-          </button>
-        </div>
-      </div>
-    );
-  };
-  
-  export default ServiceCard;
+  return (
+    <Card
+      sx={{
+        backgroundColor: "#F5F6F8",
+        borderRadius: 2,
+        p: 3,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        boxShadow: "none",
+        textAlign: "left",
+      }}
+    >
+      {/* Image at the top, centered */}
+      <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+        <img
+          src={image}
+          alt={title}
+          style={{
+            height: 100,
+            width: "auto",
+            objectFit: "contain",
+          }}
+        />
+      </Box>
+
+      {/* Text Content */}
+      <CardContent sx={{ padding: 0 }}>
+        <Typography variant="h6" sx={{ fontWeight: 500, color: "#374151" }}>
+          {title}
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "#6B7280",
+            marginBottom: 3,
+          }}
+        >
+          {description}
+        </Typography>
+      </CardContent>
+
+      {/* Button at the bottom right */}
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Button
+          variant="outlined"
+          sx={{
+            borderColor: "#3B82F6",
+            color: "#374151",
+            fontWeight: 600,
+            borderRadius: 2,
+            backgroundColor: "#E2F1FF",
+            textTransform: "none",
+            fontSize: "0.875rem",
+            padding: "6px 16px",
+            minWidth: "auto",
+          }}
+        >
+          {buttonText}
+        </Button>
+      </Box>
+    </Card>
+  );
+};
+
+ServiceCard.propTypes = {
+  image: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  buttonText: PropTypes.string.isRequired,
+};
+
+export default ServiceCard;

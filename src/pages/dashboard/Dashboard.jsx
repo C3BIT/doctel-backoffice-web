@@ -9,7 +9,8 @@ import PaperPrescriptionSection from "./PaperPrescriptionSection";
 import { useWebSocket } from "../../providers/WebSocketProvider";
 import JitsiMeetComponent from "./JitsiMeetComponent";
 import CallingScreen from "./Jitsi/CallingScreen";
-
+import ContactFreeSvg from "../../assets/images/onlineDoctor.svg";
+import BuyPackageSvg from "../../assets/images/prchase.svg";
 const Dashboard = () => {
   const { socket, incomingCall, setIncomingCall } = useWebSocket();
   const audioRef = useRef(null);
@@ -66,7 +67,7 @@ const Dashboard = () => {
       });
     }
   };
-  
+
 
   const stopRingtone = () => {
     if (audioRef.current) {
@@ -117,7 +118,7 @@ const Dashboard = () => {
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <ServiceCard
-                  image="https://img.freepik.com/free-vector/videocalling-with-therapist_23-2148517118.jpg"
+                  image={ContactFreeSvg}
                   title="Contact Free"
                   description="Connect with us anytime for free"
                   buttonText="Chat Now"
@@ -125,7 +126,7 @@ const Dashboard = () => {
               </Grid>
               <Grid item xs={12} md={6}>
                 <ServiceCard
-                  image="https://img.freepik.com/free-vector/humanitarian-help-people-donating-sanitary-protection-equipment_114360-1775.jpg"
+                  image={BuyPackageSvg}
                   title="Buy Package"
                   description="Buy health package & get 24x7 consultation"
                   buttonText="Buy Now"
