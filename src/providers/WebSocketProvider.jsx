@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../redux/auth/authSlice";
 import PropTypes from "prop-types";
+import { persistor } from "../redux/store";
 
 const WebSocketContext = createContext(null);
 
@@ -13,7 +14,23 @@ export const WebSocketProvider = ({ children }) => {
     const [isConnected, setIsConnected] = useState(false);
     const [incomingCall, setIncomingCall] = useState(null);
     const reconnectInterval = useRef(null);
-    const URL = import.meta.env.VITE_SERVER_URL;
+    const URL = import.meta.env.VITE_SOCKET_URL;
+
+
+    const handleTokenExpiration = async () => {
+        console.log("⏳ Token expired, logging out and purging persisted data...");
+        
+        if (socket) {
+            socket.disconnect();
+        }    
+        setSocket(null);
+        setIsConnected(false);
+        clearInterval(reconnectInterval.current);
+        dispatch(logout());
+        
+        await persistor.purge();
+        window.location.reload();
+    };
 
     const connectWebSocket = () => {
         if (!token) {
@@ -40,6 +57,13 @@ export const WebSocketProvider = ({ children }) => {
             clearInterval(reconnectInterval.current);
         });
 
+        // newSocket.on("connect_error", (error) => {
+        //     console.error("🔴 Connection Error:", error.message);
+        //     if (error.message.includes("auth")) {
+        //         handleTokenExpiration();
+        //     }
+        // });
+
         newSocket.on("disconnect", (reason) => {
             console.log("❌ WebSocket Disconnected:", reason);
             setIsConnected(false);
@@ -47,14 +71,14 @@ export const WebSocketProvider = ({ children }) => {
         });
 
         newSocket.on("error", (error) => {
-            console.error("⚠️ WebSocket Error:", error);
+            if (error.toString().toLowerCase().includes("auth") ||
+                error.toString().toLowerCase().includes("token")) {
+                handleTokenExpiration();
+            }
         });
 
         newSocket.on("token_expired", () => {
-            console.log("⏳ Token expired, logging out...");
-            dispatch(logout());
-            newSocket.disconnect();
-            setSocket(null);
+            handleTokenExpiration();
         });
 
         newSocket.on("call:request", (data) => {
