@@ -16,7 +16,7 @@ import {
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import logo from '../../assets/logo.png';
+import doctorAvatar from '../../assets/logo.png';
 
 const theme = createTheme({
   typography: {
@@ -75,7 +75,7 @@ const DoctorProfile = () => {
         <Container maxWidth="sm" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           <Box sx={{ mb: { xs: 4, sm: 5, md: 6 }, alignSelf: 'flex-start' }}>
             <img 
-              src={logo} 
+              src={doctorAvatar} 
               alt="Doctor Logo" 
               style={{ 
                 width: isMobile ? '80px' : '110px',

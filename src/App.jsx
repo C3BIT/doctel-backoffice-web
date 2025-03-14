@@ -9,6 +9,7 @@ import DoctorProfile from './pages/DoctorProfile/DoctorProfile';
 import Home from './pages/Home/Home';
 import Profile from './pages/profile/Profile';
 import LabReport from './pages/LabReport/LabReport';
+import PrescriptionReport from './pages/PrescriptionReport/PrescriptionReport';
 const App = () => {
   return (
     <Box className="App">
@@ -18,6 +19,7 @@ const App = () => {
               <Route index element={<Home />} />
               <Route path="/doctor/profile" element={<Profile />} />
               <Route path="/lab/report" element={<LabReport />} />
+              <Route path="/prescription/list" element={<PrescriptionReport/>} />
             </Route>
           </Route>
           <Route path="/login" element={<Login />} />
