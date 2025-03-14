@@ -16,8 +16,8 @@ import {
     useMediaQuery,
     useTheme,
 } from "@mui/material";
-import vector5 from '../../assets/Vector(5).png';
-import vector6 from '../../assets/Vector (6).png';
+import DocumentSymbol from '../../assets/Vector(5).png';
+import RxSymbol from '../../assets/Vector (6).png';
 const LabReport = () => {
     const labReports = [
         { id: 1, date: "12 October 2022" },
@@ -147,7 +147,7 @@ const LabReport = () => {
                                 >
                                     <Box
                                         component="img"
-                                        src={vector5}
+                                        src={DocumentSymbol}
                                         alt="Document"
                                         sx={{
                                             width: "30px",
@@ -156,7 +156,7 @@ const LabReport = () => {
                                     />
                                     <Box
                                         component="img"
-                                        src={vector6}
+                                        src={RxSymbol}
                                         alt="Rx Symbol"
                                         sx={{
                                             position: "absolute",
