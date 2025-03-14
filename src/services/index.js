@@ -1,1 +1,1 @@
-export const api = 'https://api.bloomattires.com/api'
+export const api = import.meta.env.VITE_SERVER_URL;
