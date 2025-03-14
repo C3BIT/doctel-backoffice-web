@@ -39,17 +39,23 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!socket) return;
-    const handleCallReassigned = (data) => {
-      console.log("🔄 Call reassigned (Dashboard handler):", data);
+    const handleCallReassigned = () => {
       setCallingScreen(false);
       setCallTarget(null);
       stopRingtone();
     };
 
+    const handleCallCancelled = () => {
+      setIncomingCall(null);
+      setCallingScreen(false);
+      setCallTarget(null);
+      stopRingtone();
+    };
     socket.on("call:reassigned", handleCallReassigned);
-
+    socket.on("call:cancelled", handleCallCancelled);
     return () => {
       socket.off("call:reassigned", handleCallReassigned);
+      socket.off("call:cancelled", handleCallCancelled);
     };
   }, [socket]);
 
