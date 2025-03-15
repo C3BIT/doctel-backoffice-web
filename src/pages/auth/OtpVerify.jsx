@@ -14,7 +14,7 @@ import {
   Stack
 } from '@mui/material';
 import { errorClean, createPatientLogin } from '../../redux/auth/authSlice';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/images/Logo.svg';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Loader from '../../components/loader/Loader';
 
