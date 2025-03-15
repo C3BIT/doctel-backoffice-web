@@ -4,7 +4,6 @@ import { logout } from '../../redux/auth/authSlice';
 import {
   AppBar,
   Toolbar,
-  Typography,
   IconButton,
   Badge,
   Box,
@@ -14,6 +13,7 @@ import {
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import LogoutIcon from '@mui/icons-material/Logout';
+import headerLogo from '../../assets/images/NavLogo.svg';
 
 const Navbar = () => {
   const [notificationCount] = useState(3);
@@ -44,17 +44,20 @@ const Navbar = () => {
             px: isMobile ? 2 : 0
           }}
         >
-          <Typography 
-            variant="h6" 
-            component="div" 
+          {/* Logo container */}
+          <Box 
             sx={{ 
-              fontWeight: 'bold',
               display: 'flex',
               alignItems: 'center'
             }}
           >
-            Doctor
-          </Typography>
+
+            <img 
+              src={headerLogo} 
+              alt="Doctor Logo" 
+              style={{ height: '32px', width: 'auto' }} 
+            /> 
+          </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <IconButton 
