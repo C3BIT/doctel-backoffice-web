@@ -42,7 +42,7 @@ const Login = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [phone, setPhone] = useState('');
-  const { isLoading, isAuthenticated, success, error, errorMessage } = useSelector((state) => state.user);
+  const { isLoading, success, error, errorMessage } = useSelector((state) => state.user);
 
   const handlePhoneChange = (e) => {
     const input = e.target.value;
@@ -59,9 +59,6 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
     if (error) {
       const timer = setTimeout(() => {
         dispatch(errorClean());
@@ -71,7 +68,7 @@ const Login = () => {
     if (success) {
       navigate('/verify-otp');
     }
-  }, [navigate, success, dispatch, error, isAuthenticated]);
+  }, [navigate, success, dispatch, error]);
 
   return (
     <ThemeProvider theme={theme}>
