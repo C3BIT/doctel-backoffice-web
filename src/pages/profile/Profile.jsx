@@ -11,6 +11,7 @@ import {
     useMediaQuery,
     useTheme,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
     // Responsive width
@@ -28,19 +29,20 @@ const Profile = () => {
         >
             {/* Back Button */}
             <Box sx={{ marginBottom: "16px" }}>
-                <Button
-                    startIcon={<ArrowBack />}
-                    sx={{
-                        color: "#3b82f6",
-                        backgroundColor: "#e5e7eb",
-                        borderRadius: "6px",
-                        textTransform: "none",
-                        fontSize: "14px",
-                        padding: "8px 12px",
-                    }}
-                >
-                    Back
-                </Button>
+                <Link to="/">
+                    <Button
+                        startIcon={<ArrowBack />}
+                        sx={{
+                            color: "#3b82f6",
+                            backgroundColor: "#e5e7eb",
+                            borderRadius: "6px",
+                            textTransform: "none",
+                            fontSize: "14px",
+                            padding: "8px 12px",
+                        }}
+                    >
+                        Back
+                    </Button></Link>
             </Box>
 
             {/* Profile Header */}
@@ -105,20 +107,21 @@ const Profile = () => {
                             >
                                 Personal Information
                             </Typography>
-                            <Button
-                                variant="outlined"
-                                startIcon={<Edit />}
-                                sx={{
-                                    color: "#1d4ed8",
-                                    borderColor: "#1d4ed8",
-                                    borderRadius: "6px",
-                                    textTransform: "none",
-                                    fontSize: "12px",
-                                    padding: "4px 8px",
-                                }}
-                            >
-                                Edit Profile
-                            </Button>
+                            <Link to='/update/profile'>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<Edit />}
+                                    sx={{
+                                        color: "#1d4ed8",
+                                        borderColor: "#1d4ed8",
+                                        borderRadius: "6px",
+                                        textTransform: "none",
+                                        fontSize: "12px",
+                                        padding: "4px 8px",
+                                    }}
+                                >
+                                    Edit Profile
+                                </Button></Link>
                         </Box>
 
                         <Grid container spacing={1} sx={{ marginBottom: "16px" }}>
@@ -493,5 +496,4 @@ const Profile = () => {
         </Box>
     );
 };
-
 export default Profile;
