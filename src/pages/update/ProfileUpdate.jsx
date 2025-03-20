@@ -13,7 +13,9 @@ import {
     Divider,
     Paper,
     TextareaAutosize,
-    CircularProgress
+    CircularProgress,
+    Snackbar,
+    Alert,
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import CameraAltOutlinedIcon from "@mui/icons-material/CameraAltOutlined";
@@ -29,7 +31,6 @@ const ProfileUpdate = () => {
     const [profileData, setProfileData] = useState({
         firstName: "",
         lastName: "",
-        phone: "",
         status: "",
         qualification: "",
         experience: "",
@@ -37,17 +38,23 @@ const ProfileUpdate = () => {
         clinicAddress: "",
         consultationFee: "",
         bio: "",
-        subscription: "",
-        expire: "",
     });
     const [profileImage, setProfileImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(AvatarImage);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success", 
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
     useEffect(() => {
         if (user) {
             setProfileData({
                 firstName: user.firstName,
                 lastName: user.lastName,
-                phone: user.phone,
                 status: user.status,
                 qualification: user.qualification,
                 experience: user.experience,
@@ -55,15 +62,16 @@ const ProfileUpdate = () => {
                 clinicAddress: user.clinicAddress,
                 consultationFee: user.consultationFee,
                 bio: user.bio,
-                subscription: user.subscription,
-                expire: user.expire,
+
             });
             if (user.profileImage) {
                 setImagePreview(user.profileImage);
             }
         }
         if (updatedUser) {
-            alert("Profile Successfully Updated");
+            setSnackbarMessage("Profile Successfully Updated");
+            setSnackbarSeverity("success");
+            setSnackbarOpen(true);
             dispatch(errorClean());
         }
     }, [user, updatedUser, dispatch]);
@@ -80,8 +88,6 @@ const ProfileUpdate = () => {
         if (file && file.type.startsWith("image/")) {
             setProfileImage(file);
             setImagePreview(URL.createObjectURL(file));
-        } else {
-            alert("Please select a valid image file.");
         }
     };
     const handleUpdate = async () => {
@@ -89,7 +95,6 @@ const ProfileUpdate = () => {
             const formData = new FormData();
             if (profileData?.firstName) formData.append("firstName", profileData.firstName);
             if (profileData?.lastName) formData.append("lastName", profileData.lastName);
-            if (profileData?.phone) formData.append("phone", profileData.phone);
             if (profileData?.status) formData.append("status", profileData.status);
             if (profileData?.qualification) formData.append("qualification", profileData.qualification);
             if (profileData?.experience) formData.append("experience", profileData.experience);
@@ -100,41 +105,29 @@ const ProfileUpdate = () => {
             if (profileImage) {
                 formData.append("file", profileImage);
             }
-            dispatch(updateUserProfile({ token, data: formData }));
+            dispatch(updateUserProfile({ token, formData }));
         } catch (error) {
-            console.error("Error updating profile:", error);
+            setSnackbarMessage("Error updating profile");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
         }
     };
-    const renderTextField = (label, field) => (
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-            <Typography sx={{ width: 100, color: "#000000" }}>{label}</Typography>
-            <Typography sx={{ mx: 1 }}>:</Typography>
-            <TextField
-                size="small"
-                value={profileData[field]}
-                onChange={handleChange(field)}
-                variant="standard"
-                sx={{
-                    width: { xs: "100%", lg: "50%" },
-                    "& .MuiInput-underline:before": {
-                        borderBottom: "1px solid #829498",
-                    },
-                    "& .MuiInput-underline:after": {
-                        borderBottom: "1px solid #829498",
-                    },
-                    "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
-                        borderBottom: "1px solid #829498",
-                    },
-                    "& .Mui-focused": {
-                        outline: "none",
-                    },
-                }}
-            />
-        </Box>
-    );
-
     return (
         <Container maxWidth="lg" sx={{ py: 2 }}>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+                <Alert
+                    onClose={handleSnackbarClose}
+                    severity={snackbarSeverity}
+                    sx={{ width: "100%" }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                 <Link to="/">
                     <Button
@@ -156,7 +149,7 @@ const ProfileUpdate = () => {
             <Typography variant="h4" component="h1" sx={{ color: "#3EDAC5", fontWeight: 700, mb: 0.5 }}>
                 Profile
             </Typography>
-            <Typography variant="body2" sx={{ color: "#000000333", fontWeight: 300, mb: 2 }}>
+            <Typography variant="body2" sx={{ color: "#000000", fontWeight: 300, mb: 2 }}>
                 List of your electronic prescriptions
             </Typography>
             <Divider sx={{ mb: 3 }} />
@@ -176,113 +169,258 @@ const ProfileUpdate = () => {
                     </Box>
 
                     <Box sx={{ flex: "1 1 auto" }}>
-                        <Typography variant="h6" sx={{ color: "#0052A8", fontWeight: 500, mb: 2 }}>
-                            Personal Information
-                        </Typography>
-                        {renderTextField("First Name*", "firstName")}
-                        {renderTextField("Last Name*", "lastName")}
-                        {renderTextField("Phone*", "phone")}
-                        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                            <Typography sx={{ width: 100, color: "#000000" }}>Status*</Typography>
-                            <Typography sx={{ mx: 1 }}>:</Typography>
-                            <Select
-                                size="small"
-                                value={profileData.status}
-                                onChange={handleChange("status")}
-                                variant="standard"
-                                IconComponent={KeyboardArrowDownIcon}
+                        {/* Creating a consistent form layout */}
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                            <Typography variant="h6" sx={{ color: "#0052A8", fontWeight: 500, mb: 1 }}>
+                                Personal Information
+                            </Typography>
+
+                            {/* Form Fields Container - Personal Information */}
+                            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>First Name*</Typography>
+                                    <TextField
+                                        variant="standard"
+                                        fullWidth
+                                        size="small"
+                                        value={profileData.firstName}
+                                        onChange={handleChange("firstName")}
+                                        InputProps={{
+                                            disableUnderline: false,
+                                        }}
+                                        sx={{
+                                            maxWidth: { xs: "100%", md: "60%" },
+                                            "& .MuiInput-underline:before": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:after": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottom: "1px solid #829498" },
+                                        }}
+                                    />
+                                </Box>
+
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>Last Name*</Typography>
+                                    <TextField
+                                        variant="standard"
+                                        fullWidth
+                                        size="small"
+                                        value={profileData.lastName}
+                                        onChange={handleChange("lastName")}
+                                        InputProps={{
+                                            disableUnderline: false,
+                                        }}
+                                        sx={{
+                                            maxWidth: { xs: "100%", md: "60%" },
+                                            "& .MuiInput-underline:before": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:after": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottom: "1px solid #829498" },
+                                        }}
+                                    />
+                                </Box>
+
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>Status*</Typography>
+                                    <Select
+                                        size="small"
+                                        value={profileData.status}
+                                        onChange={handleChange("status")}
+                                        variant="standard"
+                                        fullWidth
+                                        IconComponent={KeyboardArrowDownIcon}
+                                        sx={{
+                                            maxWidth: { xs: "100%", md: "60%" },
+                                            "& .MuiInput-underline:before": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:after": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottom: "1px solid #829498" },
+                                        }}
+                                    >
+                                        <MenuItem value="Active">online</MenuItem>
+                                        <MenuItem value="Inactive">offline</MenuItem>
+                                    </Select>
+                                </Box>
+                            </Box>
+
+                            <Typography variant="h6" sx={{ color: "#0052A8", fontWeight: 500, mt: 2, mb: 1 }}>
+                                Professional Information
+                            </Typography>
+
+                            {/* Form Fields Container - Professional Information */}
+                            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>Qualification*</Typography>
+                                    <TextField
+                                        variant="standard"
+                                        fullWidth
+                                        size="small"
+                                        value={profileData.qualification}
+                                        onChange={handleChange("qualification")}
+                                        InputProps={{
+                                            disableUnderline: false,
+                                        }}
+                                        sx={{
+                                            maxWidth: { xs: "100%", md: "60%" },
+                                            "& .MuiInput-underline:before": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:after": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottom: "1px solid #829498" },
+                                        }}
+                                    />
+                                </Box>
+
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>Experience*</Typography>
+                                    <TextField
+                                        variant="standard"
+                                        fullWidth
+                                        size="small"
+                                        value={profileData.experience}
+                                        onChange={handleChange("experience")}
+                                        InputProps={{
+                                            disableUnderline: false,
+                                        }}
+                                        sx={{
+                                            maxWidth: { xs: "100%", md: "60%" },
+                                            "& .MuiInput-underline:before": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:after": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottom: "1px solid #829498" },
+                                        }}
+                                    />
+                                </Box>
+
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>Specialization*</Typography>
+                                    <TextField
+                                        variant="standard"
+                                        fullWidth
+                                        size="small"
+                                        value={profileData.specialization}
+                                        onChange={handleChange("specialization")}
+                                        InputProps={{
+                                            disableUnderline: false,
+                                        }}
+                                        sx={{
+                                            maxWidth: { xs: "100%", md: "60%" },
+                                            "& .MuiInput-underline:before": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:after": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottom: "1px solid #829498" },
+                                        }}
+                                    />
+                                </Box>
+
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>Clinic Address*</Typography>
+                                    <TextField
+                                        variant="standard"
+                                        fullWidth
+                                        size="small"
+                                        value={profileData.clinicAddress}
+                                        onChange={handleChange("clinicAddress")}
+                                        InputProps={{
+                                            disableUnderline: false,
+                                        }}
+                                        sx={{
+                                            maxWidth: { xs: "100%", md: "60%" },
+                                            "& .MuiInput-underline:before": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:after": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottom: "1px solid #829498" },
+                                        }}
+                                    />
+                                </Box>
+
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>Consultation Fee*</Typography>
+                                    <TextField
+                                        variant="standard"
+                                        fullWidth
+                                        size="small"
+                                        value={profileData.consultationFee}
+                                        onChange={handleChange("consultationFee")}
+                                        InputProps={{
+                                            disableUnderline: false,
+                                        }}
+                                        sx={{
+                                            maxWidth: { xs: "100%", md: "60%" },
+                                            "& .MuiInput-underline:before": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:after": { borderBottom: "1px solid #829498" },
+                                            "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottom: "1px solid #829498" },
+                                        }}
+                                    />
+                                </Box>
+
+                                <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                                    <Typography sx={{ width: 120, flexShrink: 0, color: "#000000", mt: 1 }}>Bio*</Typography>
+                                    <TextareaAutosize
+                                        minRows={3}
+                                        value={profileData.bio}
+                                        onChange={handleChange("bio")}
+                                        style={{
+                                            width: "100%",
+                                            maxWidth: "60%",
+                                            padding: "8px",
+                                            borderRadius: "4px",
+                                            border: "1px solid #829498",
+                                            fontFamily: "inherit",
+                                            fontSize: "inherit",
+                                        }}
+                                    />
+                                </Box>
+                            </Box>
+
+                            <Typography variant="h6" sx={{ color: "#0052A8", fontWeight: 500, mt: 2, mb: 1 }}>
+                                Account Information
+                            </Typography>
+
+                            {/* Account Information Container - Read-only */}
+                            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, opacity: 0.5 }}>
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>Subscription</Typography>
+                                    <Typography>{profileData.subscription}</Typography>
+                                </Box>
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>Expire</Typography>
+                                    <Typography>{profileData.expire}</Typography>
+                                </Box>
+                            </Box>
+                            <Box
                                 sx={{
-                                    width: { xs: "100%", lg: "50%" },
-                                    "& .MuiInput-underline:before": {
-                                        borderBottom: "1px solid #829498",
-                                    },
-                                    "& .MuiInput-underline:after": {
-                                        borderBottom: "1px solid #829498",
-                                    },
-                                    "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
-                                        borderBottom: "1px solid #829498",
-                                    },
-                                    "& .Mui-focused": {
-                                        outline: "none",
-                                    },
+                                    mt: 4,
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    width: "100%",
                                 }}
                             >
-                                <MenuItem value="Active">Active</MenuItem>
-                                <MenuItem value="Inactive">Inactive</MenuItem>
-                            </Select>
-                        </Box>
-
-                        <Typography variant="h6" sx={{ color: "#0052A8", fontWeight: 500, mt: 3, mb: 2 }}>
-                            Professional Information
-                        </Typography>
-                        {renderTextField("Qualification*", "qualification")}
-                        {renderTextField("Experience*", "experience")}
-                        {renderTextField("Specialization*", "specialization")}
-                        {renderTextField("Clinic Address*", "clinicAddress")}
-                        {renderTextField("Consultation Fee*", "consultationFee")}
-                        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                            <Typography sx={{ width: 100, color: "#000000" }}>Bio*</Typography>
-                            <Typography sx={{ mx: 1 }}>:</Typography>
-                            <TextareaAutosize
-                                minRows={3}
-                                value={profileData.bio}
-                                onChange={handleChange("bio")}
-                                style={{
-                                    width: "100%",
-                                    maxWidth: "50%",
-                                    padding: "8px",
-                                    borderRadius: "4px",
-                                    border: "1px solid #829498",
-                                    fontFamily: "inherit",
-                                    fontSize: "inherit",
-                                }}
-                            />
-                        </Box>
-
-                        <Typography variant="h6" sx={{ color: "#0052A8", fontWeight: 500, mt: 3, mb: 2 }}>
-                            Account Information
-                        </Typography>
-                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, opacity: 0.5 }}>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                                <Typography sx={{ width: 100, color: "#000000" }}>Subscription</Typography>
-                                <Typography sx={{ mx: 1 }}>:</Typography>
-                                <Typography>{profileData.subscription}</Typography>
+                                <Button
+                                    variant="contained"
+                                    onClick={handleUpdate}
+                                    disabled={isLoading}
+                                    sx={{
+                                        width: { xs: "100%", md: "60%", lg: "400px" },
+                                        maxWidth: 400,
+                                        borderRadius: 2,
+                                        py: 1.5,
+                                        textTransform: "none",
+                                        fontSize: "1rem",
+                                        color: "#fff",
+                                        backgroundColor: "#0052A8",
+                                        "&:hover": {
+                                            backgroundColor: "#003D7A",
+                                        },
+                                        "&:disabled": {
+                                            backgroundColor: "#B0BEC5",
+                                        },
+                                    }}
+                                >
+                                    {isLoading ? (
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                            <CircularProgress size={20} sx={{ color: "#fff" }} />
+                                            Loading...
+                                        </Box>
+                                    ) : (
+                                        "Update"
+                                    )}
+                                </Button>
                             </Box>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                                <Typography sx={{ width: 100, color: "#000000" }}>Expire</Typography>
-                                <Typography sx={{ mx: 1 }}>:</Typography>
-                                <Typography>{profileData.expire}</Typography>
-                            </Box>
+
                         </Box>
                     </Box>
-                </Box>
-
-                <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
-                    <Button
-                        variant="outlined"
-                        onClick={handleUpdate}
-                        disabled={isLoading} // Disable button when loading
-                        sx={{
-                            width: "100%",
-                            maxWidth: 400,
-                            borderRadius: 2,
-                            py: 1,
-                            textTransform: "none",
-                            fontSize: "1rem",
-                            color: "#375560",
-                            borderColor: "#0052A8",
-                            backgroundColor: "#FFECEA",
-                        }}
-                    >
-                        {isLoading ? ( // Show loading text and spinner when isLoading is true
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                <CircularProgress size={20} sx={{ color: "#375560" }} />
-                                Loading...
-                            </Box>
-                        ) : (
-                            "Update"
-                        )}
-                    </Button>
                 </Box>
             </Paper>
         </Container>
