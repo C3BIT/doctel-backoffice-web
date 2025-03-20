@@ -1,5 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { publicPost } from '../../services/apiCaller';
+import { publicPost, privatePutFile } from '../../services/apiCaller';
+
+// Async thunk for sending OTP
 export const sendOtp = createAsyncThunk(
   "auth/sendOtp",
   async (phone, { rejectWithValue }) => {
@@ -12,6 +14,24 @@ export const sendOtp = createAsyncThunk(
     }
   }
 );
+
+// Async thunk for updating user profile
+export const updateUserProfile = createAsyncThunk(
+  "user/updateUserProfile",
+  async ({ token, formData }, { rejectWithValue }) => {
+    try {
+      console.log("token",token);
+      console.log("data",formData);
+      const response = await privatePutFile("/doctors/profile/update", token, formData);
+      console.log("response",response)
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response);
+    }
+  }
+);
+
+// Async thunk for patient login
 export const createPatientLogin = createAsyncThunk(
   "user/login",
   async (data, { rejectWithValue }) => {
@@ -23,6 +43,8 @@ export const createPatientLogin = createAsyncThunk(
     }
   }
 );
+
+// Auth slice
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -33,6 +55,7 @@ const authSlice = createSlice({
     errorMessage: "",
     phone: "",
     success: false,
+    updatedUser: false,
     token: "",
   },
   reducers: {
@@ -62,6 +85,7 @@ const authSlice = createSlice({
     errorClean: (state) => {
       state.error = false;
       state.errorMessage = "";
+      state.updatedUser = false;
     },
   },
   extraReducers: (builder) => {
@@ -84,7 +108,7 @@ const authSlice = createSlice({
       state.errorMessage = action.payload?.data?.message || "OTP verification failed";
     });
 
-    // New sendOtp cases
+    // sendOtp cases
     builder.addCase(sendOtp.pending, (state) => {
       state.isLoading = true;
       state.success = false;
@@ -103,7 +127,29 @@ const authSlice = createSlice({
       state.error = true;
       state.errorMessage = action.payload?.data?.message || "Failed to send OTP";
     });
+
+    builder.addCase(updateUserProfile.pending, (state) => {
+      state.isLoading = true;
+      state.error = false;
+    });
+    builder.addCase(updateUserProfile.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.error = null;
+      state.updatedUser = true;
+      state.user=action.payload;
+      // state.user = {
+      //   ...state.user, // Keep existing user data
+      //   ...action.payload.user, // Merge updated user data
+      // };
+      state.errorMessage = "";
+    });
+    builder.addCase(updateUserProfile.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = true;
+      state.errorMessage = action.payload?.data?.message || "Failed to update profile";
+    });
   },
 });
+
 export const { savePhone, clearPhone, login, logout, errorClean } = authSlice.actions;
 export default authSlice.reducer;
