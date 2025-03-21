@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { publicPost, privatePutFile } from '../../services/apiCaller';
+import { publicPost, privatePutFile, privateGet } from '../../services/apiCaller';
 
 // Async thunk for sending OTP
 export const sendOtp = createAsyncThunk(
@@ -43,7 +43,17 @@ export const createPatientLogin = createAsyncThunk(
     }
   }
 );
-
+export const getUserDetails = createAsyncThunk(
+  "user/details",
+  async (token, { rejectWithValue }) => {
+    try {
+      const response = await privateGet("/doctors/profile", token);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response);
+    }
+  }
+);
 // Auth slice
 const authSlice = createSlice({
   name: "auth",
@@ -57,6 +67,7 @@ const authSlice = createSlice({
     success: false,
     updatedUser: false,
     token: "",
+    userDetails: {},
   },
   reducers: {
     savePhone: (state, action) => {
@@ -137,10 +148,6 @@ const authSlice = createSlice({
       state.error = null;
       state.updatedUser = true;
       state.user=action.payload;
-      // state.user = {
-      //   ...state.user, // Keep existing user data
-      //   ...action.payload.user, // Merge updated user data
-      // };
       state.errorMessage = "";
     });
     builder.addCase(updateUserProfile.rejected, (state, action) => {
@@ -148,8 +155,23 @@ const authSlice = createSlice({
       state.error = true;
       state.errorMessage = action.payload?.data?.message || "Failed to update profile";
     });
+    builder.addCase(getUserDetails.pending, (state) => {
+      state.isLoading = true;
+      state.error = false;
+    });
+    builder.addCase(getUserDetails.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.error = null;
+      state.isAuthenticated = true;
+      state.userDetails = action.payload;
+      state.errorMessage = "";
+    });
+    builder.addCase(getUserDetails.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = true;
+      state.errorMessage = action.payload.data.message;
+    });
   },
 });
-
 export const { savePhone, clearPhone, login, logout, errorClean } = authSlice.actions;
 export default authSlice.reducer;
