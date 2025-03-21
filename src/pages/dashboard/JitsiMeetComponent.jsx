@@ -217,17 +217,19 @@ const JitsiMeetComponent = ({
   };
 
   useEffect(() => {
-    socket.on("patient:ended_call", (data) => {
+    const handlePatientEndedCall = () => {
       if (jitsiApiRef.current) {
         jitsiApiRef.current.executeCommand("hangup");
       }
       if (onLeave) onLeave();
-    });
+    };
+
+    socket.on("patient:ended_call", handlePatientEndedCall);
 
     return () => {
-      socket.off("patient:ended_call");
+      socket.off("patient:ended_call", handlePatientEndedCall);
     };
-  }, [socket]);
+  }, [socket, onLeave]);
   return (
     <Box
       sx={{
