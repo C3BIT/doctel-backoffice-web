@@ -7,6 +7,7 @@ import MicOffIcon from "@mui/icons-material/MicOff";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import CallEndIcon from "@mui/icons-material/CallEnd";
+import { useWebSocket } from "../../providers/WebSocketProvider";
 
 const callingRingtone = "/sounds/calling-ringtone.mp3";
 
@@ -24,6 +25,7 @@ const JitsiMeetComponent = ({
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const [isCallConnected, setIsCallConnected] = useState(false);
+  const { socket } = useWebSocket();
 
   useEffect(() => {
     if (initializationAttemptedRef.current) {
@@ -207,12 +209,25 @@ const JitsiMeetComponent = ({
   };
 
   const leaveCall = () => {
+    socket.emit("doctor:callend");
     if (jitsiApiRef.current) {
       jitsiApiRef.current.executeCommand("hangup");
     }
     if (onLeave) onLeave();
   };
 
+  useEffect(() => {
+    socket.on("patient:ended_call", (data) => {
+      if (jitsiApiRef.current) {
+        jitsiApiRef.current.executeCommand("hangup");
+      }
+      if (onLeave) onLeave();
+    });
+
+    return () => {
+      socket.off("patient:ended_call");
+    };
+  }, [socket]);
   return (
     <Box
       sx={{
