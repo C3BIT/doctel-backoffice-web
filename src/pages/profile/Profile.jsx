@@ -155,24 +155,7 @@ const Profile = () => {
                                     </Typography>
                                 )}
                             </Grid>
-                            <Grid item xs={12}>
-                                {isLoading ? (
-                                    <Skeleton variant="text" width="40%" />
-                                ) : (
-                                    <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                        <strong>Age:</strong> 35
-                                    </Typography>
-                                )}
-                            </Grid>
-                            <Grid item xs={12}>
-                                {isLoading ? (
-                                    <Skeleton variant="text" width="30%" />
-                                ) : (
-                                    <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                        <strong>Sex:</strong> Male
-                                    </Typography>
-                                )}
-                            </Grid>
+                           
                             <Grid item xs={12}>
                                 {isLoading ? (
                                     <Skeleton variant="text" width="50%" />
