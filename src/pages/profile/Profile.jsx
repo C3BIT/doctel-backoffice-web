@@ -10,11 +10,21 @@ import {
     IconButton,
     useMediaQuery,
     useTheme,
+    Skeleton, // Import Skeleton component
 } from "@mui/material";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getUserDetails } from "../../redux/auth/authSlice";
+import { useEffect } from "react";
 
 const Profile = () => {
-    // Responsive width
+    const dispatch = useDispatch();
+    const { userDetails, isLoading, token } = useSelector((state) => state.user);
+
+    useEffect(() => {
+        dispatch(getUserDetails(token));
+    }, [dispatch, token]);
+
     const theme = useTheme();
     const isSmallDevice = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -23,8 +33,8 @@ const Profile = () => {
             sx={{
                 backgroundColor: "white",
                 padding: "16px",
-                width: isSmallDevice ? "95%" : "80%", // 95% for small devices, 80% for larger devices
-                margin: "0 auto", // Center horizontally
+                width: isSmallDevice ? "95%" : "80%",
+                margin: "0 auto",
             }}
         >
             {/* Back Button */}
@@ -42,7 +52,8 @@ const Profile = () => {
                         }}
                     >
                         Back
-                    </Button></Link>
+                    </Button>
+                </Link>
             </Box>
 
             {/* Profile Header */}
@@ -80,14 +91,18 @@ const Profile = () => {
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                margin: "0 auto", // Center the image on small devices
+                                margin: "0 auto",
                             }}
                         >
-                            <img
-                                src="https://s3-alpha-sig.figma.com/img/0488/c066/a9c9336892f34822ffc715bfc5d072a0?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=Ur0Oydujx~-t1FjZ~ReVRqvj-PhTNqneddZzRPuaiT1FdigklmercDdU~HhQ~O0fa5CYETcRA63IavmCy4m0zs2cs8Fiq0Srnf1rgZ6b5T~F7WMvPXxJ42q9yf7NLsuMaX1TWEUrqJLrQLZ~n-w8~51eAE~MwWjH9JH748fcGpEcRNIehyJWnKM8FRVuYV451bcRlRlxOIxmvREsMLenbXpAOEVhxKZT9Nb0jU7YDb0jH7qH4E~H8ff746Uu5uDusyKd4m3VaC1TK-P794WoqAMMTEYWUHzsUvxhHk9ENwfByGEDeqqXbWaWZ~pim8V5zV0zNZo-ncdt9Uen2QX5sg__"
-                                alt="Profile"
-                                style={{ width: "100%" }}
-                            />
+                            {isLoading ? (
+                                <Skeleton variant="rectangular" width="100%" height="100%" />
+                            ) : (
+                                <img
+                                    src={userDetails?.profileImage}
+                                    alt="Profile"
+                                    style={{ width: "100%" }}
+                                />
+                            )}
                         </Box>
                     </Grid>
 
@@ -107,80 +122,115 @@ const Profile = () => {
                             >
                                 Personal Information
                             </Typography>
-                            <Link to='/update/profile'>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<Edit />}
-                                    sx={{
-                                        color: "#1d4ed8",
-                                        borderColor: "#1d4ed8",
-                                        borderRadius: "6px",
-                                        textTransform: "none",
-                                        fontSize: "12px",
-                                        padding: "4px 8px",
-                                    }}
-                                >
-                                    Edit Profile
-                                </Button></Link>
+                            {isLoading ? (
+                                <Skeleton variant="rectangular" width={100} height={36} />
+                            ) : (
+                                <Link to='/update/profile'>
+                                    <Button
+                                        variant="outlined"
+                                        startIcon={<Edit />}
+                                        sx={{
+                                            color: "#1d4ed8",
+                                            borderColor: "#1d4ed8",
+                                            borderRadius: "6px",
+                                            textTransform: "none",
+                                            fontSize: "12px",
+                                            padding: "4px 8px",
+                                        }}
+                                    >
+                                        Edit Profile
+                                    </Button>
+                                </Link>
+                            )}
                         </Box>
 
+                        {/* Personal Information Skeleton */}
                         <Grid container spacing={1} sx={{ marginBottom: "16px" }}>
                             <Grid item xs={12}>
-                                <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                    <strong>Name:</strong> Ahmed Saif Reza
-                                </Typography>
+                                {isLoading ? (
+                                    <Skeleton variant="text" width="60%" />
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: "#4b5563" }}>
+                                        <strong>Name:</strong> {userDetails?.firstName || ""} {userDetails?.lastName || ""}
+                                    </Typography>
+                                )}
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                    <strong>Age:</strong> 35
-                                </Typography>
+                                {isLoading ? (
+                                    <Skeleton variant="text" width="40%" />
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: "#4b5563" }}>
+                                        <strong>Age:</strong> 35
+                                    </Typography>
+                                )}
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                    <strong>Sex:</strong> Male
-                                </Typography>
+                                {isLoading ? (
+                                    <Skeleton variant="text" width="30%" />
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: "#4b5563" }}>
+                                        <strong>Sex:</strong> Male
+                                    </Typography>
+                                )}
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                    <strong>Mobile:</strong> 0171 101 101 101
-                                </Typography>
+                                {isLoading ? (
+                                    <Skeleton variant="text" width="50%" />
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: "#4b5563" }}>
+                                        <strong>Mobile:</strong> {userDetails?.phone}
+                                    </Typography>
+                                )}
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                    <strong>E-mail:</strong>
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                    <strong>Location:</strong> Motijhil, Dhaka
-                                </Typography>
+                                {isLoading ? (
+                                    <Skeleton variant="text" width="70%" />
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: "#4b5563" }}>
+                                        <strong>Clinic Address:</strong> {userDetails?.profile?.clinicAddress}
+                                    </Typography>
+                                )}
                             </Grid>
                         </Grid>
 
+                        {/* Profile Information Skeleton */}
                         <Typography
                             variant="h6"
                             sx={{ color: "#1d4ed8", fontWeight: "600", marginBottom: "8px" }}
                         >
-                            Health Information
+                            Profile Information
                         </Typography>
                         <Grid container spacing={1} sx={{ marginBottom: "16px" }}>
                             <Grid item xs={12}>
-                                <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                    <strong>Blood Group:</strong> A+
-                                </Typography>
+                                {isLoading ? (
+                                    <Skeleton variant="text" width="50%" />
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: "#4b5563" }}>
+                                        <strong>Qualification:</strong> {userDetails?.profile?.qualification}
+                                    </Typography>
+                                )}
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                    <strong>Height:</strong> 5'7"
-                                </Typography>
+                                {isLoading ? (
+                                    <Skeleton variant="text" width="60%" />
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: "#4b5563" }}>
+                                        <strong>Specialization:</strong> {userDetails?.profile?.specialization}
+                                    </Typography>
+                                )}
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                    <strong>Weight:</strong> 85 Kg
-                                </Typography>
+                                {isLoading ? (
+                                    <Skeleton variant="text" width="40%" />
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: "#4b5563" }}>
+                                        <strong>Consultation Fee:</strong> {userDetails?.profile?.consultationFee}
+                                    </Typography>
+                                )}
                             </Grid>
                         </Grid>
 
+                        {/* Account Information Skeleton */}
                         <Typography
                             variant="h6"
                             sx={{ color: "#1d4ed8", fontWeight: "600", marginBottom: "8px" }}
@@ -189,14 +239,22 @@ const Profile = () => {
                         </Typography>
                         <Grid container spacing={1}>
                             <Grid item xs={12}>
-                                <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                    <strong>Subscription:</strong> Monthly Pack
-                                </Typography>
+                                {isLoading ? (
+                                    <Skeleton variant="text" width="40%" />
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: "#4b5563" }}>
+                                        <strong>Subscription:</strong> Monthly Pack
+                                    </Typography>
+                                )}
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                    <strong>Expire:</strong> 31 December 2022
-                                </Typography>
+                                {isLoading ? (
+                                    <Skeleton variant="text" width="50%" />
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: "#4b5563" }}>
+                                        <strong>Expire:</strong> 31 December 2022
+                                    </Typography>
+                                )}
                             </Grid>
                         </Grid>
                     </Grid>
@@ -213,7 +271,7 @@ const Profile = () => {
                             borderRadius: "8px",
                             padding: "16px",
                             boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
-                            height: "100%", // Ensure same height for all sections
+                            height: "100%",
                         }}
                     >
                         <Typography
@@ -275,7 +333,7 @@ const Profile = () => {
                             borderRadius: "8px",
                             padding: "16px",
                             boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
-                            height: "100%", // Ensure same height for all sections
+                            height: "100%",
                         }}
                     >
                         <Box
@@ -388,7 +446,7 @@ const Profile = () => {
                             borderRadius: "8px",
                             padding: "16px",
                             boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
-                            height: "100%", // Ensure same height for all sections
+                            height: "100%",
                         }}
                     >
                         <Box
@@ -496,4 +554,5 @@ const Profile = () => {
         </Box>
     );
 };
+
 export default Profile;
