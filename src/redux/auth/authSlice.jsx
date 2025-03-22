@@ -6,7 +6,6 @@ export const sendOtp = createAsyncThunk(
   "auth/sendOtp",
   async (phone, { rejectWithValue }) => {
     try {
-      console.log("phone", phone);
       const response = await publicPost("/otp/send", { phone });
       return response.data;
     } catch (err) {
@@ -20,10 +19,8 @@ export const updateUserProfile = createAsyncThunk(
   "user/updateUserProfile",
   async ({ token, formData }, { rejectWithValue }) => {
     try {
-      console.log("token",token);
-      console.log("data",formData);
       const response = await privatePutFile("/doctors/profile/update", token, formData);
-      console.log("response",response)
+      console.log("response", response)
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response);
@@ -91,7 +88,9 @@ const authSlice = createSlice({
       state.errorMessage = "";
       state.phone = "";
       state.success = false;
+      state.userDetails = {};
       localStorage.removeItem("phone");
+
     },
     errorClean: (state) => {
       state.error = false;
@@ -147,7 +146,7 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.error = null;
       state.updatedUser = true;
-      state.user=action.payload;
+      state.user = action.payload;
       state.errorMessage = "";
     });
     builder.addCase(updateUserProfile.rejected, (state, action) => {

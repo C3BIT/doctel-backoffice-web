@@ -151,17 +151,17 @@ const Profile = () => {
                                     <Skeleton variant="text" width="60%" />
                                 ) : (
                                     <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                        <strong>Name:</strong> {userDetails?.firstName || ""} {userDetails?.lastName || ""}
+                                        <strong>Name :</strong> {userDetails?.firstName || ""} {userDetails?.lastName || ""}
                                     </Typography>
                                 )}
                             </Grid>
-                           
+
                             <Grid item xs={12}>
                                 {isLoading ? (
                                     <Skeleton variant="text" width="50%" />
                                 ) : (
                                     <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                        <strong>Mobile:</strong> {userDetails?.phone}
+                                        <strong>Mobile :</strong> {userDetails?.phone}
                                     </Typography>
                                 )}
                             </Grid>
@@ -170,7 +170,7 @@ const Profile = () => {
                                     <Skeleton variant="text" width="70%" />
                                 ) : (
                                     <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                        <strong>Clinic Address:</strong> {userDetails?.profile?.clinicAddress}
+                                        <strong>Clinic Address :</strong> {userDetails?.profile?.clinicAddress}
                                     </Typography>
                                 )}
                             </Grid>
@@ -189,7 +189,7 @@ const Profile = () => {
                                     <Skeleton variant="text" width="50%" />
                                 ) : (
                                     <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                        <strong>Qualification:</strong> {userDetails?.profile?.qualification}
+                                        <strong>Qualification :</strong> {userDetails?.profile?.qualification}
                                     </Typography>
                                 )}
                             </Grid>
@@ -198,7 +198,7 @@ const Profile = () => {
                                     <Skeleton variant="text" width="60%" />
                                 ) : (
                                     <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                        <strong>Specialization:</strong> {userDetails?.profile?.specialization}
+                                        <strong>Specialization :</strong> {userDetails?.profile?.specialization}
                                     </Typography>
                                 )}
                             </Grid>
@@ -207,7 +207,16 @@ const Profile = () => {
                                     <Skeleton variant="text" width="40%" />
                                 ) : (
                                     <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                        <strong>Consultation Fee:</strong> {userDetails?.profile?.consultationFee}
+                                        <strong>Experience :</strong> {userDetails?.profile?.experience}
+                                    </Typography>
+                                )}
+                            </Grid>
+                            <Grid item xs={12}>
+                                {isLoading ? (
+                                    <Skeleton variant="text" width="40%" />
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: "#4b5563" }}>
+                                        <strong>Consultation Fee :</strong> {userDetails?.profile?.consultationFee}
                                     </Typography>
                                 )}
                             </Grid>
@@ -226,7 +235,7 @@ const Profile = () => {
                                     <Skeleton variant="text" width="40%" />
                                 ) : (
                                     <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                        <strong>Subscription:</strong> Monthly Pack
+                                        <strong>Subscription :</strong> Monthly Pack
                                     </Typography>
                                 )}
                             </Grid>
@@ -235,7 +244,7 @@ const Profile = () => {
                                     <Skeleton variant="text" width="50%" />
                                 ) : (
                                     <Typography variant="body2" sx={{ color: "#4b5563" }}>
-                                        <strong>Expire:</strong> 31 December 2022
+                                        <strong>Expire :</strong> 31 December 2022
                                     </Typography>
                                 )}
                             </Grid>

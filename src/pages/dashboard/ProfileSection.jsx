@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
   Typography,
@@ -7,9 +7,12 @@ import {
   CardContent,
   Avatar,
   Stack,
-  styled
+  styled,
+  Skeleton,
 } from '@mui/material';
 import { Link } from "react-router-dom";
+import { getUserDetails } from "../../redux/auth/authSlice";
+import { useEffect } from "react";
 
 const ProfileCard = styled(Card)(({ theme }) => ({
   backgroundColor: '#F5F6F8',
@@ -35,29 +38,50 @@ const ProfileAvatar = styled(Avatar)(({ theme }) => ({
 }));
 
 const ProfileSection = () => {
-  const { user } = useSelector((state) => state.user);
-
+  const { user, token, userDetails, isLoading } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getUserDetails(token));
+  }, [dispatch, token]);
   return (
     <ProfileCard>
       <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 3 }}>
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { md: 'center' } }}>
-          <ProfileAvatar
-            src="https://s3-alpha-sig.figma.com/img/f5d1/626b/58c7efc77645ec3d92f9810aa546723d?Expires=1742169600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=acGbZeTMacggeZ2Hsyf2td~ia2LEUhRPcNXViWtacB0Sg1i5RUZa1xEp9MvUMslnkIjhNK~Ob1PwuEssyc6xXdQLu6SBszLtKrZ5yxEdkzwcyWrOWBPkDyFKWbR4xGqnpv4TMxOkGT3mfraH3jou1RyleINYrkxYXXnCzI74-zA3MIIOqOYupE8FfFyYn9ek~O23zNr41E6pXiuSo~Wk19IwCg2MZggpvQxzWxOCQsYF4rMEG5JfutvahKRS7gDy6MYjdlPdCcvnxr7SCrI7ziR6QylYEsnKUa3vbbTgfpu6ivMrEMmKPwWfiOcd7bUBM8HlE-NecDpB8nDGkK2XFg__"
-            alt="Profile"
-            variant="square"
-          />
 
+          {isLoading ? (
+            <Box
+              sx={{
+                width: 120,
+                height: 120,
+                borderRadius: (theme) => theme.spacing(1),
+                border: (theme) => `1px solid ${theme.palette.grey[200]}`,
+                marginRight: (theme) => theme.spacing(2),
+              }}
+            >
+              <Skeleton variant="rectangular" width="100%" height="100%" />
+            </Box>
+          ) : (
+            <ProfileAvatar
+              src={userDetails?.profileImage}
+              alt="Profile"
+              variant="square"
+            />
+          )}
           <Stack spacing={0.5} sx={{ mt: { xs: 2, md: 0 } }}>
             <Typography variant="caption" color="text.secondary" align="left">
               Welcome
             </Typography>
 
-            <Typography variant="h6" color="primary" fontWeight="medium" align="left">
-              Ahmed Ali
-            </Typography>
+            {isLoading ? (
+              <Skeleton variant="text" width="60%" />
+            ) : (
+              <Typography variant="h6" color="primary" fontWeight="medium" align="left">
+                {userDetails?.firstName || ""} {userDetails?.lastName || ""}
+              </Typography>
+            )}
 
             <Typography variant="body2" color="text.secondary" align="left">
-              {user?.phone || '8801710575743'}
+              {user?.phone || ''}
             </Typography>
 
             <Typography variant="body2" color="text.secondary" align="left" sx={{ mt: 1 }}>

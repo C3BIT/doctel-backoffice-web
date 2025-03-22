@@ -27,7 +27,8 @@ import { errorClean, updateUserProfile } from "../../redux/auth/authSlice";
 
 const ProfileUpdate = () => {
     const dispatch = useDispatch();
-    const { user, token, updatedUser, isLoading } = useSelector((state) => state.user);
+    const { token, updatedUser, isLoading, userDetails } = useSelector((state) => state.user);
+    // Initialize state with default values
     const [profileData, setProfileData] = useState({
         firstName: "",
         lastName: "",
@@ -39,11 +40,13 @@ const ProfileUpdate = () => {
         consultationFee: "",
         bio: "",
     });
+    const [initialProfileData, setInitialProfileData] = useState({}); // To store initial values
     const [profileImage, setProfileImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(AvatarImage);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
-    const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success", 
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
     const handleSnackbarClose = (event, reason) => {
         if (reason === "clickaway") {
             return;
@@ -51,38 +54,45 @@ const ProfileUpdate = () => {
         setSnackbarOpen(false);
     };
     useEffect(() => {
-        if (user) {
-            setProfileData({
-                firstName: user.firstName,
-                lastName: user.lastName,
-                status: user.status,
-                qualification: user.qualification,
-                experience: user.experience,
-                specialization: user.specialization,
-                clinicAddress: user.clinicAddress,
-                consultationFee: user.consultationFee,
-                bio: user.bio,
+        if (userDetails) {
+            const initialData = {
+                firstName: userDetails?.firstName || "",
+                lastName: userDetails?.lastName || "",
+                status: userDetails?.status || "",
+                qualification: userDetails?.profile?.qualification || "",
+                experience: userDetails?.profile?.experience || "",
+                specialization: userDetails?.profile?.specialization || "",
+                clinicAddress: userDetails?.profile?.clinicAddress || "",
+                consultationFee: userDetails?.profile?.consultationFee || "",
+                bio: userDetails?.profile?.bio || "",
+            };
+            setProfileData(initialData);
+            setInitialProfileData(initialData);
 
-            });
-            if (user.profileImage) {
-                setImagePreview(user.profileImage);
+            if (userDetails?.profileImage) {
+                setImagePreview(userDetails.profileImage);
             }
         }
+    }, [userDetails]);
+    useEffect(() => {
         if (updatedUser) {
             setSnackbarMessage("Profile Successfully Updated");
             setSnackbarSeverity("success");
             setSnackbarOpen(true);
             dispatch(errorClean());
         }
-    }, [user, updatedUser, dispatch]);
-
+    }, [updatedUser, dispatch]);
+    const isFormModified = () => {
+        return Object.keys(profileData).some(
+            (key) => profileData[key] !== initialProfileData[key]
+        );
+    };
     const handleChange = (field) => (event) => {
         setProfileData({
             ...profileData,
             [field]: event.target.value,
         });
     };
-
     const handleImageChange = (event) => {
         const file = event.target.files[0];
         if (file && file.type.startsWith("image/")) {
@@ -169,13 +179,11 @@ const ProfileUpdate = () => {
                     </Box>
 
                     <Box sx={{ flex: "1 1 auto" }}>
-                        {/* Creating a consistent form layout */}
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                             <Typography variant="h6" sx={{ color: "#0052A8", fontWeight: 500, mb: 1 }}>
                                 Personal Information
                             </Typography>
 
-                            {/* Form Fields Container - Personal Information */}
                             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
                                     <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>First Name*</Typography>
@@ -225,6 +233,13 @@ const ProfileUpdate = () => {
                                         onChange={handleChange("status")}
                                         variant="standard"
                                         fullWidth
+                                        displayEmpty
+                                        renderValue={(selected) => {
+                                            if (!selected) {
+                                                return <Typography sx={{ color: "#829498" }}>Select status</Typography>;
+                                            }
+                                            return selected === "online" ? "online" : "offline";
+                                        }}
                                         IconComponent={KeyboardArrowDownIcon}
                                         sx={{
                                             maxWidth: { xs: "100%", md: "60%" },
@@ -233,8 +248,8 @@ const ProfileUpdate = () => {
                                             "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottom: "1px solid #829498" },
                                         }}
                                     >
-                                        <MenuItem value="Active">online</MenuItem>
-                                        <MenuItem value="Inactive">offline</MenuItem>
+                                        <MenuItem value="online">online</MenuItem>
+                                        <MenuItem value="offline">offline</MenuItem>
                                     </Select>
                                 </Box>
                             </Box>
@@ -243,7 +258,6 @@ const ProfileUpdate = () => {
                                 Professional Information
                             </Typography>
 
-                            {/* Form Fields Container - Professional Information */}
                             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
                                     <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>Qualification*</Typography>
@@ -368,7 +382,6 @@ const ProfileUpdate = () => {
                                 Account Information
                             </Typography>
 
-                            {/* Account Information Container - Read-only */}
                             <Box sx={{ display: "flex", flexDirection: "column", gap: 2, opacity: 0.5 }}>
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
                                     <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>Subscription</Typography>
@@ -390,11 +403,11 @@ const ProfileUpdate = () => {
                                 <Button
                                     variant="contained"
                                     onClick={handleUpdate}
-                                    disabled={isLoading}
+                                    disabled={!isFormModified() || isLoading} // Disable if no changes or loading
                                     sx={{
                                         width: { xs: "100%", md: "60%", lg: "400px" },
                                         maxWidth: 400,
-                                        borderRadius: 2,
+
                                         py: 1.5,
                                         textTransform: "none",
                                         fontSize: "1rem",
@@ -418,7 +431,6 @@ const ProfileUpdate = () => {
                                     )}
                                 </Button>
                             </Box>
-
                         </Box>
                     </Box>
                 </Box>
