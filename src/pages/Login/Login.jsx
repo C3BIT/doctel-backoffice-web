@@ -86,17 +86,6 @@ const Login = () => {
       >
         <Loader open={isLoading} />
         <Container maxWidth="sm" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          <Box sx={{ mb: { xs: 4, sm: 5, md: 6 }, alignSelf: 'flex-start' }}>
-            <img
-              src={logo}
-              alt="Doctor Logo"
-              style={{
-                width: isMobile ? '80px' : '110px',
-                height: 'auto'
-              }}
-            />
-          </Box>
-
           <Paper
             elevation={0}
             sx={{
@@ -106,6 +95,16 @@ const Login = () => {
               width: '100%'
             }}
           >
+            <Box sx={{ mb: { xs: 4, sm: 5, md: 6 }, alignSelf: 'flex-start' }}>
+              <img
+                src={logo}
+                alt="Doctor Logo"
+                style={{
+                  width: isMobile ? '80px' : '110px',
+                  height: 'auto'
+                }}
+              />
+            </Box>
             <Box sx={{ mb: { xs: 3, sm: 4 } }}>
               <Typography
                 variant={isMobile ? "h6" : "h5"}
@@ -252,5 +251,4 @@ const Login = () => {
     </ThemeProvider>
   );
 };
-
 export default Login;

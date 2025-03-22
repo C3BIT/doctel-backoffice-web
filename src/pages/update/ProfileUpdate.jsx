@@ -20,14 +20,16 @@ import {
 import { ArrowBack } from "@mui/icons-material";
 import CameraAltOutlinedIcon from "@mui/icons-material/CameraAltOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AvatarImage from "../../assets/avatar.png";
 import { useDispatch, useSelector } from "react-redux";
 import { errorClean, updateUserProfile } from "../../redux/auth/authSlice";
 
 const ProfileUpdate = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { user, token, updatedUser, isLoading } = useSelector((state) => state.user);
+    const { token, updatedUser, isLoading, userDetails } = useSelector((state) => state.user);
+    // Initialize state with default values
     const [profileData, setProfileData] = useState({
         firstName: "",
         lastName: "",
@@ -39,11 +41,13 @@ const ProfileUpdate = () => {
         consultationFee: "",
         bio: "",
     });
+    const [initialProfileData, setInitialProfileData] = useState({}); // To store initial values
     const [profileImage, setProfileImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(AvatarImage);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
-    const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success", 
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
     const handleSnackbarClose = (event, reason) => {
         if (reason === "clickaway") {
             return;
@@ -51,38 +55,47 @@ const ProfileUpdate = () => {
         setSnackbarOpen(false);
     };
     useEffect(() => {
-        if (user) {
-            setProfileData({
-                firstName: user.firstName,
-                lastName: user.lastName,
-                status: user.status,
-                qualification: user.qualification,
-                experience: user.experience,
-                specialization: user.specialization,
-                clinicAddress: user.clinicAddress,
-                consultationFee: user.consultationFee,
-                bio: user.bio,
+        if (userDetails) {
+            const initialData = {
+                firstName: userDetails?.firstName || "",
+                lastName: userDetails?.lastName || "",
+                status: userDetails?.status || "",
+                qualification: userDetails?.profile?.qualification || "",
+                experience: userDetails?.profile?.experience || "",
+                specialization: userDetails?.profile?.specialization || "",
+                clinicAddress: userDetails?.profile?.clinicAddress || "",
+                consultationFee: userDetails?.profile?.consultationFee || "",
+                bio: userDetails?.profile?.bio || "",
+            };
+            setProfileData(initialData);
+            setInitialProfileData(initialData);
 
-            });
-            if (user.profileImage) {
-                setImagePreview(user.profileImage);
+            if (userDetails?.profileImage) {
+                setImagePreview(userDetails.profileImage);
             }
         }
+    }, [userDetails]);
+    useEffect(() => {
         if (updatedUser) {
             setSnackbarMessage("Profile Successfully Updated");
             setSnackbarSeverity("success");
             setSnackbarOpen(true);
             dispatch(errorClean());
         }
-    }, [user, updatedUser, dispatch]);
-
+    }, [updatedUser, dispatch]);
+    const isFormModified = () => {
+        const isDataModified = Object.keys(profileData).some(
+            (key) => profileData[key] !== initialProfileData[key]
+        );
+        const isImageModified = profileImage !== null; // Check if a new image is selected
+        return isDataModified || isImageModified;
+    };
     const handleChange = (field) => (event) => {
         setProfileData({
             ...profileData,
             [field]: event.target.value,
         });
     };
-
     const handleImageChange = (event) => {
         const file = event.target.files[0];
         if (file && file.type.startsWith("image/")) {
@@ -129,21 +142,20 @@ const ProfileUpdate = () => {
                 </Alert>
             </Snackbar>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <Link to="/">
-                    <Button
-                        startIcon={<ArrowBack />}
-                        sx={{
-                            color: "#0052A8",
-                            backgroundColor: "#E2F1FF",
-                            borderRadius: "6px",
-                            textTransform: "none",
-                            fontSize: "14px",
-                            padding: "8px 12px",
-                        }}
-                    >
-                        Back
-                    </Button>
-                </Link>
+                <Button
+                    startIcon={<ArrowBack />}
+                    onClick={() => navigate(-1)}
+                    sx={{
+                        color: "#0052A8",
+                        backgroundColor: "#E2F1FF",
+                        borderRadius: "6px",
+                        textTransform: "none",
+                        fontSize: "14px",
+                        padding: "8px 12px",
+                    }}
+                >
+                    Back
+                </Button>
             </Box>
 
             <Typography variant="h4" component="h1" sx={{ color: "#3EDAC5", fontWeight: 700, mb: 0.5 }}>
@@ -159,7 +171,7 @@ const ProfileUpdate = () => {
                     <Box sx={{ flex: "0 0 auto", width: { xs: "100%", md: "auto" }, display: "flex", justifyContent: { xs: "center", md: "flex-start" } }}>
                         <Card sx={{ width: 200, height: 200, position: "relative", borderRadius: 2, border: "5px solid #0070C0", boxShadow: "none" }}>
                             <CardMedia component="img" image={imagePreview} alt="Profile" sx={{ height: "100%", objectFit: "cover" }} />
-                            <IconButton sx={{ position: "absolute", right: 8, top: 8, backgroundColor: "white", color: "#0052A8", "&:hover": { backgroundColor: "white" } }}>
+                            <IconButton sx={{ position: "absolute", right: 8, top: 8, backgroundColor: "white", color: "#0052A8", "&:hover": { backgroundColor: "white", borderRadius: 8, } }}>
                                 <label htmlFor="profile-image-upload">
                                     <CameraAltOutlinedIcon />
                                 </label>
@@ -169,13 +181,11 @@ const ProfileUpdate = () => {
                     </Box>
 
                     <Box sx={{ flex: "1 1 auto" }}>
-                        {/* Creating a consistent form layout */}
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                             <Typography variant="h6" sx={{ color: "#0052A8", fontWeight: 500, mb: 1 }}>
                                 Personal Information
                             </Typography>
 
-                            {/* Form Fields Container - Personal Information */}
                             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
                                     <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>First Name*</Typography>
@@ -225,6 +235,13 @@ const ProfileUpdate = () => {
                                         onChange={handleChange("status")}
                                         variant="standard"
                                         fullWidth
+                                        displayEmpty
+                                        renderValue={(selected) => {
+                                            if (!selected) {
+                                                return <Typography sx={{ color: "#829498" }}>Select status</Typography>;
+                                            }
+                                            return selected === "online" ? "online" : "offline";
+                                        }}
                                         IconComponent={KeyboardArrowDownIcon}
                                         sx={{
                                             maxWidth: { xs: "100%", md: "60%" },
@@ -233,8 +250,8 @@ const ProfileUpdate = () => {
                                             "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottom: "1px solid #829498" },
                                         }}
                                     >
-                                        <MenuItem value="Active">online</MenuItem>
-                                        <MenuItem value="Inactive">offline</MenuItem>
+                                        <MenuItem value="online">online</MenuItem>
+                                        <MenuItem value="offline">offline</MenuItem>
                                     </Select>
                                 </Box>
                             </Box>
@@ -243,7 +260,6 @@ const ProfileUpdate = () => {
                                 Professional Information
                             </Typography>
 
-                            {/* Form Fields Container - Professional Information */}
                             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
                                     <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>Qualification*</Typography>
@@ -368,7 +384,6 @@ const ProfileUpdate = () => {
                                 Account Information
                             </Typography>
 
-                            {/* Account Information Container - Read-only */}
                             <Box sx={{ display: "flex", flexDirection: "column", gap: 2, opacity: 0.5 }}>
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
                                     <Typography sx={{ width: 120, flexShrink: 0, color: "#000000" }}>Subscription</Typography>
@@ -390,11 +405,11 @@ const ProfileUpdate = () => {
                                 <Button
                                     variant="contained"
                                     onClick={handleUpdate}
-                                    disabled={isLoading}
+                                    disabled={!isFormModified() || isLoading} // Disable if no changes or loading
                                     sx={{
                                         width: { xs: "100%", md: "60%", lg: "400px" },
                                         maxWidth: 400,
-                                        borderRadius: 2,
+
                                         py: 1.5,
                                         textTransform: "none",
                                         fontSize: "1rem",
@@ -418,7 +433,6 @@ const ProfileUpdate = () => {
                                     )}
                                 </Button>
                             </Box>
-
                         </Box>
                     </Box>
                 </Box>

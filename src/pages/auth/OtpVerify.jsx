@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  TextField, 
-  Button, 
-  Divider, 
+import {
+  Box,
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Divider,
   Link,
   useMediaQuery,
   Paper,
@@ -50,11 +50,11 @@ const OtpVerify = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  
+
   const [otp, setOtp] = useState(['', '', '', '']);
   const [timer, setTimer] = useState(150);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
-  
+
   const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
   const phone = localStorage.getItem('phone');
   const { isAuthenticated, isLoading, error, errorMessage } = useSelector((state) => state.user);
@@ -80,7 +80,7 @@ const OtpVerify = () => {
     const interval = setInterval(() => {
       setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
     }, 1000);
-    
+
     if (timer === 0) {
       setIsInputDisabled(true);
     }
@@ -123,31 +123,32 @@ const OtpVerify = () => {
           px: { xs: 2, sm: 3, md: 4 }
         }}
       >
-        <Loader open={isLoading}/>
+        <Loader open={isLoading} />
         <Container maxWidth="sm" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          <Box sx={{ mb: { xs: 4, sm: 5, md: 6 }, alignSelf: 'flex-start' }}>
-            <img 
-              src={logo} 
-              alt="Doctor Logo" 
-              style={{ 
-                width: isMobile ? '80px' : '110px',
-                height: 'auto'
-              }} 
-            />
-          </Box>
 
-          <Paper 
-            elevation={0} 
-            sx={{ 
+
+          <Paper
+            elevation={0}
+            sx={{
               p: { xs: 3, sm: 4, md: 5 },
               borderRadius: 2,
               backgroundColor: 'white',
               width: '100%'
             }}
           >
+            <Box sx={{ mb: { xs: 4, sm: 5, md: 6 }, alignSelf: 'flex-start' }}>
+              <img
+                src={logo}
+                alt="Doctor Logo"
+                style={{
+                  width: isMobile ? '80px' : '110px',
+                  height: 'auto'
+                }}
+              />
+            </Box>
             <Box sx={{ mb: { xs: 3, sm: 4 } }}>
-              <Typography 
-                variant={isMobile ? "h6" : "h5"} 
+              <Typography
+                variant={isMobile ? "h6" : "h5"}
                 component="h2"
                 sx={{
                   display: 'inline-block',
@@ -160,12 +161,12 @@ const OtpVerify = () => {
               >
                 OTP
               </Typography>
-              
-              <Typography 
+
+              <Typography
                 variant={isMobile ? "h6" : "h3"}
                 component="h3"
-                sx={{ 
-                  fontWeight: 700, 
+                sx={{
+                  fontWeight: 700,
                   mb: 0.5,
                   color: '#375560',
                   textAlign: 'left',
@@ -177,10 +178,10 @@ const OtpVerify = () => {
               >
                 Premium Telemedicine Platform
               </Typography>
-              
-              <Typography 
+
+              <Typography
                 variant="h6"
-                sx={{ 
+                sx={{
                   mb: 3,
                   color: '#0052A8',
                   fontWeight: 700,
@@ -195,28 +196,28 @@ const OtpVerify = () => {
             </Box>
 
             <Box sx={{ mb: 4 }}>
-              <Typography 
-                variant="body2" 
+              <Typography
+                variant="body2"
                 color="#375560"
-                sx={{ 
+                sx={{
                   mb: 2,
                   textAlign: 'left',
                   fontSize: { xs: '0.875rem', sm: '0.9rem', md: '1rem' }
                 }}
               >
                 Please enter the OTP sent to{' '}
-                <Typography 
-                  component="span" 
+                <Typography
+                  component="span"
                   sx={{ color: '#0052A8', fontWeight: 500 }}
                 >
                   {phone}
                 </Typography>
               </Typography>
 
-              <Stack 
-                direction="row" 
-                spacing={2} 
-                justifyContent="space-between" 
+              <Stack
+                direction="row"
+                spacing={2}
+                justifyContent="space-between"
                 sx={{ mb: 3 }}
               >
                 {otp.map((digit, index) => (
@@ -226,7 +227,7 @@ const OtpVerify = () => {
                     variant="outlined"
                     inputProps={{
                       maxLength: 1,
-                      style: { 
+                      style: {
                         textAlign: 'center',
                         fontSize: '1.25rem',
                         padding: '10px 0'
@@ -274,8 +275,8 @@ const OtpVerify = () => {
 
             <Box sx={{ height: '24px', mb: 1 }}>
               {error && (
-                <Typography 
-                  variant="body2" 
+                <Typography
+                  variant="body2"
                   color="error"
                   sx={{ textAlign: 'left' }}
                 >
@@ -287,10 +288,10 @@ const OtpVerify = () => {
             <Box sx={{ textAlign: 'center', mb: 4 }}>
               <Typography variant="body2" color="text.secondary">
                 Did not receive OTP?{' '}
-                <Typography 
-                  component="span" 
-                  sx={{ 
-                    color: '#0052A8', 
+                <Typography
+                  component="span"
+                  sx={{
+                    color: '#0052A8',
                     fontWeight: 500,
                     cursor: timer === 0 ? 'pointer' : 'default',
                     opacity: timer === 0 ? 1 : 0.7
@@ -306,8 +307,8 @@ const OtpVerify = () => {
               <Divider sx={{ my: 2 }} />
               <Box sx={{ textAlign: 'left' }}>
                 <Typography variant="body2">
-                  <Link 
-                    href="#" 
+                  <Link
+                    href="#"
                     color="#0052A8"
                     underline="hover"
                     sx={{ fontWeight: 500 }}
