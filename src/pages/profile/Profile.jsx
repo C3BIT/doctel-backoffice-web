@@ -12,12 +12,13 @@ import {
     useTheme,
     Skeleton, // Import Skeleton component
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserDetails } from "../../redux/auth/authSlice";
 import { useEffect } from "react";
 
 const Profile = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const { userDetails, isLoading, token } = useSelector((state) => state.user);
 
@@ -39,21 +40,20 @@ const Profile = () => {
         >
             {/* Back Button */}
             <Box sx={{ marginBottom: "16px" }}>
-                <Link to="/">
-                    <Button
-                        startIcon={<ArrowBack />}
-                        sx={{
-                            color: "#3b82f6",
-                            backgroundColor: "#e5e7eb",
-                            borderRadius: "6px",
-                            textTransform: "none",
-                            fontSize: "14px",
-                            padding: "8px 12px",
-                        }}
-                    >
-                        Back
-                    </Button>
-                </Link>
+                <Button
+                    startIcon={<ArrowBack />}
+                    onClick={() => navigate(-1)}
+                    sx={{
+                        color: "#0052A8",
+                        backgroundColor: "#E2F1FF",
+                        borderRadius: "6px",
+                        textTransform: "none",
+                        fontSize: "14px",
+                        padding: "8px 12px",
+                    }}
+                >
+                    Back
+                </Button>
             </Box>
 
             {/* Profile Header */}

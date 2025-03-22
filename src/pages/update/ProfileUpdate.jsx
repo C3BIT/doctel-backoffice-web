@@ -20,12 +20,13 @@ import {
 import { ArrowBack } from "@mui/icons-material";
 import CameraAltOutlinedIcon from "@mui/icons-material/CameraAltOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AvatarImage from "../../assets/avatar.png";
 import { useDispatch, useSelector } from "react-redux";
 import { errorClean, updateUserProfile } from "../../redux/auth/authSlice";
 
 const ProfileUpdate = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const { token, updatedUser, isLoading, userDetails } = useSelector((state) => state.user);
     // Initialize state with default values
@@ -83,9 +84,11 @@ const ProfileUpdate = () => {
         }
     }, [updatedUser, dispatch]);
     const isFormModified = () => {
-        return Object.keys(profileData).some(
+        const isDataModified = Object.keys(profileData).some(
             (key) => profileData[key] !== initialProfileData[key]
         );
+        const isImageModified = profileImage !== null; // Check if a new image is selected
+        return isDataModified || isImageModified;
     };
     const handleChange = (field) => (event) => {
         setProfileData({
@@ -139,21 +142,20 @@ const ProfileUpdate = () => {
                 </Alert>
             </Snackbar>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <Link to="/">
-                    <Button
-                        startIcon={<ArrowBack />}
-                        sx={{
-                            color: "#0052A8",
-                            backgroundColor: "#E2F1FF",
-                            borderRadius: "6px",
-                            textTransform: "none",
-                            fontSize: "14px",
-                            padding: "8px 12px",
-                        }}
-                    >
-                        Back
-                    </Button>
-                </Link>
+                <Button
+                    startIcon={<ArrowBack />}
+                    onClick={() => navigate(-1)}
+                    sx={{
+                        color: "#0052A8",
+                        backgroundColor: "#E2F1FF",
+                        borderRadius: "6px",
+                        textTransform: "none",
+                        fontSize: "14px",
+                        padding: "8px 12px",
+                    }}
+                >
+                    Back
+                </Button>
             </Box>
 
             <Typography variant="h4" component="h1" sx={{ color: "#3EDAC5", fontWeight: 700, mb: 0.5 }}>
@@ -169,7 +171,7 @@ const ProfileUpdate = () => {
                     <Box sx={{ flex: "0 0 auto", width: { xs: "100%", md: "auto" }, display: "flex", justifyContent: { xs: "center", md: "flex-start" } }}>
                         <Card sx={{ width: 200, height: 200, position: "relative", borderRadius: 2, border: "5px solid #0070C0", boxShadow: "none" }}>
                             <CardMedia component="img" image={imagePreview} alt="Profile" sx={{ height: "100%", objectFit: "cover" }} />
-                            <IconButton sx={{ position: "absolute", right: 8, top: 8, backgroundColor: "white", color: "#0052A8", "&:hover": { backgroundColor: "white" } }}>
+                            <IconButton sx={{ position: "absolute", right: 8, top: 8, backgroundColor: "white", color: "#0052A8", "&:hover": { backgroundColor: "white", borderRadius: 8, } }}>
                                 <label htmlFor="profile-image-upload">
                                     <CameraAltOutlinedIcon />
                                 </label>
