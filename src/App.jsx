@@ -13,28 +13,30 @@ import Profile from './pages/profile/Profile';
 import LabReport from './pages/LabReport/LabReport';
 import PrescriptionReport from './pages/PrescriptionReport/PrescriptionReport';
 import ProfileUpdate from './pages/update/ProfileUpdate';
+import PrescriptionForm from './pages/PrescriptionForm/PrescriptionForm'
 const App = () => {
   return (
     <Box className="App">
-        <Routes>
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Layout />} >
-              <Route index element={<Home />} />
-              <Route path="/profile" element={<DoctorProfile />} />
-              <Route path="/doctor/profile" element={<Profile />} />
-              <Route path="/lab/report" element={<LabReport />} />
-              <Route path="/prescription/list" element={<PrescriptionReport/>} />
-              <Route path="/update/profile" element={<ProfileUpdate/>} />
-            </Route>
+      <Routes>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Layout />} >
+            <Route index element={<Home />} />
+            <Route path="/profile" element={<DoctorProfile />} />
+            <Route path="/doctor/profile" element={<Profile />} />
+            <Route path="/lab/report" element={<LabReport />} />
+            <Route path="/prescription/list" element={<PrescriptionReport />} />
+            <Route path="/update/profile" element={<ProfileUpdate />} />
+            <Route path="/create/prescription" element={<PrescriptionForm />} />
           </Route>
-          
-          <Route element={<PublicRoute />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/verify-otp" element={<OtpVerify />} />
-          </Route>
-          
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        </Route>
+
+        <Route element={<PublicRoute />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/verify-otp" element={<OtpVerify />} />
+        </Route>
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </Box>
   );
 };
