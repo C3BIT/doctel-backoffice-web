@@ -15,7 +15,7 @@ const JitsiMeetComponent = ({
   roomName,
   displayName = "User",
   onLeave,
-  showInHalfScreen = false,
+  showInHalfScreen = true,
   isIncoming = false,
 }) => {
   const jitsiContainerRef = useRef(null);
