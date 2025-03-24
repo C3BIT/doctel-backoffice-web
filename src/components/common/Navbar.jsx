@@ -14,6 +14,7 @@ import {
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import LogoutIcon from '@mui/icons-material/Logout';
 import headerLogo from '../../assets/images/NavLogo.svg';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [notificationCount] = useState(3);
@@ -26,51 +27,52 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar 
-      position="fixed" 
-      sx={{ 
+    <AppBar
+      position="fixed"
+      sx={{
         backgroundColor: '#0052A8',
         boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
         zIndex: (theme) => theme.zIndex.drawer + 1
       }}
     >
       <Container maxWidth="lg">
-        <Toolbar 
+        <Toolbar
           disableGutters
-          sx={{ 
-            display: 'flex', 
+          sx={{
+            display: 'flex',
             justifyContent: 'space-between',
             py: 1,
             px: isMobile ? 2 : 0
           }}
         >
           {/* Logo container */}
-          <Box 
-            sx={{ 
+          <Box
+            sx={{
               display: 'flex',
               alignItems: 'center'
             }}
           >
 
-            <img 
-              src={headerLogo} 
-              alt="Doctor Logo" 
-              style={{ height: '32px', width: 'auto' }} 
-            /> 
+            <Link to="/">
+              <img
+                src={headerLogo}
+                alt="Doctor Logo"
+                style={{ height: '32px', width: 'auto' }}
+              /> </Link>
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <IconButton 
-              color="inherit" 
+            <IconButton
+              color="inherit"
               size="medium"
-              sx={{ 
-                '&:hover': { 
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)' 
-                } 
+              sx={{
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                }
               }}
             >
-              <Badge 
-                badgeContent={notificationCount} 
+              <Badge
+                badgeContent={notificationCount}
                 color="error"
                 anchorOrigin={{
                   vertical: 'top',
@@ -87,15 +89,15 @@ const Navbar = () => {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-            
-            <IconButton 
-              color="inherit" 
+
+            <IconButton
+              color="inherit"
               onClick={handleLogout}
               size="medium"
-              sx={{ 
-                '&:hover': { 
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)' 
-                } 
+              sx={{
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                }
               }}
             >
               <LogoutIcon />
