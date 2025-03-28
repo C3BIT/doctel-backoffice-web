@@ -13,6 +13,7 @@ import Profile from './pages/profile/Profile';
 import LabReport from './pages/LabReport/LabReport';
 import PrescriptionReport from './pages/PrescriptionReport/PrescriptionReport';
 import ProfileUpdate from './pages/update/ProfileUpdate';
+import PrescriptionFormContent from './pages/CreatePrescription/PrescriptionFormContent'
 const App = () => {
   return (
     <Box className="App">
@@ -25,6 +26,7 @@ const App = () => {
               <Route path="/lab/report" element={<LabReport />} />
               <Route path="/prescription/list" element={<PrescriptionReport/>} />
               <Route path="/update/profile" element={<ProfileUpdate/>} />
+              <Route path="/create/call" element={<PrescriptionFormContent/>} />
             </Route>
           </Route>
           
