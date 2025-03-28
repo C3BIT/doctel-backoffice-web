@@ -12,7 +12,7 @@ import CallingScreen from "./Jitsi/CallingScreen";
 import ContactFreeSvg from "../../assets/images/onlineDoctor.svg";
 import BuyPackageSvg from "../../assets/images/prchase.svg";
 import CallEndModal from "./Jitsi/CallEndModal";
-
+import PrescriptionFormContent from '../CreatePrescription/PrescriptionFormContent'
 const Dashboard = () => {
   const { socket, incomingCall, setIncomingCall } = useWebSocket();
   const audioRef = useRef(null);
@@ -199,35 +199,14 @@ const Dashboard = () => {
               )}
             </Box>
           </Grid>
-
+{/* prescription component */}
           <Grid item xs={12} md={6}>
-            <Box sx={{ p: 3, height: "100%" }}>
+            <Box sx={{ pt: 0, pb: 3, pr: 3, pl: 3, height: "100%" }}>
               <Paper
                 elevation={2}
-                sx={{ p: 3, height: "100%", borderRadius: 2 }}
+                sx={{ p: 3, height: "100%", borderRadius: 1 }}
               >
-                <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
-                  Patient Information
-                </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <Box
-                    component="img"
-                    src={callTarget.image}
-                    alt={callTarget.name}
-                    sx={{
-                      width: 80,
-                      height: 80,
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <Box>
-                    <Typography variant="h6">{callTarget.name}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      ID: {callTarget.id}
-                    </Typography>
-                  </Box>
-                </Box>
+                <PrescriptionFormContent/>
               </Paper>
             </Box>
           </Grid>

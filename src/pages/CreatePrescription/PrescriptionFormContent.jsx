@@ -1,5 +1,4 @@
 import  { useState } from "react";
-import VideoCallSection from "./VideoCallSection";
 import PrescriptionForm from "./PrescriptionForm";
 import generatePDF from "./generatePDF";
 import "./PrescriptionForm.css";
@@ -38,7 +37,6 @@ const PrescriptionFormContent = () => {
   return (
     <div className="medical-form-container">
       <form className="form-layout">
-        <VideoCallSection />
         <PrescriptionForm 
           formData={formData} 
           handleChange={handleChange}
