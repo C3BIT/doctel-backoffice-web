@@ -40,7 +40,7 @@ const PrescriptionFormContent = () => {
       const pdfFile = await generatePDF(formData);
       const newformData = new FormData();
       newformData.append("patientId", "DUMMY_PATIENT_ID_123");
-      newformData.append("file", pdfFile);
+      newformData.append("file", pdfFile,"prescription.pdf");
 
       await dispatch(
         createPrescription({
