@@ -1,0 +1,220 @@
+/* Layout Styles */
+.medical-form-container {
+    width: 100%;
+    margin: 0 auto;
+    background: white;
+    font-family: Arial, sans-serif;
+  }
+  
+  .form-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 1024px) {
+    .form-layout {
+      flex-direction: row;
+    }
+  }
+
+  
+  .call-controls {
+    padding: 1rem;
+  }
+  
+  .call-controls h2 {
+    color: #3b82f6;
+    font-size: 1.125rem;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+    text-align: left;
+  }
+  
+  .control-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .control-buttons button {
+    padding: 0.75rem;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .end-button {
+    background: #ef4444;
+    color: white;
+  }
+  
+  .mute-button, .video-button {
+    background: #e5e7eb;
+    color: #374151;
+  }
+  
+  /* Form Content */
+  .form-content-scrollable {
+    width: 100%;
+    overflow-y: auto;
+    max-height: calc(100vh - 100px);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .form-content-scrollable::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .form-section {
+    margin-bottom: 1rem;
+  }
+  
+  .form-section h2 {
+    color: #3b82f6;
+    font-size: 0.875rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+  
+  /* Patient Details */
+  .patient-details-form {
+    background: #f0f7ff;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+  }
+  
+  .patient-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .patient-details-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  /* Input Styles */
+  input, select, textarea {
+    outline: none;
+    padding: 0.5rem;
+    border: 1px solid #93c5fd;
+    border-radius: 0.5rem;
+    background: white;
+    width: 100%;
+  }
+  
+  .red-input, .red-text {
+    color: #5A6684;
+  }
+  
+  .red-input::placeholder, .red-text::placeholder {
+    color: #5A6684;
+    opacity: 1;
+  }
+  .reason-select {
+    background: #f0f7ff;
+    padding: 1rem;
+  }
+  .text-area-container {
+    background: #f0f7ff;
+    padding: 1rem;
+  }
+  
+  textarea {
+    min-height: 6rem;
+  }
+  
+  /* PDF Styles */
+  .pdf-target {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    width: 210mm; /* A4 width */
+    height: 297mm; /* A4 height */
+    background: white;
+    z-index: -1;
+    opacity: 0;
+  }
+  
+  .pdf-content {
+    padding: 2rem;
+    color: #000000;
+    background: #ffffff;
+  }
+  
+  .pdf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .pdf-logo {
+    height: 4rem;
+    width: 4rem;
+    background: #3b82f6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+  }
+  
+  .pdf-doctor-info {
+    text-align: right;
+  }
+  
+  .pdf-doctor-info h2 {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  
+  .pdf-patient-info h3, .pdf-section h3 {
+    font-size: 1.125rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .patient-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .patient-details-grid p span {
+    font-weight: 600;
+  }
+  
+  .prescription-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .prescription-table th, .prescription-table td {
+    border: 1px solid #dddddd;
+    padding: 0.5rem;
+    text-align: left;
+  }
+  
+  .prescription-table th {
+    background-color: #f1f1f1;
+  }
+  
+  /* Submit Button */
+  .submit-button {
+    width: 100%;
+    background: #0d9488;
+    color: white;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    text-align: center;
+    margin-top: 1rem;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+  }
