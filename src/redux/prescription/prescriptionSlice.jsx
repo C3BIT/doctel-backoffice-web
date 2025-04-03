@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { privatePost } from "../../services/apiCaller";
+import { privatePost,privatePutFile } from "../../services/apiCaller";
 
 export const createPrescription = createAsyncThunk(
     "prescriptions/createPrescription",
     async ({ token, formData }, { rejectWithValue }) => {
       try {
-        const response = await privatePost("/doctors/upload/prescription", token, formData);
+        const response = await privatePutFile("/doctors/upload/prescription", token, formData);
         return response.data;
       } catch (err) {
         return rejectWithValue(
