@@ -1,6 +1,7 @@
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import logo from '../../assets/icons/prescriptionlogo.svg'
+import logo from '../../assets/icons/prescriptionlogo.svg';
+
 const formatMedicineLine = (line) => {
   return line
     .split("+")
@@ -23,6 +24,49 @@ const formatSectionContent = (text) => {
     .filter((line) => line.trim())
     .map((line) => `• ${line.trim()}`)
     .join("\n");
+};
+
+const compressPDF = async (pdfBlob, attempts = 3, scale = 1.5, quality = 0.7) => {
+  const maxSize = 4.8 * 1024 * 1024; // 4.8MB to give some buffer
+  let compressedBlob = pdfBlob;
+  
+  for (let i = 0; i < attempts; i++) {
+    if (compressedBlob.size <= maxSize) break;
+    
+    console.log(`Compression attempt ${i + 1}: Current size ${(compressedBlob.size / 1024 / 1024).toFixed(2)}MB`);
+    
+    // Create a temporary container for re-rendering
+    const tempContainer = document.createElement("div");
+    tempContainer.style.position = "absolute";
+    tempContainer.style.left = "-9999px";
+    tempContainer.style.width = "210mm";
+    tempContainer.style.padding = "20px";
+    tempContainer.style.background = "white";
+    document.body.appendChild(tempContainer);
+    
+    try {
+      // Re-render with lower quality settings
+      const canvas = await html2canvas(tempContainer, {
+        scale: scale - (i * 0.2), // Reduce scale with each attempt
+        quality: quality - (i * 0.1), // Reduce quality with each attempt
+        logging: false,
+        useCORS: true,
+        backgroundColor: '#FFFFFF'
+      });
+
+      const imgData = canvas.toDataURL("image/jpeg", quality - (i * 0.1));
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
+      compressedBlob = pdf.output("blob");
+    } finally {
+      document.body.removeChild(tempContainer);
+    }
+  }
+  
+  return compressedBlob;
 };
 
 const generatePDF = async (formData) => {
@@ -303,24 +347,44 @@ const generatePDF = async (formData) => {
   document.body.appendChild(pdfContainer);
 
   try {
+    // Initial render with moderate quality
     const canvas = await html2canvas(pdfContainer, {
-      scale: 2,
+      scale: 1.8,
+      quality: 0.8,
       logging: false,
       useCORS: true,
+      backgroundColor: '#FFFFFF'
     });
 
-    const imgData = canvas.toDataURL("image/png");
+    const imgData = canvas.toDataURL("image/jpeg", 0.8);
     const pdf = new jsPDF("p", "mm", "a4");
     const imgWidth = 210;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+    pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
+    
+    // Generate initial PDF blob
     const pdfBlob = pdf.output("blob");
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    window.open(pdfUrl, "_blank");
+    
+    // Compress if needed
+    const finalBlob = await compressPDF(pdfBlob);
+    
+    // Validate size
+    if (finalBlob.size > 5 * 1024 * 1024) {
+      throw new Error("Failed to reduce PDF under 5MB");
+    }
+    
+    console.log(`Final PDF size: ${(finalBlob.size / 1024 / 1024).toFixed(2)}MB`);
+    
+    // Create File object with fixed name
+    return new File([finalBlob], "prescription.pdf", {
+      type: "application/pdf",
+      lastModified: Date.now()
+    });
+    
   } catch (error) {
-    console.error("Error generating PDF:", error);
-    throw error;
+    console.error("PDF generation error:", error);
+    throw new Error("Failed to generate prescription: " + error.message);
   } finally {
     document.body.removeChild(pdfContainer);
   }
