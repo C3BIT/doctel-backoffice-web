@@ -36,7 +36,6 @@ export const privatePost = async (endpoint, token, body) => {
   const response = await axios.post(`${api}${endpoint}`, body, config);
   return response.data;
 };
-// Add this to your apiCaller.js
 export const privatePostFile = async (endpoint, token, body) => {
   fileConfig.headers.token = `${token}`;
   const response = await axios.post(`${api}${endpoint}`, body, fileConfig);
