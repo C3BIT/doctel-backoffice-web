@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PrescriptionForm from "./PrescriptionForm";
 import generatePDF from "./generatePDF";
 import "./PrescriptionForm.css";
 import { useDispatch, useSelector } from "react-redux";
-import { createPrescription } from "../../redux/prescription/prescriptionSlice";
+import {
+  createPrescription,
+  resetPrescriptionsState,
+} from "../../redux/prescription/prescriptionSlice";
+import { Snackbar, Alert } from "@mui/material";
 
 const PrescriptionFormContent = () => {
   const { token } = useSelector((state) => state.user);
-  const { isLoading, prescriptionsCreated} = useSelector(
+  const { isLoading, prescriptionsCreated } = useSelector(
     (state) => state.prescriptions
   );
   const dispatch = useDispatch();
-
   const [formData, setFormData] = useState({
     patientName: "",
     age: "",
@@ -24,8 +27,17 @@ const PrescriptionFormContent = () => {
     advice: "",
     prescription: "",
   });
-
   const [isGenerating, setIsGenerating] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,13 +47,11 @@ const PrescriptionFormContent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsGenerating(true);
-
     try {
       const pdfFile = await generatePDF(formData);
       const newformData = new FormData();
       newformData.append("patientId", "DUMMY_PATIENT_ID_123");
-      newformData.append("file", pdfFile,"prescription.pdf");
-
+      newformData.append("file", pdfFile);
       await dispatch(
         createPrescription({
           token,
@@ -54,7 +64,14 @@ const PrescriptionFormContent = () => {
       setIsGenerating(false);
     }
   };
-
+  useEffect(() => {
+    if (prescriptionsCreated) {
+      setSnackbarMessage("Prescription Created Successfully");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      dispatch(resetPrescriptionsState());
+    }
+  }, [prescriptionsCreated, dispatch]);
   return (
     <div className="medical-form-container">
       <form className="form-layout">
@@ -65,8 +82,22 @@ const PrescriptionFormContent = () => {
           onSubmit={handleSubmit}
         />
       </form>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
-
 export default PrescriptionFormContent;

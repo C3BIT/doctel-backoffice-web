@@ -5,6 +5,7 @@ export const createPrescription = createAsyncThunk(
     "prescriptions/createPrescription",
     async ({ token, formData }, { rejectWithValue }) => {
       try {
+        console.log("formData",formData)
         const response = await privatePostFile("/doctors/upload/prescription", token, formData);
         return response.data;
       } catch (err) {
@@ -43,16 +44,14 @@ export const prescriptionsSlice = createSlice({
         state.error = null;
         state.prescriptionsCreated = true;
         state.success = true;
-        state.message =
-          action.payload.message || "Prescription created successfully";
+        state.message = action.payload.message || "Prescription created successfully";
         state.data = action.payload;
       })
       .addCase(createPrescription.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
         state.success = false;
-        state.message =
-          action.payload?.message || "Failed to create prescription";
+        state.message = action.payload?.message || "Failed to create prescription";
       });
   },
 });
