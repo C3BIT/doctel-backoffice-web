@@ -28,7 +28,7 @@ const Dashboard = () => {
       console.log("📞 Incoming Call Request:", incomingCall);
       setCallTarget({
         name: incomingCall.patientName || `${incomingCall.patientId}`,
-        id: incomingCall.patientId,
+        phone: incomingCall.patientId,
         image: "https://avatars.githubusercontent.com/u/50502837?v=4",
       });
       setCallingScreen(true);
@@ -199,14 +199,13 @@ const Dashboard = () => {
               )}
             </Box>
           </Grid>
-{/* prescription component */}
           <Grid item xs={12} md={6}>
             <Box sx={{ pt: 0, pb: 3, pr: 3, pl: 3, height: "100%" }}>
               <Paper
                 elevation={2}
                 sx={{ p: 3, height: "100%", borderRadius: 1 }}
               >
-                <PrescriptionFormContent/>
+                <PrescriptionFormContent patient={callTarget}/>
               </Paper>
             </Box>
           </Grid>

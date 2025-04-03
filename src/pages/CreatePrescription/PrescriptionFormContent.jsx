@@ -9,7 +9,7 @@ import {
 } from "../../redux/prescription/prescriptionSlice";
 import { Snackbar, Alert } from "@mui/material";
 
-const PrescriptionFormContent = () => {
+const PrescriptionFormContent = ({ patient }) => {
   const { token } = useSelector((state) => state.user);
   const { isLoading, prescriptionsCreated } = useSelector(
     (state) => state.prescriptions
@@ -50,7 +50,7 @@ const PrescriptionFormContent = () => {
     try {
       const pdfFile = await generatePDF(formData);
       const newformData = new FormData();
-      newformData.append("patientId", "DUMMY_PATIENT_ID_123");
+      newformData.append("phone", patient.phone);
       newformData.append("file", pdfFile);
       await dispatch(
         createPrescription({

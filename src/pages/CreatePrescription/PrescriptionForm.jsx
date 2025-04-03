@@ -2,7 +2,6 @@
 const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) => {
   return (
     <div className="form-content-scrollable">
-      {/* Patient Details */}
       <div className="form-section">
         <h2>Patient Details</h2>
         <div className="patient-details-form">
