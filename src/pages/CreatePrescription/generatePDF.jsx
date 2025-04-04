@@ -1,7 +1,6 @@
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import logo from '../../assets/icons/prescriptionlogo.svg';
-
+import logo from "../../assets/icons/prescriptionlogo.svg";
 const formatMedicineLine = (line) => {
   return line
     .split("+")
@@ -26,15 +25,26 @@ const formatSectionContent = (text) => {
     .join("\n");
 };
 
-const compressPDF = async (pdfBlob, attempts = 3, scale = 1.5, quality = 0.7) => {
+const compressPDF = async (
+  pdfBlob,
+  attempts = 3,
+  scale = 1.5,
+  quality = 0.7
+) => {
   const maxSize = 4.8 * 1024 * 1024; // 4.8MB to give some buffer
   let compressedBlob = pdfBlob;
-  
+
   for (let i = 0; i < attempts; i++) {
     if (compressedBlob.size <= maxSize) break;
-    
-    console.log(`Compression attempt ${i + 1}: Current size ${(compressedBlob.size / 1024 / 1024).toFixed(2)}MB`);
-    
+
+    console.log(
+      `Compression attempt ${i + 1}: Current size ${(
+        compressedBlob.size /
+        1024 /
+        1024
+      ).toFixed(2)}MB`
+    );
+
     // Create a temporary container for re-rendering
     const tempContainer = document.createElement("div");
     tempContainer.style.position = "absolute";
@@ -43,33 +53,40 @@ const compressPDF = async (pdfBlob, attempts = 3, scale = 1.5, quality = 0.7) =>
     tempContainer.style.padding = "20px";
     tempContainer.style.background = "white";
     document.body.appendChild(tempContainer);
-    
+
     try {
       // Re-render with lower quality settings
       const canvas = await html2canvas(tempContainer, {
-        scale: scale - (i * 0.2), // Reduce scale with each attempt
-        quality: quality - (i * 0.1), // Reduce quality with each attempt
+        scale: scale - i * 0.2, // Reduce scale with each attempt
+        quality: quality - i * 0.1, // Reduce quality with each attempt
         logging: false,
         useCORS: true,
-        backgroundColor: '#FFFFFF'
+        backgroundColor: "#FFFFFF",
       });
 
-      const imgData = canvas.toDataURL("image/jpeg", quality - (i * 0.1));
+      const imgData = canvas.toDataURL("image/jpeg", quality - i * 0.1);
       const pdf = new jsPDF("p", "mm", "a4");
       const imgWidth = 210;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
+
       pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
       compressedBlob = pdf.output("blob");
     } finally {
       document.body.removeChild(tempContainer);
     }
   }
-  
+
   return compressedBlob;
 };
 
 const generatePDF = async (formData) => {
+  const {patientInfo, doctorInfo, } = formData;
+
+  const doctorName =
+    `${doctorInfo?.firstName || ""} ${doctorInfo?.lastName || ""}`.trim() || "";
+  const doctorQualifications = doctorInfo?.profile?.qualification || "";
+  const specialization = doctorInfo?.profile?.specialization || "";
+  const clinicAddress = doctorInfo?.profile?.clinicAddress || "";
   const pdfContainer = document.createElement("div");
   pdfContainer.style.position = "absolute";
   pdfContainer.style.left = "-9999px";
@@ -200,8 +217,6 @@ const generatePDF = async (formData) => {
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        margin-top: 20px;
-        padding-top: 15px;
         border-top: 2px solid #0064B0;
         gap: 10px;
       }
@@ -214,7 +229,8 @@ const generatePDF = async (formData) => {
       }
       .footer-logo {
         width: 131px;
-        height: 38px;
+        height: 48px;
+        margin-top: 30px;
       }
     </style>
 
@@ -223,12 +239,11 @@ const generatePDF = async (formData) => {
         <img src="${logo}" class="header-logo" />
       </div>
       <div class="doctor-info">
-        <h2 class="doctor-name">Dr. John Doe</h2>
+        <h2 class="doctor-name">${doctorName}</h2>
         <div class="doctor-details">
-          <p>MBBS, BCS (Health), MS (ORTHO)</p>
-          <p>Fellowship Training in Oncology & Arthroplasty (England, UK)</p>
-          <p>Orthopedics, Trauma, Bone Tumor & Sarcoma Surgeon</p>
-          <p>National Institute of Cancer Research & Hospital</p>
+          <p>${doctorQualifications}</p>
+          <p>${specialization}</p>
+          <p>${clinicAddress}</p>
         </div>
       </div>
     </div>
@@ -274,25 +289,14 @@ const generatePDF = async (formData) => {
       ${parsePrescription(formData.prescription)
         .map(
           (medicine, index) =>
-            `<div class="medicine-item">${
-              index + 1
-            }. ${formatMedicineLine(medicine)}</div>`
+            `<div class="medicine-item">${index + 1}. ${formatMedicineLine(
+              medicine
+            )}</div>`
         )
         .join("")}
     </div>
 
-    ${
-      formData.reason && formData.reason !== "Second opinion"
-        ? `
-      <div>
-        <h3 class="section-title">Reason For Visit</h3>
-        <p class="section-content">${formatSectionContent(
-          formData.reason
-        ).replace(/\n/g, "<br>")}</p>
-      </div>
-    `
-        : ""
-    }
+   
 
     ${
       formData.presentCondition
@@ -353,7 +357,7 @@ const generatePDF = async (formData) => {
       quality: 0.8,
       logging: false,
       useCORS: true,
-      backgroundColor: '#FFFFFF'
+      backgroundColor: "#FFFFFF",
     });
 
     const imgData = canvas.toDataURL("image/jpeg", 0.8);
@@ -362,26 +366,27 @@ const generatePDF = async (formData) => {
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
     pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-    
+
     // Generate initial PDF blob
     const pdfBlob = pdf.output("blob");
-    
+
     // Compress if needed
     const finalBlob = await compressPDF(pdfBlob);
-    
+
     // Validate size
     if (finalBlob.size > 5 * 1024 * 1024) {
       throw new Error("Failed to reduce PDF under 5MB");
     }
-    
-    console.log(`Final PDF size: ${(finalBlob.size / 1024 / 1024).toFixed(2)}MB`);
-    
+
+    console.log(
+      `Final PDF size: ${(finalBlob.size / 1024 / 1024).toFixed(2)}MB`
+    );
+
     // Create File object with fixed name
     return new File([finalBlob], "prescription.pdf", {
       type: "application/pdf",
-      lastModified: Date.now()
+      lastModified: Date.now(),
     });
-    
   } catch (error) {
     console.error("PDF generation error:", error);
     throw new Error("Failed to generate prescription: " + error.message);

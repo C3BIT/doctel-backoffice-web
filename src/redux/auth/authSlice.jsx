@@ -20,7 +20,6 @@ export const updateUserProfile = createAsyncThunk(
   async ({ token, formData }, { rejectWithValue }) => {
     try {
       const response = await privatePutFile("/doctors/profile/update", token, formData);
-      console.log("response", response)
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response);

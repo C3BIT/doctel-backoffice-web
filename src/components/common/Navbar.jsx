@@ -1,29 +1,48 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../redux/auth/authSlice';
 import {
   AppBar,
   Toolbar,
   IconButton,
-  Badge,
   Box,
   Container,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Menu,
+  MenuItem,
+  Typography,
+  Avatar
 } from '@mui/material';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import LogoutIcon from '@mui/icons-material/Logout';
 import headerLogo from '../../assets/images/NavLogo.svg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Check, X, LogOut } from 'lucide-react';
 
 const Navbar = () => {
-  const [notificationCount] = useState(3);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { userDetails } = useSelector((state) => state.user);
+  
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleStatusClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = () => {
     dispatch(logout());
+    handleMenuClose();
+  };
+
+  const handleProfileClick = () => {
+    navigate('/doctor/profile');
   };
 
   return (
@@ -45,63 +64,89 @@ const Navbar = () => {
             px: isMobile ? 2 : 0
           }}
         >
-          {/* Logo container */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Link to="/">
               <img
                 src={headerLogo}
                 alt="Doctor Logo"
                 style={{ height: '32px', width: 'auto' }}
-              /> </Link>
+              />
+            </Link>
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <IconButton
-              color="inherit"
-              size="medium"
+            <Box 
+              onClick={handleStatusClick}
               sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                color: '#1af807',
+                cursor: 'pointer',
                 '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                  opacity: 0.8
                 }
               }}
             >
-              <Badge
-                badgeContent={notificationCount}
-                color="error"
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                sx={{
-                  '& .MuiBadge-badge': {
-                    fontSize: '0.65rem',
-                    height: '18px',
-                    minWidth: '18px',
-                  }
-                }}
-              >
-                <NotificationsIcon />
-              </Badge>
+              <Check size={18} />
+              <Typography>
+                {userDetails?.status || 'Online'}
+              </Typography>
+            </Box>
+
+            <IconButton onClick={handleProfileClick}>
+              <Avatar 
+                src={userDetails?.profileImage} 
+                sx={{ width: 32, height: 32 }}
+              />
             </IconButton>
 
-            <IconButton
-              color="inherit"
-              onClick={handleLogout}
-              size="medium"
-              sx={{
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)'
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleMenuClose}
+              PaperProps={{
+                sx: {
+                  minWidth: '180px',
+                  padding: '8px 0'
                 }
               }}
             >
-              <LogoutIcon />
-            </IconButton>
+              <MenuItem disabled>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Check size={16} color="#1af807" />
+                  <Typography variant="body2" sx={{ color: '#1af807' }}>
+                    Current Status: {userDetails?.status || 'Online'}
+                  </Typography>
+                </Box>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{
+                    backgroundColor: 'red',
+                    borderRadius: '50%',
+                    width: 14,
+                    height: 14,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <X size={12} color="white" />
+                  </Box>
+                  <Typography variant="body2">
+                    Set to Offline
+                  </Typography>
+                </Box>
+              </MenuItem>
+              <MenuItem onClick={handleLogout}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <LogOut size={16} />
+                  <Typography variant="body2">
+                    Logout
+                  </Typography>
+                </Box>
+              </MenuItem>
+            </Menu>
           </Box>
         </Toolbar>
       </Container>

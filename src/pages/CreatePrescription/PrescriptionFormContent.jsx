@@ -8,13 +8,24 @@ import {
   resetPrescriptionsState,
 } from "../../redux/prescription/prescriptionSlice";
 import { Snackbar, Alert } from "@mui/material";
+import { getPatientInfo } from "../../redux/patient/patientInfoSlice";
+import { getUserDetails } from "../../redux/auth/authSlice";
 
 const PrescriptionFormContent = ({ patient }) => {
-  const { token } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const { userDetails, token } = useSelector((state) => state.user);
+  useEffect(() => {
+    dispatch(getUserDetails(token));
+  }, [dispatch, token]);
+
+  const { patientInfo } = useSelector((state) => state.patientInfo);
+  useEffect(() => {
+    const phone = "01910125428";
+    dispatch(getPatientInfo({ token, phone }));
+  }, [dispatch, token]);
   const { isLoading, prescriptionsCreated } = useSelector(
     (state) => state.prescriptions
   );
-  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     patientName: "",
     age: "",
@@ -43,23 +54,33 @@ const PrescriptionFormContent = ({ patient }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsGenerating(true);
     try {
-      const pdfFile = await generatePDF(formData);
-      const newformData = new FormData();
-      newformData.append("phone", patient.phone);
-      newformData.append("file", pdfFile);
-      await dispatch(
-        createPrescription({
-          token,
-          formData: newformData,
-        })
-      );
+      const pdfFile = await generatePDF({
+        ...formData,
+        doctorInfo: userDetails,
+        patientInfo:patientInfo
+      });
+      const url = URL.createObjectURL(pdfFile);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `prescription_${new Date().toISOString().split("T")[0]}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+      // const newformData = new FormData();
+      // newformData.append("phone", patient.phone);
+      // newformData.append("file", pdfFile);
+      // await dispatch(createPrescription({ token, formData: newformData }));
     } catch (error) {
-      console.error("Error:", error);
+      setSnackbarMessage("Failed to generate prescription");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     } finally {
       setIsGenerating(false);
     }
@@ -72,6 +93,7 @@ const PrescriptionFormContent = ({ patient }) => {
       dispatch(resetPrescriptionsState());
     }
   }, [prescriptionsCreated, dispatch]);
+
   return (
     <div className="medical-form-container">
       <form className="form-layout">
@@ -79,6 +101,7 @@ const PrescriptionFormContent = ({ patient }) => {
           formData={formData}
           handleChange={handleChange}
           isGenerating={isGenerating}
+          patientInfo={patientInfo}
           onSubmit={handleSubmit}
         />
       </form>
