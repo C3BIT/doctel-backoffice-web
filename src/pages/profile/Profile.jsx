@@ -61,9 +61,6 @@ const Profile = () => {
                 <Typography variant="h5" sx={{ color: "#10b981", fontWeight: "500" }}>
                     Profile
                 </Typography>
-                <Typography variant="body2" sx={{ color: "#6b7280", fontSize: "12px" }}>
-                    List of your electronic prescriptions
-                </Typography>
                 <Divider sx={{ borderColor: "#d1d5db", marginTop: "8px" }} />
             </Box>
 

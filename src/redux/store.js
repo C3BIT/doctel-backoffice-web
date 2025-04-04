@@ -1,18 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import logger from 'redux-logger';
+import logger from "redux-logger";
 import authSlice from "./auth/authSlice";
-import  prescriptionsSlice  from "./prescription/prescriptionSlice";
+import prescriptionsSlice from "./prescription/prescriptionSlice";
+import patientsSlice from "./patient/patientInfoSlice";
 const persistConfig = {
   key: "authentication",
   storage,
 };
-const persistedReducer = persistReducer(persistConfig,authSlice);
+const persistedReducer = persistReducer(persistConfig, authSlice);
 const combinedReducer = {
   user: persistedReducer,
-  prescriptions:prescriptionsSlice
- 
+  prescriptions: prescriptionsSlice,
+  patientInfo: patientsSlice,
 };
 const middlewares = [];
 if (import.meta.env.NODE_ENV === "development") {

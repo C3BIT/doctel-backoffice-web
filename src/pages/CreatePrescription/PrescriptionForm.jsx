@@ -52,7 +52,7 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
       </div>
 
       {/* Reason For Calling */}
-      <div className="form-section">
+      {/* <div className="form-section">
         <h2>Reason For Calling</h2>
         <div className="reason-select">
           <select name="reason" value={formData.reason} onChange={handleChange}>
@@ -62,7 +62,7 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
             <option>Emergency</option>
           </select>
         </div>
-      </div>
+      </div> */}
 
       {/* Present Condition & Current Medication */}
       <div className="form-section">
