@@ -38,7 +38,6 @@ const Profile = () => {
                 margin: "0 auto",
             }}
         >
-            {/* Back Button */}
             <Box sx={{ marginBottom: "16px" }}>
                 <Button
                     startIcon={<ArrowBack />}
@@ -55,19 +54,12 @@ const Profile = () => {
                     Back
                 </Button>
             </Box>
-
-            {/* Profile Header */}
             <Box sx={{ marginBottom: "16px" }}>
                 <Typography variant="h5" sx={{ color: "#10b981", fontWeight: "500" }}>
                     Profile
                 </Typography>
-                <Typography variant="body2" sx={{ color: "#6b7280", fontSize: "12px" }}>
-                    List of your electronic prescriptions
-                </Typography>
                 <Divider sx={{ borderColor: "#d1d5db", marginTop: "8px" }} />
             </Box>
-
-            {/* Profile Card */}
             <Paper
                 sx={{
                     backgroundColor: "#F5F6F8",
@@ -78,7 +70,6 @@ const Profile = () => {
                 }}
             >
                 <Grid container spacing={3}>
-                    {/* Profile Image */}
                     <Grid item xs={12} md={3}>
                         <Box
                             sx={{
@@ -105,8 +96,6 @@ const Profile = () => {
                             )}
                         </Box>
                     </Grid>
-
-                    {/* Profile Information */}
                     <Grid item xs={12} md={9}>
                         <Box
                             sx={{
@@ -143,8 +132,6 @@ const Profile = () => {
                                 </Link>
                             )}
                         </Box>
-
-                        {/* Personal Information Skeleton */}
                         <Grid container spacing={1} sx={{ marginBottom: "16px" }}>
                             <Grid item xs={12}>
                                 {isLoading ? (
@@ -175,8 +162,6 @@ const Profile = () => {
                                 )}
                             </Grid>
                         </Grid>
-
-                        {/* Profile Information Skeleton */}
                         <Typography
                             variant="h6"
                             sx={{ color: "#1d4ed8", fontWeight: "600", marginBottom: "8px" }}
@@ -221,8 +206,6 @@ const Profile = () => {
                                 )}
                             </Grid>
                         </Grid>
-
-                        {/* Account Information Skeleton */}
                         <Typography
                             variant="h6"
                             sx={{ color: "#1d4ed8", fontWeight: "600", marginBottom: "8px" }}
@@ -252,10 +235,7 @@ const Profile = () => {
                     </Grid>
                 </Grid>
             </Paper>
-
-            {/* Prescriptions Section */}
             <Grid container spacing={3}>
-                {/* E-Prescription */}
                 <Grid item xs={12} md={4}>
                     <Paper
                         sx={{
@@ -316,8 +296,6 @@ const Profile = () => {
                         ))}
                     </Paper>
                 </Grid>
-
-                {/* Lab Report */}
                 <Grid item xs={12} md={4}>
                     <Paper
                         sx={{

@@ -149,7 +149,7 @@ const generatePDF = async (formData) => {
       }
       .detail-value {
         font-weight: bold;
-        color: #0063AF;
+        color: #0d1b2a;
       }
       .date-time {
         text-align: right;
