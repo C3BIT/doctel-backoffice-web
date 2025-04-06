@@ -1,6 +1,6 @@
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import logo from '../../assets/icons/prescriptionlogo.svg';
+import logo from "../../assets/icons/prescriptionlogo.svg";
 
 const formatMedicineLine = (line) => {
   return line
@@ -29,12 +29,9 @@ const formatSectionContent = (text) => {
 const compressPDF = async (pdfBlob, attempts = 3, scale = 1.5, quality = 0.7) => {
   const maxSize = 4.8 * 1024 * 1024; // 4.8MB to give some buffer
   let compressedBlob = pdfBlob;
-  
+
   for (let i = 0; i < attempts; i++) {
     if (compressedBlob.size <= maxSize) break;
-    
-    console.log(`Compression attempt ${i + 1}: Current size ${(compressedBlob.size / 1024 / 1024).toFixed(2)}MB`);
-    
     // Create a temporary container for re-rendering
     const tempContainer = document.createElement("div");
     tempContainer.style.position = "absolute";
@@ -43,33 +40,40 @@ const compressPDF = async (pdfBlob, attempts = 3, scale = 1.5, quality = 0.7) =>
     tempContainer.style.padding = "20px";
     tempContainer.style.background = "white";
     document.body.appendChild(tempContainer);
-    
+
     try {
       // Re-render with lower quality settings
       const canvas = await html2canvas(tempContainer, {
-        scale: scale - (i * 0.2), // Reduce scale with each attempt
-        quality: quality - (i * 0.1), // Reduce quality with each attempt
+        scale: scale - i * 0.2, // Reduce scale with each attempt
+        quality: quality - i * 0.1, // Reduce quality with each attempt
         logging: false,
         useCORS: true,
-        backgroundColor: '#FFFFFF'
+        backgroundColor: "#FFFFFF",
       });
 
-      const imgData = canvas.toDataURL("image/jpeg", quality - (i * 0.1));
+      const imgData = canvas.toDataURL("image/jpeg", quality - i * 0.1);
       const pdf = new jsPDF("p", "mm", "a4");
       const imgWidth = 210;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
+
       pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
       compressedBlob = pdf.output("blob");
     } finally {
       document.body.removeChild(tempContainer);
     }
   }
-  
+
   return compressedBlob;
 };
 
 const generatePDF = async (formData) => {
+  const { doctorInfo } = formData;
+  const doctorName =
+    `${doctorInfo?.firstName || ""} ${doctorInfo?.lastName || ""}`.trim() || "";
+  const doctorQualifications = doctorInfo?.profile?.qualification || "";
+  const specialization = doctorInfo?.profile?.specialization || "";
+  const clinicAddress = doctorInfo?.profile?.clinicAddress || "";
+
   const pdfContainer = document.createElement("div");
   pdfContainer.style.position = "absolute";
   pdfContainer.style.left = "-9999px";
@@ -141,9 +145,11 @@ const generatePDF = async (formData) => {
       }
       .detail-label {
         font-weight: normal;
+        color: #0063AF;
       }
       .detail-value {
         font-weight: bold;
+        color: #0063AF;
       }
       .date-time {
         text-align: right;
@@ -151,18 +157,23 @@ const generatePDF = async (formData) => {
       .date-time p {
         margin: 0;
         font-size: 14px;
+        color: #0063AF;
       }
       .date-label {
         font-weight: normal;
+        color: #0063AF;
       }
       .date-value {
         font-weight: bold;
+        color: #0063AF;
       }
       .time-label {
         font-weight: normal;
+        color: #0063AF;
       }
       .time-value {
         font-weight: bold;
+        color: #0063AF;
       }
       .section-title {
         color: #0063AF;
@@ -187,6 +198,7 @@ const generatePDF = async (formData) => {
         margin: 15px 0 25px 0;
         font-size: 14px;
         line-height: 1.6;
+        color: #0063AF;
       }
       .medicine-item {
         margin-bottom: 8px;
@@ -200,9 +212,6 @@ const generatePDF = async (formData) => {
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        margin-top: 20px;
-        padding-top: 15px;
-        border-top: 2px solid #0064B0;
         gap: 10px;
       }
       .footer-powered-by {
@@ -214,7 +223,8 @@ const generatePDF = async (formData) => {
       }
       .footer-logo {
         width: 131px;
-        height: 38px;
+        height: 48px;
+        margin-top: 30px;
       }
     </style>
 
@@ -223,12 +233,11 @@ const generatePDF = async (formData) => {
         <img src="${logo}" class="header-logo" />
       </div>
       <div class="doctor-info">
-        <h2 class="doctor-name">Dr. John Doe</h2>
+        <h2 class="doctor-name">${doctorName}</h2>
         <div class="doctor-details">
-          <p>MBBS, BCS (Health), MS (ORTHO)</p>
-          <p>Fellowship Training in Oncology & Arthroplasty (England, UK)</p>
-          <p>Orthopedics, Trauma, Bone Tumor & Sarcoma Surgeon</p>
-          <p>National Institute of Cancer Research & Hospital</p>
+          <p>${doctorQualifications}</p>
+          <p>${specialization}</p>
+          <p>${clinicAddress}</p>
         </div>
       </div>
     </div>
@@ -236,30 +245,25 @@ const generatePDF = async (formData) => {
     <div class="patient-info-section">
       <div class="patient-details">
         <div>
-          <p class="patient-name">Patient: <span class="detail-value">${
-            formData.patientName || "Not provided"
-          }</span></p>
+          <p class="patient-name">Patient: <span class="detail-value">${formData.patientName || "Not provided"
+    }</span></p>
           <div class="detail-row">
-            ${
-              formData.gender !== "Gender"
-                ? `<p><span class="detail-label">Gender: </span><span class="detail-value">${formData.gender}</span></p>`
-                : ""
-            }
-            ${
-              formData.age
-                ? `<p><span class="detail-label">Age: </span><span class="detail-value">${formData.age} years old </span></p>`
-                : ""
-            }
-            ${
-              formData.weight
-                ? `<p><span class="detail-label">Weight: </span><span class="detail-value">${formData.weight} kg</span></p>`
-                : ""
-            }
-            ${
-              formData.temperature
-                ? `<p><span class="detail-label">Temp: </span><span class="detail-value">${formData.temperature}°F</span></p>`
-                : ""
-            }
+            ${formData.gender !== "Gender"
+      ? `<p><span class="detail-label">Gender: </span><span class="detail-value">${formData.gender}</span></p>`
+      : ""
+    }
+            ${formData.age
+      ? `<p><span class="detail-label">Age: </span><span class="detail-value">${formData.age} years old </span></p>`
+      : ""
+    }
+            ${formData.weight
+      ? `<p><span class="detail-label">Weight: </span><span class="detail-value">${formData.weight} kg</span></p>`
+      : ""
+    }
+            ${formData.temperature
+      ? `<p><span class="detail-label">Temp: </span><span class="detail-value">${formData.temperature}°F</span></p>`
+      : ""
+    }
           </div>
         </div>
         <div class="date-time">
@@ -272,65 +276,49 @@ const generatePDF = async (formData) => {
     <h3 class="medicine-title">Medicine : </h3>
     <div class="medicine-list">
       ${parsePrescription(formData.prescription)
-        .map(
-          (medicine, index) =>
-            `<div class="medicine-item">${
-              index + 1
-            }. ${formatMedicineLine(medicine)}</div>`
-        )
-        .join("")}
+      .map(
+        (medicine, index) =>
+          `<div class="medicine-item">${index + 1}. ${formatMedicineLine(
+            medicine
+          )}</div>`
+      )
+      .join("")}
     </div>
-
-    ${
-      formData.reason && formData.reason !== "Second opinion"
-        ? `
-      <div>
-        <h3 class="section-title">Reason For Visit</h3>
-        <p class="section-content">${formatSectionContent(
-          formData.reason
-        ).replace(/\n/g, "<br>")}</p>
-      </div>
-    `
-        : ""
-    }
-
-    ${
-      formData.presentCondition
-        ? `
+   
+    ${formData.presentCondition
+      ? `
       <div>
         <h3 class="section-title">Present Condition & Current Medication</h3>
         <p class="section-content">${formatSectionContent(
-          formData.presentCondition
-        ).replace(/\n/g, "<br>")}</p>
+        formData.presentCondition
+      ).replace(/\n/g, "<br>")}</p>
       </div>
     `
-        : ""
+      : ""
     }
 
-    ${
-      formData.diagnosis
-        ? `
+    ${formData.diagnosis
+      ? `
       <div>
         <h3 class="section-title">Assessment/Diagnosis</h3>
         <p class="section-content">${formatSectionContent(
-          formData.diagnosis
-        ).replace(/\n/g, "<br>")}</p>
+        formData.diagnosis
+      ).replace(/\n/g, "<br>")}</p>
       </div>
     `
-        : ""
+      : ""
     }
 
-    ${
-      formData.advice
-        ? `
+    ${formData.advice
+      ? `
       <div>
         <h3 class="section-title">Advice & Investigation</h3>
         <p class="section-content">${formatSectionContent(
-          formData.advice
-        ).replace(/\n/g, "<br>")}</p>
+        formData.advice
+      ).replace(/\n/g, "<br>")}</p>
       </div>
     `
-        : ""
+      : ""
     }
   `;
 
@@ -353,7 +341,7 @@ const generatePDF = async (formData) => {
       quality: 0.8,
       logging: false,
       useCORS: true,
-      backgroundColor: '#FFFFFF'
+      backgroundColor: "#FFFFFF",
     });
 
     const imgData = canvas.toDataURL("image/jpeg", 0.8);
@@ -362,26 +350,28 @@ const generatePDF = async (formData) => {
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
     pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-    
+
     // Generate initial PDF blob
     const pdfBlob = pdf.output("blob");
-    
+
     // Compress if needed
     const finalBlob = await compressPDF(pdfBlob);
-    
+
     // Validate size
     if (finalBlob.size > 5 * 1024 * 1024) {
       throw new Error("Failed to reduce PDF under 5MB");
     }
-    
-    console.log(`Final PDF size: ${(finalBlob.size / 1024 / 1024).toFixed(2)}MB`);
-    
+
+    console.log(
+      `Final PDF size: ${(finalBlob.size / 1024 / 1024).toFixed(2)}MB`
+    );
+
     // Create File object with fixed name
     return new File([finalBlob], "prescription.pdf", {
       type: "application/pdf",
-      lastModified: Date.now()
+      lastModified: Date.now(),
     });
-    
+
   } catch (error) {
     console.error("PDF generation error:", error);
     throw new Error("Failed to generate prescription: " + error.message);

@@ -1,70 +1,74 @@
-
+import './PrescriptionForm.css'
 const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) => {
   return (
     <div className="form-content-scrollable">
       <div className="form-section">
         <h2>Patient Details</h2>
         <div className="patient-details-form">
-          <div>
+          <div className="form-group">
+            <label>Patient Name</label>
             <input
               name="patientName"
               value={formData.patientName}
-              onChange={handleChange}
-              className="red-input"
+              readOnly
+              className="red-input readonly-input"
               placeholder="Patient Name"
               required
             />
           </div>
           <div className="patient-details-grid mt-4">
-            <input
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-              className="red-input"
-              placeholder="Age"
-            />
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-            >
-              <option>Gender</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
-            </select>
-            <input
-              name="weight"
-              value={formData.weight}
-              onChange={handleChange}
-              className="red-input"
-              placeholder="Weight"
-            />
-            <input
-              name="temperature"
-              value={formData.temperature}
-              onChange={handleChange}
-              className="red-input"
-              placeholder="Temp °F"
-            />
+            <div className="form-group">
+              <label>Age</label>
+              <input
+                name="age"
+                value={formData.age}
+                readOnly
+                className="red-input readonly-input"
+                placeholder="Age"
+              />
+            </div>
+
+            <div className="form-group">
+  <label>Gender</label>
+  <select
+    name="gender"
+    value={formData.gender}
+    disabled
+    className="gender-select"
+  >
+    <option>Gender</option>
+    <option>Male</option>
+    <option>Female</option>
+    <option>Other</option>
+  </select>
+</div>
+
+            <div className="form-group">
+              <label>Weight (kg)</label>
+              <input
+                name="weight"
+                value={formData.weight}
+                readOnly
+                className="red-input readonly-input"
+                placeholder="Weight"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Temperature (°F)</label>
+              <input
+                name="temperature"
+                value={formData.temperature}
+                onChange={handleChange}
+                className="red-input"
+                placeholder="Temp °F"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Reason For Calling */}
-      <div className="form-section">
-        <h2>Reason For Calling</h2>
-        <div className="reason-select">
-          <select name="reason" value={formData.reason} onChange={handleChange}>
-            <option>Second opinion</option>
-            <option>Follow up</option>
-            <option>New condition</option>
-            <option>Emergency</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Present Condition & Current Medication */}
+      {/* Other sections remain the same */}
       <div className="form-section">
         <h2>Present Condition & Current Medication</h2>
         <div className="text-area-container">
@@ -73,12 +77,11 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
             value={formData.presentCondition}
             onChange={handleChange}
             className="red-text"
-            placeholder="Write Here"
+            placeholder="Describe the patient's current condition and medications"
           />
         </div>
       </div>
 
-      {/* Assessment/Diagnosis */}
       <div className="form-section">
         <h2>Assessment/Diagnosis</h2>
         <div className="text-area-container">
@@ -87,12 +90,11 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
             value={formData.diagnosis}
             onChange={handleChange}
             className="red-text"
-            placeholder="Write Here"
+            placeholder="Enter your diagnosis"
           />
         </div>
       </div>
 
-      {/* Advice & Investigation */}
       <div className="form-section">
         <h2>Advice & Investigation</h2>
         <div className="text-area-container">
@@ -101,12 +103,11 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
             value={formData.advice}
             onChange={handleChange}
             className="red-text"
-            placeholder="Write Here"
+            placeholder="Provide advice and recommended investigations"
           />
         </div>
       </div>
 
-      {/* Prescription Medicine */}
       <div className="form-section">
         <h2>Prescription Medicine</h2>
         <div className="text-area-container">
@@ -131,6 +132,4 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
     </div>
   );
 };
-
 export default PrescriptionForm;
-
