@@ -238,3 +238,7 @@ textarea {
   cursor: pointer;
   font-size: 1rem;
 }
+
+.ck.ck-content.ck-editor__editable {
+  color: #5A6684;
+}

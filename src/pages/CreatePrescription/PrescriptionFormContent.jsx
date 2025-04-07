@@ -22,7 +22,7 @@ const PrescriptionFormContent = ({ patient }) => {
 
   const { patientInfo } = useSelector((state) => state.patientInfo);
   useEffect(() => {
-    const phone = patient?.phone;
+    const phone = patient?.phone || "01910125428";
     dispatch(getPatientInfo({ token, phone }));
   }, [dispatch, token, patient]);
 
@@ -47,8 +47,6 @@ const PrescriptionFormContent = ({ patient }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-
-  // Calculate age from date of birth
   const calculateAge = (dateOfBirth) => {
     if (!dateOfBirth) return '';
     const birthDate = new Date(dateOfBirth);
@@ -104,15 +102,15 @@ const PrescriptionFormContent = ({ patient }) => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }, 100);
-      const newformData = new FormData();
-      newformData.append("phone", patient.phone);
-      newformData.append("file", pdfFile);
-      await dispatch(
-        createPrescription({
-          token,
-          formData: newformData,
-        })
-      );
+      // const newformData = new FormData();
+      // newformData.append("phone", patient.phone);
+      // newformData.append("file", pdfFile);
+      // await dispatch(
+      //   createPrescription({
+      //     token,
+      //     formData: newformData,
+      //   })
+      // );
     } catch (error) {
     } finally {
       setIsGenerating(false);

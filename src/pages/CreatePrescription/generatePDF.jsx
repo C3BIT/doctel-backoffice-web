@@ -1,22 +1,22 @@
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import logo from "../../assets/icons/prescriptionlogo.svg";
-
-const formatMedicineLine = (line) => {
-  return line
-    .split("+")
-    .map((part) => part.trim())
-    .join("  +  ");
-};
-
+import footerlogo from "../../assets/icons/footer-logo.svg";
 const parsePrescription = (text) => {
   if (!text) return [];
-  const lines = text
+  const plainText = text.replace(/<[^>]*>/g, '\n').replace(/\n+/g, '\n').trim();
+  const lines = plainText
     .split("\n")
-    .filter((line) => line.trim() && !line.includes("Suggestion Matrix"));
-  return lines.map((line) => line.trim());
+    .filter(line => line.trim() && !line.includes("Suggestion Matrix"));
+  return lines.map(line => line.trim());
 };
-
+const formatMedicineLine = (line) => {
+  return line
+    .replace(/<[^>]*>/g, '')
+    .split("+")
+    .map(part => part.trim())
+    .join("  +  ");
+};
 const formatSectionContent = (text) => {
   if (!text) return "";
   return text
@@ -27,12 +27,11 @@ const formatSectionContent = (text) => {
 };
 
 const compressPDF = async (pdfBlob, attempts = 3, scale = 1.5, quality = 0.7) => {
-  const maxSize = 4.8 * 1024 * 1024; // 4.8MB to give some buffer
+  const maxSize = 4.8 * 1024 * 1024;
   let compressedBlob = pdfBlob;
 
   for (let i = 0; i < attempts; i++) {
     if (compressedBlob.size <= maxSize) break;
-    // Create a temporary container for re-rendering
     const tempContainer = document.createElement("div");
     tempContainer.style.position = "absolute";
     tempContainer.style.left = "-9999px";
@@ -40,12 +39,10 @@ const compressPDF = async (pdfBlob, attempts = 3, scale = 1.5, quality = 0.7) =>
     tempContainer.style.padding = "20px";
     tempContainer.style.background = "white";
     document.body.appendChild(tempContainer);
-
     try {
-      // Re-render with lower quality settings
       const canvas = await html2canvas(tempContainer, {
-        scale: scale - i * 0.2, // Reduce scale with each attempt
-        quality: quality - i * 0.1, // Reduce quality with each attempt
+        scale: scale - i * 0.2,
+        quality: quality - i * 0.1,
         logging: false,
         useCORS: true,
         backgroundColor: "#FFFFFF",
@@ -101,20 +98,20 @@ const generatePDF = async (formData) => {
         justify-content: space-between;
         margin-bottom: 30px;
         padding-bottom: 15px;
-        border-bottom: 2px solid #0064B0;
+        border-bottom: 2px solid #0063AF;
       }
       .doctor-info {
         text-align: right;
       }
       .doctor-name {
         margin: 0;
-        color: #0063AF;
-        font-size: 24px;
+        color: #0064B0;
+        font-size: 14px;
         font-weight: bold;
       }
       .doctor-details {
         font-size: 10px;
-        color: #555;
+        color: #040504;
         line-height: 1.5;
       }
       .doctor-details p {
@@ -130,8 +127,8 @@ const generatePDF = async (formData) => {
       .patient-name {
         margin: 5px 0;
         font-weight: bold;
-        font-size: 18px;
-        color: #0063AF;
+        font-size: 10px;
+        color: #0064B0;
       }
       .detail-row {
         display: flex;
@@ -141,62 +138,69 @@ const generatePDF = async (formData) => {
       }
       .detail-row p {
         margin: 0;
-        font-size: 14px;
+        font-size: 10px;
       }
       .detail-label {
         font-weight: normal;
         color: #0063AF;
+        font-size: 10px;
       }
       .detail-value {
         font-weight: bold;
         color: #0d1b2a;
+        font-size: 10px;
       }
       .date-time {
         text-align: right;
       }
       .date-time p {
         margin: 0;
-        font-size: 14px;
+        font-size: 10px;
         color: #0063AF;
       }
       .date-label {
         font-weight: normal;
         color: #0063AF;
+         font-size: 10px;
       }
       .date-value {
         font-weight: bold;
         color: #0063AF;
+         font-size: 10px;
       }
       .time-label {
         font-weight: normal;
         color: #0063AF;
+         font-size: 10px;
       }
       .time-value {
         font-weight: bold;
         color: #0063AF;
+         font-size: 10px;
       }
       .section-title {
         color: #0063AF;
         margin: 25px 0 15px 0;
-        font-size: 18px;
-        font-weight: bold;
+        font-size: 14px;
+        font-weight: 700;
       }
       .section-content {
         white-space: pre-wrap;
         margin: 15px 0 25px 0;
-        font-size: 14px;
+        font-size: 10px;
         line-height: 1.6;
+        color:#1A1818;
       }
       .medicine-title {
         color: #0063AF;
         margin: 25px 0 15px 0;
-        font-size: 18px;
-        font-weight: bold;
+        font-size: 14px;
+        font-weight: 700;
       }
       .medicine-list {
         white-space: pre-wrap;
         margin: 15px 0 25px 0;
-        font-size: 14px;
+        font-size: 10px;
         line-height: 1.6;
         color: #0063AF;
       }
@@ -204,27 +208,29 @@ const generatePDF = async (formData) => {
         margin-bottom: 8px;
       }
       .header-logo {
-        width: 180px;
-        height: 60px;
+        width: 140px;
+        height: 40px;
         object-fit: contain;
+      }
+      .footer-section {
+        border-top: 1px solid #0063AF;
       }
       .footer-content {
         display: flex;
         justify-content: flex-start;
-        align-items: center;
         gap: 10px;
       }
       .footer-powered-by {
-        font-size: 12px;
-        color: #555;
-        font-weight: bold;
+        font-size: 10px;
+        color: #191717;
+        font-weight: 400; 
         display: flex;
         align-items: center;
       }
       .footer-logo {
-        width: 131px;
-        height: 48px;
-        margin-top: 30px;
+        width: 96px;
+        height: 23px;
+        margin-top: 10px;
       }
     </style>
 
@@ -275,10 +281,10 @@ const generatePDF = async (formData) => {
 
     <h3 class="medicine-title">Medicine : </h3>
     <div class="medicine-list">
-      ${parsePrescription(formData.prescription)
+    ${parsePrescription(formData.prescription)
       .map(
-        (medicine, index) =>
-          `<div class="medicine-item">${index + 1}. ${formatMedicineLine(
+        (medicine) =>
+          `<div class="medicine-item"> ${formatMedicineLine(
             medicine
           )}</div>`
       )
@@ -324,9 +330,11 @@ const generatePDF = async (formData) => {
 
   const footer = document.createElement("div");
   footer.innerHTML = `
-    <div class="footer-content">
-      <span class="footer-powered-by">Powered by</span>
-      <img src="${logo}" class="footer-logo" />
+    <div class="footer-section">
+      <div class="footer-content">
+        <span class="footer-powered-by">Powered by</span>
+        <img src="${footerlogo}" class="footer-logo" />
+      </div>
     </div>
   `;
 
@@ -361,12 +369,6 @@ const generatePDF = async (formData) => {
     if (finalBlob.size > 5 * 1024 * 1024) {
       throw new Error("Failed to reduce PDF under 5MB");
     }
-
-    console.log(
-      `Final PDF size: ${(finalBlob.size / 1024 / 1024).toFixed(2)}MB`
-    );
-
-    // Create File object with fixed name
     return new File([finalBlob], "prescription.pdf", {
       type: "application/pdf",
       lastModified: Date.now(),
