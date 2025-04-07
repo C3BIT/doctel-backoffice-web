@@ -3,16 +3,12 @@ import { CKEditor, useCKEditorCloud } from "@ckeditor/ckeditor5-react";
 import './PrescriptionForm.css';
 
 const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) => {
-  const LICENSE_KEY =
-    "eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NDUyNzk5OTksImp0aSI6IjhmYmEyYmFkLTA5YTUtNGNiYi1iNzQ0LTZjYjgwYThhMTkxMyIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiLCJzaCJdLCJ3aGl0ZUxhYmVsIjp0cnVlLCJsaWNlbnNlVHlwZSI6InRyaWFsIiwiZmVhdHVyZXMiOlsiKiJdLCJ2YyI6Ijc3OTY2ZTYzIn0.QAWN8_du5XYi27kp7S6fkO96qAbJuNfzz36h-HcLFIzYWwSn2NI-EI1xP1VU31uWLkeasTFW4V9d5ylXtPo2hg";
-
-  const CLOUD_SERVICES_TOKEN_URL =
-    "https://bbjbq_xw7eug.cke-cs.com/token/dev/33968b4567501247dc57f8f41582c3056fd73c8e853d1897f9a32cc59bf6?limit=10";
+  const LICENSE_KEY = import.meta.env.VITE_CKEDITOR_LICENSE_KEY;
+  const CLOUD_SERVICES_TOKEN_URL = import.meta.env.VITE_CKEDITOR_CLOUD_SERVICES_TOKEN_URL;
   const cloud = useCKEditorCloud({
     version: "45.0.0",
     ckbox: { version: "2.6.1" },
   });
-
   const [isLayoutReady, setIsLayoutReady] = useState(false);
   const editorContainerRef = useRef(null);
   const editorRef = useRef(null);
@@ -34,7 +30,6 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
     if (cloud.status !== "success" || !isLayoutReady) {
       return {};
     }
-
     const {
       ClassicEditor,
       Autoformat,
@@ -250,8 +245,8 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
             <input
               name="patientName"
               value={formData.patientName}
-              readOnly
-              className="red-input readonly-input"
+              onChange={handleChange}
+              className="red-input"
               placeholder="Patient Name"
               required
             />
@@ -270,7 +265,7 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
 
             <div className="form-group">
               <label>Gender</label>
-              {formData.gender && formData.gender !== "Gender" ? (
+              {formData.gender && formData.gender !== "" ? (
                 <input
                   name="gender"
                   value={formData.gender}
@@ -284,10 +279,7 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
                   disabled
                   className="gender-select"
                 >
-                  <option value="Gender">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+
                 </select>
               )}
             </div>
@@ -297,8 +289,8 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
               <input
                 name="weight"
                 value={formData.weight}
-                readOnly
-                className="red-input readonly-input"
+                onChange={handleChange}
+                className="red-input"
                 placeholder="Weight"
               />
             </div>
@@ -338,7 +330,7 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
             value={formData.diagnosis}
             onChange={handleChange}
             className="red-text"
-            placeholder="Enter your diagnosis"
+            placeholder="Write your diagnosis"
           />
         </div>
       </div>

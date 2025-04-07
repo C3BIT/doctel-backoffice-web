@@ -22,7 +22,7 @@ const PrescriptionFormContent = ({ patient }) => {
 
   const { patientInfo } = useSelector((state) => state.patientInfo);
   useEffect(() => {
-    const phone = patient?.phone || "01910125428";
+    const phone = patient?.phone ;
     dispatch(getPatientInfo({ token, phone }));
   }, [dispatch, token, patient]);
 
@@ -64,7 +64,7 @@ const PrescriptionFormContent = ({ patient }) => {
         ...prev,
         patientName: `${patientInfo.firstName} ${patientInfo.lastName}`,
         age: calculateAge(patientInfo.dateOfBirth),
-        gender: patientInfo.gender || "Gender",
+        gender: patientInfo.gender || "",
         weight: patientInfo.weight || ""
       }));
     }
@@ -95,7 +95,7 @@ const PrescriptionFormContent = ({ patient }) => {
       const url = URL.createObjectURL(pdfFile);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `prescription_${new Date().toISOString().split("T")[0]}.pdf`;
+      a.download = `prescription_${patient.phone}_${new Date().toISOString().split("T")[0]}.pdf`;
       document.body.appendChild(a);
       a.click();
       setTimeout(() => {
