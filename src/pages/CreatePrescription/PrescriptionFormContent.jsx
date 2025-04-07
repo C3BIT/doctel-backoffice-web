@@ -22,7 +22,7 @@ const PrescriptionFormContent = ({ patient }) => {
 
   const { patientInfo } = useSelector((state) => state.patientInfo);
   useEffect(() => {
-    const phone = patient?.phone;
+    const phone = patient?.phone || "01910125428";
     dispatch(getPatientInfo({ token, phone }));
   }, [dispatch, token, patient]);
 

@@ -270,17 +270,26 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
 
             <div className="form-group">
               <label>Gender</label>
-              <select
-                name="gender"
-                value={formData.gender}
-                disabled
-                className="gender-select"
-              >
-                <option>Gender</option>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Other</option>
-              </select>
+              {formData.gender && formData.gender !== "Gender" ? (
+                <input
+                  name="gender"
+                  value={formData.gender}
+                  readOnly
+                  className="red-input readonly-input"
+                />
+              ) : (
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  disabled
+                  className="gender-select"
+                >
+                  <option value="Gender">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              )}
             </div>
 
             <div className="form-group">
