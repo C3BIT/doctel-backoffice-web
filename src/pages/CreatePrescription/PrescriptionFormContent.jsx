@@ -22,7 +22,7 @@ const PrescriptionFormContent = ({ patient }) => {
 
   const { patientInfo } = useSelector((state) => state.patientInfo);
   useEffect(() => {
-    const phone = patient?.phone || "01910125428";
+    const phone = patient?.phone;
     dispatch(getPatientInfo({ token, phone }));
   }, [dispatch, token, patient]);
 
@@ -102,15 +102,15 @@ const PrescriptionFormContent = ({ patient }) => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }, 100);
-      // const newformData = new FormData();
-      // newformData.append("phone", patient.phone);
-      // newformData.append("file", pdfFile);
-      // await dispatch(
-      //   createPrescription({
-      //     token,
-      //     formData: newformData,
-      //   })
-      // );
+      const newformData = new FormData();
+      newformData.append("phone", patient.phone);
+      newformData.append("file", pdfFile);
+      await dispatch(
+        createPrescription({
+          token,
+          formData: newformData,
+        })
+      );
     } catch (error) {
     } finally {
       setIsGenerating(false);
