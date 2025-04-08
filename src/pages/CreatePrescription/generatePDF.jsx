@@ -375,7 +375,6 @@ const generatePDF = async (formData) => {
     });
 
   } catch (error) {
-    console.error("PDF generation error:", error);
     throw new Error("Failed to generate prescription: " + error.message);
   } finally {
     document.body.removeChild(pdfContainer);

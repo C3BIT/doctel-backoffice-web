@@ -12,10 +12,12 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
   const [isLayoutReady, setIsLayoutReady] = useState(false);
   const editorContainerRef = useRef(null);
   const editorRef = useRef(null);
+
   useEffect(() => {
     setIsLayoutReady(true);
     return () => setIsLayoutReady(false);
   }, []);
+
   const handleEditorChange = (event, editor) => {
     const data = editor.getData();
     const plainText = data.replace(/<[^>]*>/g, '\n').replace(/\n+/g, '\n').trim();
@@ -26,6 +28,7 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
       },
     });
   };
+
   const { ClassicEditor, editorConfig } = useMemo(() => {
     if (cloud.status !== "success" || !isLayoutReady) {
       return {};
@@ -255,33 +258,31 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
             <div className="form-group">
               <label>Age</label>
               <input
+                type="number"
                 name="age"
                 value={formData.age}
-                readOnly
-                className="red-input readonly-input"
+                onChange={handleChange}
+                className="red-input"
                 placeholder="Age"
+                min="0"
+                max="120"
               />
             </div>
 
             <div className="form-group">
               <label>Gender</label>
-              {formData.gender && formData.gender !== "" ? (
-                <input
-                  name="gender"
-                  value={formData.gender}
-                  readOnly
-                  className="red-input readonly-input"
-                />
-              ) : (
-                <select
-                  name="gender"
-                  value={formData.gender}
-                  disabled
-                  className="gender-select"
-                >
-
-                </select>
-              )}
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                className="red-input gender-select"
+                required
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
             </div>
 
             <div className="form-group">
