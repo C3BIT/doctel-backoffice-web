@@ -10,16 +10,13 @@ import {
 import { Snackbar, Alert } from "@mui/material";
 import { getUserDetails } from "../../redux/auth/authSlice";
 import { getPatientInfo } from "../../redux/patient/patientInfoSlice";
-
 const PrescriptionFormContent = ({ patient }) => {
   const { token } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const { userDetails } = useSelector((state) => state.user);
-
   useEffect(() => {
     dispatch(getUserDetails(token));
   }, [dispatch, token]);
-
   const { patientInfo } = useSelector((state) => state.patientInfo);
   useEffect(() => {
     const phone = patient?.phone;
@@ -29,7 +26,6 @@ const PrescriptionFormContent = ({ patient }) => {
   const { isLoading, prescriptionsCreated } = useSelector(
     (state) => state.prescriptions
   );
-
   const [formData, setFormData] = useState({
     patientName: "",
     age: "",
@@ -42,7 +38,6 @@ const PrescriptionFormContent = ({ patient }) => {
     advice: "",
     prescription: "",
   });
-
   const [isGenerating, setIsGenerating] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -69,21 +64,17 @@ const PrescriptionFormContent = ({ patient }) => {
       }));
     }
   }, [patientInfo]);
-
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
     setSnackbarOpen(false);
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   const handleSubmit = async (e) => {
-
     e.preventDefault();
     setIsGenerating(true);
     try {
