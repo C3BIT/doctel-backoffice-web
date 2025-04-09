@@ -1,7 +1,9 @@
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import logo from "../../assets/icons/prescriptionlogo.svg";
+import logo from "../../assets/icons/logo-frame.svg";
 import footerlogo from "../../assets/icons/footer-logo.svg";
+import headerlogoSvg from '../../assets/icons/header-bg.svg';
+import RxLogo from '../../assets/icons/Rx.svg'
 const parsePrescription = (text) => {
   if (!text) return [];
   const plainText = text.replace(/<[^>]*>/g, '\n').replace(/\n+/g, '\n').trim();
@@ -76,9 +78,6 @@ const generatePDF = async (formData) => {
   pdfContainer.style.left = "-9999px";
   pdfContainer.style.width = "210mm";
   pdfContainer.style.minHeight = "297mm";
-  pdfContainer.style.padding = "20px";
-  pdfContainer.style.background = "white";
-  pdfContainer.style.fontFamily = "Arial, sans-serif";
   pdfContainer.style.display = "flex";
   pdfContainer.style.flexDirection = "column";
 
@@ -93,120 +92,6 @@ const generatePDF = async (formData) => {
   mainContent.style.flexGrow = "1";
   mainContent.innerHTML = `
     <style>
-      .pdf-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 30px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #0063AF;
-      }
-      .doctor-info {
-        text-align: right;
-      }
-      .doctor-name {
-        margin: 0;
-        color: #0064B0;
-        font-size: 14px;
-        font-weight: bold;
-      }
-      .doctor-details {
-        font-size: 10px;
-        color: #040504;
-        line-height: 1.5;
-      }
-      .doctor-details p {
-        margin: 5px 0;
-      }
-      .patient-info-section {
-        margin-bottom: 25px;
-      }
-      .patient-details {
-        display: flex;
-        justify-content: space-between;
-      }
-      .patient-name {
-        margin: 5px 0;
-        font-weight: bold;
-        font-size: 10px;
-        color: #0064B0;
-      }
-      .detail-row {
-        display: flex;
-        gap: 20px;
-        margin-top: 8px;
-        flex-wrap: wrap;
-      }
-      .detail-row p {
-        margin: 0;
-        font-size: 10px;
-      }
-      .detail-label {
-        font-weight: normal;
-        color: #0063AF;
-        font-size: 10px;
-      }
-      .detail-value {
-        font-weight: bold;
-        color: #0d1b2a;
-        font-size: 10px;
-      }
-      .date-time {
-        text-align: right;
-      }
-      .date-time p {
-        margin: 0;
-        font-size: 10px;
-        color: #0063AF;
-      }
-      .date-label {
-        font-weight: normal;
-        color: #0063AF;
-         font-size: 10px;
-      }
-      .date-value {
-        font-weight: bold;
-        color: #0063AF;
-         font-size: 10px;
-      }
-      .time-label {
-        font-weight: normal;
-        color: #0063AF;
-         font-size: 10px;
-      }
-      .time-value {
-        font-weight: bold;
-        color: #0063AF;
-         font-size: 10px;
-      }
-      .section-title {
-        color: #0063AF;
-        margin: 25px 0 15px 0;
-        font-size: 14px;
-        font-weight: 700;
-      }
-      .section-content {
-        white-space: pre-wrap;
-        margin: 15px 0 25px 0;
-        font-size: 10px;
-        line-height: 1.6;
-        color:#1A1818;
-      }
-      .medicine-title {
-        color: #0063AF;
-        margin: 25px 0 15px 0;
-        font-size: 14px;
-        font-weight: 700;
-      }
-      .medicine-list {
-        white-space: pre-wrap;
-        margin: 15px 0 25px 0;
-        font-size: 10px;
-        line-height: 1.6;
-        color: #0063AF;
-      }
-      .medicine-item {
-        margin-bottom: 8px;
-      }
       .header-logo {
         width: 140px;
         height: 40px;
@@ -214,6 +99,7 @@ const generatePDF = async (formData) => {
       }
       .footer-section {
         border-top: 1px solid #0063AF;
+        padding-left:40px;
       }
       .footer-content {
         display: flex;
@@ -234,99 +120,151 @@ const generatePDF = async (formData) => {
       }
     </style>
 
-    <div class="pdf-header">
-      <div>
-        <img src="${logo}" class="header-logo" />
-      </div>
-      <div class="doctor-info">
-        <h2 class="doctor-name">${doctorName}</h2>
-        <div class="doctor-details">
-          <p>${doctorQualifications}</p>
-          <p>${specialization}</p>
-          <p>${clinicAddress}</p>
+
+
+<div style="
+  background-image: url(${headerlogoSvg});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 0px 20px 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height:150px
+">
+  <div style="
+    background-color: white;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 5px solid #203A71;
+    position: absolute;
+    left: 40px;
+    top: 20px;
+    z-index: 2;
+    margin-top: 15px;
+  ">
+    <img src="${logo}" alt="DOCTEL Logo" style="width: 80px; height: 80px;" />
+  </div>
+  <div style="margin-left: 250px; flex: 1;">
+    <div style="font-size: 20px; font-weight: 400; margin-bottom: 5px;">${doctorName}</div>
+    <div style="font-size: 9px; margin: 3px 0; color:#070707;"> ${doctorQualifications}</div>
+    <div style="font-size: 9px; margin: 3px 0; color:#070707;"> ${specialization}</div>
+    <div style="font-size: 9px; margin: 3px 0; color:#070707;">${clinicAddress} </div>
+  </div>
+</div>
+
+
+    <div style="display: flex; justify-content: flex-end; padding: 15px 20px; background: white;">
+      <div style="display: flex; gap: 30px;">
+        <div style="display: flex; align-items: center; gap: 5px; font-size: 12px;">
+          <span style="font-weight: 400; color: #20ACE2; font-size: 12px;">Date :</span>
+          <span style="font-weight: 400; color:#1A1818; font-size: 12px;">09 June 2024</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 5px;">
+          <span style="font-weight: 400; color: #20ACE2; font-size: 12px;">Time :</span>
+          <span style="font-weight: 400; color:#1A1818; font-size: 12px;">02:25 PM</span>
         </div>
       </div>
     </div>
 
-    <div class="patient-info-section">
-      <div class="patient-details">
-        <div>
-          <p class="patient-name">Patient: <span class="detail-value">${formData.patientName || "Not provided"
-    }</span></p>
-          <div class="detail-row">
-            ${formData.gender !== "Gender"
-      ? `<p><span class="detail-label">Gender: </span><span class="detail-value">${formData.gender}</span></p>`
-      : ""
-    }
-            ${formData.age
-      ? `<p><span class="detail-label">Age: </span><span class="detail-value">${formData.age} years old </span></p>`
-      : ""
-    }
-            ${formData.weight
-      ? `<p><span class="detail-label">Weight: </span><span class="detail-value">${formData.weight} kg</span></p>`
-      : ""
-    }
-            ${formData.temperature
-      ? `<p><span class="detail-label">Temp: </span><span class="detail-value">${formData.temperature}°F</span></p>`
-      : ""
-    }
+
+   <div style="width: 90%; margin: 0 auto; margin-top: 30px;">
+    <div style="background-color: #F1F0F0; padding: 10px 10px 20px 10px; display: flex; flex-direction: column; border-radius: 6px;">
+      <div style="margin-bottom: 15px; text-align: start;">
+        <span style="font-weight: 400; color: #0465AF; margin-right: 5px; font-size: 12px;"">Patient:</span>
+        <span style="color: #0465AF; font-size: 12px;"">${formData.patientName || "Not provided"}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+        ${formData.gender ? `
+          <div style="display: flex; align-items: center;">
+            <span style="font-weight: 400; color:#1A1818; margin-right: 5px; font-size: 12px;"">Gender:</span>
+            <span style="color:#1A1818; font-size: 12px;"">${formData.gender}</span>
           </div>
-        </div>
-        <div class="date-time">
-          <p><span class="date-label">Date: </span><span class="date-value">${dateStr}</span></p>
-          <p><span class="time-label">Time: </span><span class="time-value">${timeStr}</span></p>
-        </div>
+        ` : ''}
+        ${formData.age ? `
+          <div style="display: flex; align-items: center;">
+            <span style="font-weight: 400; color:#1A1818; margin-right: 5px; font-size: 12px;"">Age:</span>
+            <span style="color:#1A1818; font-size: 12px;"">${formData.age} Year(s)</span>
+          </div>
+        ` : ''}
+        ${formData.weight ? `
+          <div style="display: flex; align-items: center;">
+            <span style="font-weight: 400; color:#1A1818; margin-right: 5px; font-size: 12px;">Weight:</span>
+            <span style="color:#1A1818; font-size: 12px;">${formData.weight}kg</span>
+          </div>
+        ` : ''}
       </div>
     </div>
+  </div>
 
-    <h3 class="medicine-title">Medicine : </h3>
-    <div class="medicine-list">
+
+<div style="
+  color: #0057a8;
+  font-weight: bold;
+  margin-left:40px;
+  margin-top:40px
+">
+ <img src="${RxLogo}" alt="Rx" />
+</div>
+
+  
+
+${formData.presentCondition ? `
+  <div style="margin-top: 30px;">
+    <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
+      Problem / Issue
+    </h3>
+    <p style="white-space: pre-wrap; font-size: 10px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 23px;">
+      ${formatSectionContent(formData.presentCondition).replace(/\n/g, "<br>")}
+    </p>
+  </div>
+` : ""}
+
+
+
+  <h3 style="color: #0063AF;   margin: 20px 0 0 40px; font-size: 14px; font-weight: 700;">Medicine :</h3>
+  <div style="margin-left:40px; margin-top:10px; font-size: 12px;font-weight: 400; line-height: 1.6; color: #1A1818;">
     ${parsePrescription(formData.prescription)
       .map(
         (medicine) =>
-          `<div class="medicine-item"> ${formatMedicineLine(
-            medicine
-          )}</div>`
+          `<div style="margin-bottom: 8px; font-weight: 400; color: #1A1818;">${formatMedicineLine(medicine)}</div>`
       )
       .join("")}
-    </div>
+  </div>
    
-    ${formData.presentCondition
-      ? `
-      <div>
-        <h3 class="section-title">Present Condition & Current Medication</h3>
-        <p class="section-content">${formatSectionContent(
-        formData.presentCondition
-      ).replace(/\n/g, "<br>")}</p>
-      </div>
-    `
-      : ""
-    }
 
-    ${formData.diagnosis
-      ? `
-      <div>
-        <h3 class="section-title">Assessment/Diagnosis</h3>
-        <p class="section-content">${formatSectionContent(
-        formData.diagnosis
-      ).replace(/\n/g, "<br>")}</p>
-      </div>
-    `
-      : ""
-    }
 
-    ${formData.advice
-      ? `
-      <div>
-        <h3 class="section-title">Advice & Investigation</h3>
-        <p class="section-content">${formatSectionContent(
-        formData.advice
-      ).replace(/\n/g, "<br>")}</p>
-      </div>
-    `
-      : ""
-    }
-  `;
+  ${formData.presentCondition ? `
+    <div style="margin-top: 30px;">
+      <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
+        Advice :
+      </h3>
+      <p style="white-space: pre-wrap; font-size: 10px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 23px;">
+        ${formatSectionContent(formData.advice).replace(/\n/g, "<br>")}
+      </p>
+    </div>
+  ` : ""}  
+
+
+    ${formData.presentCondition ? `
+    <div style="margin-top: 30px;">
+      <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
+        Investigation :
+      </h3>
+      <p style="white-space: pre-wrap; font-size: 10px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 23px;">
+        ${formatSectionContent(formData.investigation).replace(/\n/g, "<br>")}
+      </p>
+    </div>
+  ` : ""}
+`;
+
+
+
 
   const footer = document.createElement("div");
   footer.innerHTML = `

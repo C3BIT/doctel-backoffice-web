@@ -1,243 +1,7 @@
-import { useState, useEffect, useRef, useMemo } from "react";
-import { CKEditor, useCKEditorCloud } from "@ckeditor/ckeditor5-react";
+import { useState } from "react";
 import './PrescriptionForm.css';
 
 const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) => {
-  const LICENSE_KEY = import.meta.env.VITE_CKEDITOR_LICENSE_KEY;
-  const CLOUD_SERVICES_TOKEN_URL = import.meta.env.VITE_CKEDITOR_CLOUD_SERVICES_TOKEN_URL;
-  const cloud = useCKEditorCloud({
-    version: "45.0.0",
-    ckbox: { version: "2.6.1" },
-  });
-  const [isLayoutReady, setIsLayoutReady] = useState(false);
-  const editorContainerRef = useRef(null);
-  const editorRef = useRef(null);
-
-  useEffect(() => {
-    setIsLayoutReady(true);
-    return () => setIsLayoutReady(false);
-  }, []);
-
-  const handleEditorChange = (event, editor) => {
-    const data = editor.getData();
-    const plainText = data.replace(/<[^>]*>/g, '\n').replace(/\n+/g, '\n').trim();
-    handleChange({
-      target: {
-        name: "prescription",
-        value: plainText,
-      },
-    });
-  };
-
-  const { ClassicEditor, editorConfig } = useMemo(() => {
-    if (cloud.status !== "success" || !isLayoutReady) {
-      return {};
-    }
-    const {
-      ClassicEditor,
-      Autoformat,
-      AutoImage,
-      Autosave,
-      BlockQuote,
-      Bold,
-      CKBox,
-      CKBoxImageEdit,
-      CloudServices,
-      Emoji,
-      Essentials,
-      Heading,
-      ImageBlock,
-      ImageCaption,
-      ImageInline,
-      ImageInsert,
-      ImageInsertViaUrl,
-      ImageResize,
-      ImageStyle,
-      ImageTextAlternative,
-      ImageToolbar,
-      ImageUpload,
-      Indent,
-      IndentBlock,
-      Italic,
-      Link,
-      LinkImage,
-      List,
-      ListProperties,
-      MediaEmbed,
-      Mention,
-      Paragraph,
-      PasteFromOffice,
-      PictureEditing,
-      Table,
-      TableCaption,
-      TableCellProperties,
-      TableColumnResize,
-      TableProperties,
-      TableToolbar,
-      TextTransformation,
-      TodoList,
-      Underline,
-    } = cloud.CKEditor;
-
-    return {
-      ClassicEditor,
-      editorConfig: {
-        toolbar: {
-          items: [
-            "heading",
-            "|",
-            "bold",
-            "italic",
-            "underline",
-            "|",
-            "emoji",
-            "link",
-            "insertImage",
-            "ckbox",
-            "mediaEmbed",
-            "insertTable",
-            "blockQuote",
-            "|",
-            "bulletedList",
-            "numberedList",
-            "todoList",
-            "outdent",
-            "indent",
-          ],
-          shouldNotGroupWhenFull: false,
-        },
-        plugins: [
-          Autoformat,
-          AutoImage,
-          Autosave,
-          BlockQuote,
-          Bold,
-          CKBox,
-          CKBoxImageEdit,
-          CloudServices,
-          Emoji,
-          Essentials,
-          Heading,
-          ImageBlock,
-          ImageCaption,
-          ImageInline,
-          ImageInsert,
-          ImageInsertViaUrl,
-          ImageResize,
-          ImageStyle,
-          ImageTextAlternative,
-          ImageToolbar,
-          ImageUpload,
-          Indent,
-          IndentBlock,
-          Italic,
-          Link,
-          LinkImage,
-          List,
-          ListProperties,
-          MediaEmbed,
-          Mention,
-          Paragraph,
-          PasteFromOffice,
-          PictureEditing,
-          Table,
-          TableCaption,
-          TableCellProperties,
-          TableColumnResize,
-          TableProperties,
-          TableToolbar,
-          TextTransformation,
-          TodoList,
-          Underline,
-        ],
-        cloudServices: {
-          tokenUrl: CLOUD_SERVICES_TOKEN_URL,
-        },
-        heading: {
-          options: [
-            {
-              model: "paragraph",
-              title: "Paragraph",
-              class: "ck-heading_paragraph",
-            },
-            {
-              model: "heading1",
-              view: "h1",
-              title: "Heading 1",
-              class: "ck-heading_heading1",
-            },
-            {
-              model: "heading2",
-              view: "h2",
-              title: "Heading 2",
-              class: "ck-heading_heading2",
-            },
-            {
-              model: "heading3",
-              view: "h3",
-              title: "Heading 3",
-              class: "ck-heading_heading3",
-            },
-          ],
-        },
-        image: {
-          toolbar: [
-            "toggleImageCaption",
-            "imageTextAlternative",
-            "|",
-            "imageStyle:inline",
-            "imageStyle:wrapText",
-            "imageStyle:breakText",
-            "|",
-            "resizeImage",
-            "|",
-            "ckboxImageEdit",
-          ],
-        },
-        initialData: formData.prescription || "",
-        licenseKey: LICENSE_KEY,
-        link: {
-          addTargetToExternalLinks: true,
-          defaultProtocol: "https://",
-          decorators: {
-            toggleDownloadable: {
-              mode: "manual",
-              label: "Downloadable",
-              attributes: {
-                download: "file",
-              },
-            },
-          },
-        },
-        list: {
-          properties: {
-            styles: true,
-            startIndex: true,
-            reversed: true,
-          },
-        },
-        mention: {
-          feeds: [
-            {
-              marker: "@",
-              feed: [],
-            },
-          ],
-        },
-        placeholder: "Type or paste your prescription here!",
-        table: {
-          contentToolbar: [
-            "tableColumn",
-            "tableRow",
-            "mergeTableCells",
-            "tableProperties",
-            "tableCellProperties",
-          ],
-        },
-      },
-    };
-  }, [cloud, isLayoutReady, formData.prescription]);
-
   return (
     <div className="form-content-scrollable">
       <div className="form-section">
@@ -324,20 +88,7 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
       </div>
 
       <div className="form-section">
-        <h2>Assessment/Diagnosis</h2>
-        <div className="text-area-container">
-          <textarea
-            name="diagnosis"
-            value={formData.diagnosis}
-            onChange={handleChange}
-            className="red-text"
-            placeholder="Write your diagnosis"
-          />
-        </div>
-      </div>
-
-      <div className="form-section">
-        <h2>Advice & Investigation</h2>
+        <h2>Advice</h2>
         <div className="text-area-container">
           <textarea
             name="advice"
@@ -351,20 +102,28 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
 
       <div className="form-section">
         <h2>Prescription Medicine</h2>
-        <div className="text-area-container ckeditor-prescription-container">
-          <div ref={editorContainerRef}>
-            <div className="editor-container__editor">
-              <div ref={editorRef}>
-                {ClassicEditor && editorConfig && (
-                  <CKEditor
-                    editor={ClassicEditor}
-                    config={editorConfig}
-                    onChange={handleEditorChange}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
+        <div className="text-area-container">
+          <textarea
+            name="prescription"
+            value={formData.prescription}
+            onChange={handleChange}
+            className="red-text"
+            placeholder="Enter medicines (one per line)"
+            rows={8}
+          />
+        </div>
+      </div>
+
+      <div className="form-section">
+        <h2>Investigation</h2>
+        <div className="text-area-container">
+          <textarea
+            name="investigation"
+            value={formData.investigation}
+            onChange={handleChange}
+            className="red-text"
+            placeholder="Provide investigations"
+          />
         </div>
       </div>
 
