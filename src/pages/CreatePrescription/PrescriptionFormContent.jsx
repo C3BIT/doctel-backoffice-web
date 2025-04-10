@@ -8,13 +8,24 @@ import {
   resetPrescriptionsState,
 } from "../../redux/prescription/prescriptionSlice";
 import { Snackbar, Alert } from "@mui/material";
-
+import { getUserDetails } from "../../redux/auth/authSlice";
+import { getPatientInfo } from "../../redux/patient/patientInfoSlice";
 const PrescriptionFormContent = ({ patient }) => {
   const { token } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const { userDetails } = useSelector((state) => state.user);
+  useEffect(() => {
+    dispatch(getUserDetails(token));
+  }, [dispatch, token]);
+  const { patientInfo } = useSelector((state) => state.patientInfo);
+  useEffect(() => {
+    const phone = patient?.phone;
+    dispatch(getPatientInfo({ token, phone }));
+  }, [dispatch, token, patient]);
+
   const { isLoading, prescriptionsCreated } = useSelector(
     (state) => state.prescriptions
   );
-  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     patientName: "",
     age: "",
@@ -23,7 +34,7 @@ const PrescriptionFormContent = ({ patient }) => {
     temperature: "",
     reason: "Second opinion",
     presentCondition: "",
-    diagnosis: "",
+    investigation: "",
     advice: "",
     prescription: "",
   });
@@ -31,24 +42,47 @@ const PrescriptionFormContent = ({ patient }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-
+  const calculateAge = (dateOfBirth) => {
+    if (!dateOfBirth) return '';
+    const birthDate = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age.toString();
+  };
+  useEffect(() => {
+    if (patientInfo) {
+      setFormData(prev => ({
+        ...prev,
+        patientName: `${patientInfo.firstName} ${patientInfo.lastName}`,
+        age: calculateAge(patientInfo.dateOfBirth),
+        gender: patientInfo.gender || "",
+        weight: patientInfo.weight || ""
+      }));
+    }
+  }, [patientInfo]);
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
     setSnackbarOpen(false);
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsGenerating(true);
     try {
-      const pdfFile = await generatePDF(formData);
+      const pdfFile = await generatePDF({
+        ...formData,
+        doctorInfo: userDetails,
+        patientInfo: patientInfo
+      });
       const newformData = new FormData();
       newformData.append("phone", patient.phone);
       newformData.append("file", pdfFile);
@@ -59,11 +93,14 @@ const PrescriptionFormContent = ({ patient }) => {
         })
       );
     } catch (error) {
-      console.error("Error:", error);
+      setSnackbarMessage("Failed to generate prescription");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     } finally {
       setIsGenerating(false);
     }
   };
+
   useEffect(() => {
     if (prescriptionsCreated) {
       setSnackbarMessage("Prescription Created Successfully");
@@ -72,6 +109,7 @@ const PrescriptionFormContent = ({ patient }) => {
       dispatch(resetPrescriptionsState());
     }
   }, [prescriptionsCreated, dispatch]);
+
   return (
     <div className="medical-form-container">
       <form className="form-layout">

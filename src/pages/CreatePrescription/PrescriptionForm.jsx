@@ -1,11 +1,47 @@
+import { useRef, useMemo } from "react";
+import JoditEditor from "jodit-react";
+import './PrescriptionForm.css';
 
 const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) => {
+  const editorRef = useRef(null);
+  const config = useMemo(
+    () => ({
+      readonly: false,
+      height: 200,
+      toolbarAdaptive: false,
+      toolbarButtonSize: 'medium',
+      buttons: 'bold,italic,underline,ul,ol,font,fontsize,paragraph,lineHeight,superscript,subscript,image,table,link,align,undo,redo',
+      removeButtons: ['source', 'fullsize', 'about', 'print', 'file'],
+      disablePlugins: "paste,table,media",
+      showCharsCounter: false,
+      showWordsCounter: false,
+      showXPathInStatusbar: false,
+      color: 'black',
+      style: {
+        color: 'black', 
+      },
+      maxLength: false,
+      maxCharsCount: -1,
+      maxWordsCount: -1,
+    }),
+    []
+  );
+
+  const handleJoditChange = (fieldName) => (newContent) => {
+    handleChange({
+      target: {
+        name: fieldName,
+        value: newContent
+      }
+    });
+  };
   return (
     <div className="form-content-scrollable">
       <div className="form-section">
         <h2>Patient Details</h2>
         <div className="patient-details-form">
-          <div>
+          <div className="form-group">
+            <label>Patient Name</label>
             <input
               name="patientName"
               value={formData.patientName}
@@ -16,112 +52,118 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
             />
           </div>
           <div className="patient-details-grid mt-4">
-            <input
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-              className="red-input"
-              placeholder="Age"
-            />
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-            >
-              <option>Gender</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
-            </select>
-            <input
-              name="weight"
-              value={formData.weight}
-              onChange={handleChange}
-              className="red-input"
-              placeholder="Weight"
-            />
-            <input
-              name="temperature"
-              value={formData.temperature}
-              onChange={handleChange}
-              className="red-input"
-              placeholder="Temp °F"
-            />
+            <div className="form-group">
+              <label>Age</label>
+              <input
+                type="number"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                className="red-input"
+                placeholder="Age"
+                min="0"
+                max="120"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Gender</label>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                className="red-input gender-select"
+                required
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Weight (kg)</label>
+              <input
+                name="weight"
+                value={formData.weight}
+                onChange={handleChange}
+                className="red-input"
+                placeholder="Weight"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Temperature (°F)</label>
+              <input
+                name="temperature"
+                value={formData.temperature}
+                onChange={handleChange}
+                className="red-input"
+                placeholder="Temp °F"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Reason For Calling */}
       <div className="form-section">
-        <h2>Reason For Calling</h2>
-        <div className="reason-select">
-          <select name="reason" value={formData.reason} onChange={handleChange}>
-            <option>Second opinion</option>
-            <option>Follow up</option>
-            <option>New condition</option>
-            <option>Emergency</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Present Condition & Current Medication */}
-      <div className="form-section">
-        <h2>Present Condition & Current Medication</h2>
+        <h2>Present Condition</h2>
         <div className="text-area-container">
-          <textarea
-            name="presentCondition"
+          <JoditEditor
+            ref={editorRef}
             value={formData.presentCondition}
-            onChange={handleChange}
-            className="red-text"
-            placeholder="Write Here"
+            config={config}
+            tabIndex={1}
+            onBlur={handleJoditChange('presentCondition')}
+            onChange={handleJoditChange('presentCondition')}
           />
         </div>
       </div>
 
-      {/* Assessment/Diagnosis */}
       <div className="form-section">
-        <h2>Assessment/Diagnosis</h2>
+        <h2>Advice</h2>
         <div className="text-area-container">
-          <textarea
-            name="diagnosis"
-            value={formData.diagnosis}
-            onChange={handleChange}
-            className="red-text"
-            placeholder="Write Here"
-          />
-        </div>
-      </div>
-
-      {/* Advice & Investigation */}
-      <div className="form-section">
-        <h2>Advice & Investigation</h2>
-        <div className="text-area-container">
-          <textarea
-            name="advice"
+          <JoditEditor
+            ref={editorRef}
             value={formData.advice}
-            onChange={handleChange}
-            className="red-text"
-            placeholder="Write Here"
+            config={config}
+            tabIndex={2}
+            onBlur={handleJoditChange('advice')}
+            onChange={handleJoditChange('advice')}
           />
         </div>
       </div>
 
-      {/* Prescription Medicine */}
       <div className="form-section">
         <h2>Prescription Medicine</h2>
         <div className="text-area-container">
-          <textarea
-            name="prescription"
+          <JoditEditor
+            ref={editorRef}
             value={formData.prescription}
-            onChange={handleChange}
-            className="red-text"
-            placeholder={`Suggestion Matrix\n1. Medicine Name + After Meal/Before Meal + 1+0+1 + 5 Days\n2. Medicine Name + After Meal/Before Meal + 1+0+1 + 5 Days`}
-            rows={6}
+            config={config}
+            tabIndex={3}
+            onBlur={handleJoditChange('prescription')}
+            onChange={handleJoditChange('prescription')}
+          />
+        </div>
+      </div>
+
+      <div className="form-section">
+        <h2>Investigation</h2>
+        <div className="text-area-container">
+          <JoditEditor
+            ref={editorRef}
+            value={formData.investigation}
+            config={config}
+            tabIndex={4}
+            onBlur={handleJoditChange('investigation')}
+            onChange={handleJoditChange('investigation')}
           />
         </div>
       </div>
       <button
-        type="submit"
+        type="button"
         className="submit-button"
         disabled={isGenerating}
         onClick={onSubmit}
@@ -133,4 +175,3 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
 };
 
 export default PrescriptionForm;
-

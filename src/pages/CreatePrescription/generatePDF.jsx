@@ -1,41 +1,34 @@
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import logo from '../../assets/icons/prescriptionlogo.svg';
-
-const formatMedicineLine = (line) => {
-  return line
-    .split("+")
-    .map((part) => part.trim())
-    .join("  +  ");
-};
-
+import logo from "../../assets/icons/logo-frame.svg";
+import footerlogo from "../../assets/icons/footer-logo.svg";
+import headerlogoSvg from '../../assets/icons/header-bg.svg';
+import RxLogo from '../../assets/icons/Rx.svg'
 const parsePrescription = (text) => {
   if (!text) return [];
-  const lines = text
-    .split("\n")
-    .filter((line) => line.trim() && !line.includes("Suggestion Matrix"));
-  return lines.map((line) => line.trim());
+  // Preserve basic HTML formatting but remove unwanted tags
+  const cleanedText = text.replace(/<\/?(div|span|p|br)[^>]*>/gi, '\n')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\n+/g, '\n')
+    .trim();
+  return cleanedText.split("\n").filter(line => line.trim());
 };
 
-const formatSectionContent = (text) => {
-  if (!text) return "";
-  return text
-    .split("\n")
-    .filter((line) => line.trim())
-    .map((line) => `• ${line.trim()}`)
-    .join("\n");
+const formatSectionContent = (htmlContent) => {
+  if (!htmlContent) return "";
+  // Convert paragraphs to bullet points while preserving other formatting
+  return htmlContent
+    .replace(/<p[^>]*>/gi, '• ')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<br[^>]*>/gi, '\n');
 };
 
 const compressPDF = async (pdfBlob, attempts = 3, scale = 1.5, quality = 0.7) => {
-  const maxSize = 4.8 * 1024 * 1024; // 4.8MB to give some buffer
+  const maxSize = 4.8 * 1024 * 1024;
   let compressedBlob = pdfBlob;
-  
+
   for (let i = 0; i < attempts; i++) {
     if (compressedBlob.size <= maxSize) break;
-    
-    console.log(`Compression attempt ${i + 1}: Current size ${(compressedBlob.size / 1024 / 1024).toFixed(2)}MB`);
-    
-    // Create a temporary container for re-rendering
     const tempContainer = document.createElement("div");
     tempContainer.style.position = "absolute";
     tempContainer.style.left = "-9999px";
@@ -43,41 +36,43 @@ const compressPDF = async (pdfBlob, attempts = 3, scale = 1.5, quality = 0.7) =>
     tempContainer.style.padding = "20px";
     tempContainer.style.background = "white";
     document.body.appendChild(tempContainer);
-    
     try {
-      // Re-render with lower quality settings
       const canvas = await html2canvas(tempContainer, {
-        scale: scale - (i * 0.2), // Reduce scale with each attempt
-        quality: quality - (i * 0.1), // Reduce quality with each attempt
+        scale: scale - i * 0.2,
+        quality: quality - i * 0.1,
         logging: false,
         useCORS: true,
-        backgroundColor: '#FFFFFF'
+        backgroundColor: "#FFFFFF",
       });
 
-      const imgData = canvas.toDataURL("image/jpeg", quality - (i * 0.1));
+      const imgData = canvas.toDataURL("image/jpeg", quality - i * 0.1);
       const pdf = new jsPDF("p", "mm", "a4");
       const imgWidth = 210;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
+
       pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
       compressedBlob = pdf.output("blob");
     } finally {
       document.body.removeChild(tempContainer);
     }
   }
-  
+
   return compressedBlob;
 };
 
 const generatePDF = async (formData) => {
+  const { doctorInfo } = formData;
+  const doctorName =
+    `${doctorInfo?.firstName || ""} ${doctorInfo?.lastName || ""}`.trim() || "";
+  const doctorQualifications = doctorInfo?.profile?.qualification || "";
+  const specialization = doctorInfo?.profile?.specialization || "";
+  const clinicAddress = doctorInfo?.profile?.clinicAddress || "";
+
   const pdfContainer = document.createElement("div");
   pdfContainer.style.position = "absolute";
   pdfContainer.style.left = "-9999px";
   pdfContainer.style.width = "210mm";
   pdfContainer.style.minHeight = "297mm";
-  pdfContainer.style.padding = "20px";
-  pdfContainer.style.background = "white";
-  pdfContainer.style.fontFamily = "Arial, sans-serif";
   pdfContainer.style.display = "flex";
   pdfContainer.style.flexDirection = "column";
 
@@ -92,253 +87,188 @@ const generatePDF = async (formData) => {
   mainContent.style.flexGrow = "1";
   mainContent.innerHTML = `
     <style>
-      .pdf-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 30px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #0064B0;
-      }
-      .doctor-info {
-        text-align: right;
-      }
-      .doctor-name {
-        margin: 0;
-        color: #0063AF;
-        font-size: 24px;
-        font-weight: bold;
-      }
-      .doctor-details {
-        font-size: 10px;
-        color: #555;
-        line-height: 1.5;
-      }
-      .doctor-details p {
-        margin: 5px 0;
-      }
-      .patient-info-section {
-        margin-bottom: 25px;
-      }
-      .patient-details {
-        display: flex;
-        justify-content: space-between;
-      }
-      .patient-name {
-        margin: 5px 0;
-        font-weight: bold;
-        font-size: 18px;
-        color: #0063AF;
-      }
-      .detail-row {
-        display: flex;
-        gap: 20px;
-        margin-top: 8px;
-        flex-wrap: wrap;
-      }
-      .detail-row p {
-        margin: 0;
-        font-size: 14px;
-      }
-      .detail-label {
-        font-weight: normal;
-      }
-      .detail-value {
-        font-weight: bold;
-      }
-      .date-time {
-        text-align: right;
-      }
-      .date-time p {
-        margin: 0;
-        font-size: 14px;
-      }
-      .date-label {
-        font-weight: normal;
-      }
-      .date-value {
-        font-weight: bold;
-      }
-      .time-label {
-        font-weight: normal;
-      }
-      .time-value {
-        font-weight: bold;
-      }
-      .section-title {
-        color: #0063AF;
-        margin: 25px 0 15px 0;
-        font-size: 18px;
-        font-weight: bold;
-      }
-      .section-content {
-        white-space: pre-wrap;
-        margin: 15px 0 25px 0;
-        font-size: 14px;
-        line-height: 1.6;
-      }
-      .medicine-title {
-        color: #0063AF;
-        margin: 25px 0 15px 0;
-        font-size: 18px;
-        font-weight: bold;
-      }
-      .medicine-list {
-        white-space: pre-wrap;
-        margin: 15px 0 25px 0;
-        font-size: 14px;
-        line-height: 1.6;
-      }
-      .medicine-item {
-        margin-bottom: 8px;
-      }
       .header-logo {
-        width: 180px;
-        height: 60px;
+        width: 140px;
+        height: 40px;
         object-fit: contain;
+      }
+      .footer-section {
+        border-top: 1px solid #0063AF;
+        padding-left:40px;
       }
       .footer-content {
         display: flex;
         justify-content: flex-start;
-        align-items: center;
-        margin-top: 20px;
-        padding-top: 15px;
-        border-top: 2px solid #0064B0;
         gap: 10px;
       }
       .footer-powered-by {
-        font-size: 12px;
-        color: #555;
-        font-weight: bold;
+        font-size: 10px;
+        color: #191717;
+        font-weight: 400; 
         display: flex;
         align-items: center;
       }
       .footer-logo {
-        width: 131px;
-        height: 38px;
+        width: 96px;
+        height: 23px;
+        margin-top: 10px;
       }
     </style>
 
-    <div class="pdf-header">
-      <div>
-        <img src="${logo}" class="header-logo" />
-      </div>
-      <div class="doctor-info">
-        <h2 class="doctor-name">Dr. John Doe</h2>
-        <div class="doctor-details">
-          <p>MBBS, BCS (Health), MS (ORTHO)</p>
-          <p>Fellowship Training in Oncology & Arthroplasty (England, UK)</p>
-          <p>Orthopedics, Trauma, Bone Tumor & Sarcoma Surgeon</p>
-          <p>National Institute of Cancer Research & Hospital</p>
+
+
+<div style="
+  background-image: url(${headerlogoSvg});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 0px 20px 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height:150px
+">
+  <div style="
+    background-color: white;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 5px solid #203A71;
+    position: absolute;
+    left: 40px;
+    top: 20px;
+    z-index: 2;
+    margin-top: 15px;
+  ">
+    <img src="${logo}" alt="DOCTEL Logo" style="width: 80px; height: 80px;" />
+  </div>
+  <div style="margin-left: 250px; flex: 1;">
+    <div style="font-size: 20px; font-weight: 400; margin-bottom: 5px;">${doctorName}</div>
+    <div style="font-size: 9px; margin: 3px 0; color:#070707;"> ${doctorQualifications}</div>
+    <div style="font-size: 9px; margin: 3px 0; color:#070707;"> ${specialization}</div>
+    <div style="font-size: 9px; margin: 3px 0; color:#070707;">${clinicAddress} </div>
+  </div>
+</div>
+
+
+    <div style="display: flex; justify-content: flex-end; padding: 15px 20px; background: white;">
+      <div style="display: flex; gap: 30px;">
+        <div style="display: flex; align-items: center; gap: 5px; font-size: 12px;">
+          <span style="font-weight: 400; color: #20ACE2; font-size: 12px;">Date :</span>
+          <span style="font-weight: 400; color:#1A1818; font-size: 12px;">09 June 2024</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 5px;">
+          <span style="font-weight: 400; color: #20ACE2; font-size: 12px;">Time :</span>
+          <span style="font-weight: 400; color:#1A1818; font-size: 12px;">02:25 PM</span>
         </div>
       </div>
     </div>
 
-    <div class="patient-info-section">
-      <div class="patient-details">
-        <div>
-          <p class="patient-name">Patient: <span class="detail-value">${
-            formData.patientName || "Not provided"
-          }</span></p>
-          <div class="detail-row">
-            ${
-              formData.gender !== "Gender"
-                ? `<p><span class="detail-label">Gender: </span><span class="detail-value">${formData.gender}</span></p>`
-                : ""
-            }
-            ${
-              formData.age
-                ? `<p><span class="detail-label">Age: </span><span class="detail-value">${formData.age} years old </span></p>`
-                : ""
-            }
-            ${
-              formData.weight
-                ? `<p><span class="detail-label">Weight: </span><span class="detail-value">${formData.weight} kg</span></p>`
-                : ""
-            }
-            ${
-              formData.temperature
-                ? `<p><span class="detail-label">Temp: </span><span class="detail-value">${formData.temperature}°F</span></p>`
-                : ""
-            }
+
+   <div style="width: 90%; margin: 0 auto; margin-top: 30px;">
+    <div style="background-color: #F1F0F0; padding: 10px 10px 20px 10px; display: flex; flex-direction: column; border-radius: 6px;">
+      <div style="margin-bottom: 15px; text-align: start;">
+        <span style="font-weight: 400; color: #0465AF; margin-right: 5px; font-size: 12px;"">Patient:</span>
+        <span style="color: #0465AF; font-size: 12px;"">${formData.patientName || "Not provided"}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+        ${formData.gender ? `
+          <div style="display: flex; align-items: center;">
+            <span style="font-weight: 400; color:#1A1818; margin-right: 5px; font-size: 12px;"">Gender:</span>
+            <span style="color:#1A1818; font-size: 12px;"">${formData.gender}</span>
           </div>
-        </div>
-        <div class="date-time">
-          <p><span class="date-label">Date: </span><span class="date-value">${dateStr}</span></p>
-          <p><span class="time-label">Time: </span><span class="time-value">${timeStr}</span></p>
-        </div>
+        ` : ''}
+        ${formData.age ? `
+          <div style="display: flex; align-items: center;">
+            <span style="font-weight: 400; color:#1A1818; margin-right: 5px; font-size: 12px;"">Age:</span>
+            <span style="color:#1A1818; font-size: 12px;"">${formData.age} Year(s)</span>
+          </div>
+        ` : ''}
+        ${formData.weight ? `
+          <div style="display: flex; align-items: center;">
+            <span style="font-weight: 400; color:#1A1818; margin-right: 5px; font-size: 12px;">Weight:</span>
+            <span style="color:#1A1818; font-size: 12px;">${formData.weight}kg</span>
+          </div>
+        ` : ''}
       </div>
     </div>
+  </div>
 
-    <h3 class="medicine-title">Medicine : </h3>
-    <div class="medicine-list">
-      ${parsePrescription(formData.prescription)
-        .map(
-          (medicine, index) =>
-            `<div class="medicine-item">${
-              index + 1
-            }. ${formatMedicineLine(medicine)}</div>`
-        )
+
+<div style="
+  color: #0057a8;
+  font-weight: bold;
+  margin-left:40px;
+  margin-top:40px
+">
+ <img src="${RxLogo}" alt="Rx" />
+</div>
+
+  
+
+
+${formData.presentCondition ? `
+  <div style="margin-top: 30px;">
+    <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
+      Problem / Issue
+    </h3>
+    <div style="font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 40px; padding-top:10px;">
+      ${formatSectionContent(formData.presentCondition)}
+    </div>
+  </div>
+` : ""}
+
+
+
+${formData.prescription ? `
+  <h3 style="color: #0063AF; margin: 20px 0 0 40px; font-size: 14px; font-weight: 700;">Medicine :</h3>
+  <div style="padding-left: 40px; padding-top:10px; margin-top:10px; font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818;">
+    ${parsePrescription(formData.prescription)
+        .map(medicine => `<div style="margin-bottom: 8px;">${medicine}</div>`)
         .join("")}
+  </div>
+` : ""}
+   
+
+
+${formData.advice ? `
+  <div style="margin-top: 30px;">
+    <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
+      Advice :
+    </h3>
+    <div style="font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 40px; padding-top:10px;">
+      ${formatSectionContent(formData.advice)}
     </div>
+  </div>
+` : ""}
+ 
 
-    ${
-      formData.reason && formData.reason !== "Second opinion"
-        ? `
-      <div>
-        <h3 class="section-title">Reason For Visit</h3>
-        <p class="section-content">${formatSectionContent(
-          formData.reason
-        ).replace(/\n/g, "<br>")}</p>
-      </div>
-    `
-        : ""
-    }
 
-    ${
-      formData.presentCondition
-        ? `
-      <div>
-        <h3 class="section-title">Present Condition & Current Medication</h3>
-        <p class="section-content">${formatSectionContent(
-          formData.presentCondition
-        ).replace(/\n/g, "<br>")}</p>
-      </div>
-    `
-        : ""
-    }
+${formData.investigation ? `
+  <div style="margin-top: 30px;">
+    <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
+      Investigation :
+    </h3>
+    <div style="font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 40px; padding-top:10px;">
+      ${formatSectionContent(formData.investigation)}
+    </div>
+  </div>
+` : ""}
+`;
 
-    ${
-      formData.diagnosis
-        ? `
-      <div>
-        <h3 class="section-title">Assessment/Diagnosis</h3>
-        <p class="section-content">${formatSectionContent(
-          formData.diagnosis
-        ).replace(/\n/g, "<br>")}</p>
-      </div>
-    `
-        : ""
-    }
 
-    ${
-      formData.advice
-        ? `
-      <div>
-        <h3 class="section-title">Advice & Investigation</h3>
-        <p class="section-content">${formatSectionContent(
-          formData.advice
-        ).replace(/\n/g, "<br>")}</p>
-      </div>
-    `
-        : ""
-    }
-  `;
+
 
   const footer = document.createElement("div");
   footer.innerHTML = `
-    <div class="footer-content">
-      <span class="footer-powered-by">Powered by</span>
-      <img src="${logo}" class="footer-logo" />
+    <div class="footer-section">
+      <div class="footer-content">
+        <span class="footer-powered-by">Powered by</span>
+        <img src="${footerlogo}" class="footer-logo" />
+      </div>
     </div>
   `;
 
@@ -353,7 +283,7 @@ const generatePDF = async (formData) => {
       quality: 0.8,
       logging: false,
       useCORS: true,
-      backgroundColor: '#FFFFFF'
+      backgroundColor: "#FFFFFF",
     });
 
     const imgData = canvas.toDataURL("image/jpeg", 0.8);
@@ -362,28 +292,23 @@ const generatePDF = async (formData) => {
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
     pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-    
+
     // Generate initial PDF blob
     const pdfBlob = pdf.output("blob");
-    
+
     // Compress if needed
     const finalBlob = await compressPDF(pdfBlob);
-    
+
     // Validate size
     if (finalBlob.size > 5 * 1024 * 1024) {
       throw new Error("Failed to reduce PDF under 5MB");
     }
-    
-    console.log(`Final PDF size: ${(finalBlob.size / 1024 / 1024).toFixed(2)}MB`);
-    
-    // Create File object with fixed name
     return new File([finalBlob], "prescription.pdf", {
       type: "application/pdf",
-      lastModified: Date.now()
+      lastModified: Date.now(),
     });
-    
+
   } catch (error) {
-    console.error("PDF generation error:", error);
     throw new Error("Failed to generate prescription: " + error.message);
   } finally {
     document.body.removeChild(pdfContainer);

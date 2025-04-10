@@ -161,9 +161,7 @@ const ProfileUpdate = () => {
             <Typography variant="h4" component="h1" sx={{ color: "#3EDAC5", fontWeight: 700, mb: 0.5 }}>
                 Profile
             </Typography>
-            <Typography variant="body2" sx={{ color: "#000000", fontWeight: 300, mb: 2 }}>
-                List of your electronic prescriptions
-            </Typography>
+            
             <Divider sx={{ mb: 3 }} />
 
             <Paper elevation={0} sx={{ backgroundColor: "#f5f5f5", borderRadius: 2, p: { xs: 2, md: 3 }, mb: 3 }}>
