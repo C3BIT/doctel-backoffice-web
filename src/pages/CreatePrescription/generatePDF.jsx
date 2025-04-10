@@ -6,26 +6,21 @@ import headerlogoSvg from '../../assets/icons/header-bg.svg';
 import RxLogo from '../../assets/icons/Rx.svg'
 const parsePrescription = (text) => {
   if (!text) return [];
-  const plainText = text.replace(/<[^>]*>/g, '\n').replace(/\n+/g, '\n').trim();
-  const lines = plainText
-    .split("\n")
-    .filter(line => line.trim() && !line.includes("Suggestion Matrix"));
-  return lines.map(line => line.trim());
+  // Preserve basic HTML formatting but remove unwanted tags
+  const cleanedText = text.replace(/<\/?(div|span|p|br)[^>]*>/gi, '\n')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\n+/g, '\n')
+    .trim();
+  return cleanedText.split("\n").filter(line => line.trim());
 };
-const formatMedicineLine = (line) => {
-  return line
-    .replace(/<[^>]*>/g, '')
-    .split("+")
-    .map(part => part.trim())
-    .join("  +  ");
-};
-const formatSectionContent = (text) => {
-  if (!text) return "";
-  return text
-    .split("\n")
-    .filter((line) => line.trim())
-    .map((line) => `• ${line.trim()}`)
-    .join("\n");
+
+const formatSectionContent = (htmlContent) => {
+  if (!htmlContent) return "";
+  // Convert paragraphs to bullet points while preserving other formatting
+  return htmlContent
+    .replace(/<p[^>]*>/gi, '• ')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<br[^>]*>/gi, '\n');
 };
 
 const compressPDF = async (pdfBlob, attempts = 3, scale = 1.5, quality = 0.7) => {
@@ -214,53 +209,54 @@ const generatePDF = async (formData) => {
 
   
 
+
 ${formData.presentCondition ? `
   <div style="margin-top: 30px;">
     <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
       Problem / Issue
     </h3>
-    <p style="white-space: pre-wrap; font-size: 10px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 23px;">
-      ${formatSectionContent(formData.presentCondition).replace(/\n/g, "<br>")}
-    </p>
+    <div style="font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 40px; padding-top:10px;">
+      ${formatSectionContent(formData.presentCondition)}
+    </div>
   </div>
 ` : ""}
 
 
 
-  <h3 style="color: #0063AF;   margin: 20px 0 0 40px; font-size: 14px; font-weight: 700;">Medicine :</h3>
-  <div style="margin-left:40px; margin-top:10px; font-size: 12px;font-weight: 400; line-height: 1.6; color: #1A1818;">
+${formData.prescription ? `
+  <h3 style="color: #0063AF; margin: 20px 0 0 40px; font-size: 14px; font-weight: 700;">Medicine :</h3>
+  <div style="padding-left: 40px; padding-top:10px; margin-top:10px; font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818;">
     ${parsePrescription(formData.prescription)
-      .map(
-        (medicine) =>
-          `<div style="margin-bottom: 8px; font-weight: 400; color: #1A1818;">${formatMedicineLine(medicine)}</div>`
-      )
-      .join("")}
+        .map(medicine => `<div style="margin-bottom: 8px;">${medicine}</div>`)
+        .join("")}
   </div>
+` : ""}
    
 
 
-  ${formData.presentCondition ? `
-    <div style="margin-top: 30px;">
-      <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
-        Advice :
-      </h3>
-      <p style="white-space: pre-wrap; font-size: 10px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 23px;">
-        ${formatSectionContent(formData.advice).replace(/\n/g, "<br>")}
-      </p>
+${formData.advice ? `
+  <div style="margin-top: 30px;">
+    <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
+      Advice :
+    </h3>
+    <div style="font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 40px; padding-top:10px;">
+      ${formatSectionContent(formData.advice)}
     </div>
-  ` : ""}  
+  </div>
+` : ""}
+ 
 
 
-    ${formData.presentCondition ? `
-    <div style="margin-top: 30px;">
-      <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
-        Investigation :
-      </h3>
-      <p style="white-space: pre-wrap; font-size: 10px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 23px;">
-        ${formatSectionContent(formData.investigation).replace(/\n/g, "<br>")}
-      </p>
+${formData.investigation ? `
+  <div style="margin-top: 30px;">
+    <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
+      Investigation :
+    </h3>
+    <div style="font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 40px; padding-top:10px;">
+      ${formatSectionContent(formData.investigation)}
     </div>
-  ` : ""}
+  </div>
+` : ""}
 `;
 
 

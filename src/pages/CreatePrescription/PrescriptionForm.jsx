@@ -1,7 +1,40 @@
-import { useState } from "react";
+import { useRef, useMemo } from "react";
+import JoditEditor from "jodit-react";
 import './PrescriptionForm.css';
 
 const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) => {
+  const editorRef = useRef(null);
+  const config = useMemo(
+    () => ({
+      readonly: false,
+      height: 200,
+      toolbarAdaptive: false,
+      toolbarButtonSize: 'medium',
+      buttons: 'bold,italic,underline,ul,ol,font,fontsize,paragraph,lineHeight,superscript,subscript,image,table,link,align,undo,redo',
+      removeButtons: ['source', 'fullsize', 'about', 'print', 'file'],
+      disablePlugins: "paste,table,media",
+      showCharsCounter: false,
+      showWordsCounter: false,
+      showXPathInStatusbar: false,
+      color: 'black',
+      style: {
+        color: 'black', 
+      },
+      maxLength: false,
+      maxCharsCount: -1,
+      maxWordsCount: -1,
+    }),
+    []
+  );
+
+  const handleJoditChange = (fieldName) => (newContent) => {
+    handleChange({
+      target: {
+        name: fieldName,
+        value: newContent
+      }
+    });
+  };
   return (
     <div className="form-content-scrollable">
       <div className="form-section">
@@ -75,14 +108,15 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
       </div>
 
       <div className="form-section">
-        <h2>Present Condition & Current Medication</h2>
+        <h2>Present Condition</h2>
         <div className="text-area-container">
-          <textarea
-            name="presentCondition"
+          <JoditEditor
+            ref={editorRef}
             value={formData.presentCondition}
-            onChange={handleChange}
-            className="red-text"
-            placeholder="Describe the patient's current condition and medications"
+            config={config}
+            tabIndex={1}
+            onBlur={handleJoditChange('presentCondition')}
+            onChange={handleJoditChange('presentCondition')}
           />
         </div>
       </div>
@@ -90,12 +124,13 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
       <div className="form-section">
         <h2>Advice</h2>
         <div className="text-area-container">
-          <textarea
-            name="advice"
+          <JoditEditor
+            ref={editorRef}
             value={formData.advice}
-            onChange={handleChange}
-            className="red-text"
-            placeholder="Provide advice and recommended investigations"
+            config={config}
+            tabIndex={2}
+            onBlur={handleJoditChange('advice')}
+            onChange={handleJoditChange('advice')}
           />
         </div>
       </div>
@@ -103,13 +138,13 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
       <div className="form-section">
         <h2>Prescription Medicine</h2>
         <div className="text-area-container">
-          <textarea
-            name="prescription"
+          <JoditEditor
+            ref={editorRef}
             value={formData.prescription}
-            onChange={handleChange}
-            className="red-text"
-            placeholder="Enter medicines (one per line)"
-            rows={8}
+            config={config}
+            tabIndex={3}
+            onBlur={handleJoditChange('prescription')}
+            onChange={handleJoditChange('prescription')}
           />
         </div>
       </div>
@@ -117,16 +152,16 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
       <div className="form-section">
         <h2>Investigation</h2>
         <div className="text-area-container">
-          <textarea
-            name="investigation"
+          <JoditEditor
+            ref={editorRef}
             value={formData.investigation}
-            onChange={handleChange}
-            className="red-text"
-            placeholder="Provide investigations"
+            config={config}
+            tabIndex={4}
+            onBlur={handleJoditChange('investigation')}
+            onChange={handleJoditChange('investigation')}
           />
         </div>
       </div>
-
       <button
         type="button"
         className="submit-button"

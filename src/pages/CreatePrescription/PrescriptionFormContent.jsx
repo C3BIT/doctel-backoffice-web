@@ -19,7 +19,7 @@ const PrescriptionFormContent = ({ patient }) => {
   }, [dispatch, token]);
   const { patientInfo } = useSelector((state) => state.patientInfo);
   useEffect(() => {
-    const phone = patient?.phone || '01952254063';
+    const phone = patient?.phone;
     dispatch(getPatientInfo({ token, phone }));
   }, [dispatch, token, patient]);
 
@@ -83,25 +83,15 @@ const PrescriptionFormContent = ({ patient }) => {
         doctorInfo: userDetails,
         patientInfo: patientInfo
       });
-      const url = URL.createObjectURL(pdfFile);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `prescription_${new Date().toISOString().split("T")[0]}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 100);
       const newformData = new FormData();
       newformData.append("phone", patient.phone);
       newformData.append("file", pdfFile);
-      // await dispatch(
-      //   createPrescription({
-      //     token,
-      //     formData: newformData,
-      //   })
-      // );
+      await dispatch(
+        createPrescription({
+          token,
+          formData: newformData,
+        })
+      );
     } catch (error) {
       setSnackbarMessage("Failed to generate prescription");
       setSnackbarSeverity("error");

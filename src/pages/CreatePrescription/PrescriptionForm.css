@@ -79,6 +79,7 @@
 
 .form-section {
   margin-bottom: 1rem;
+  padding: 10px;
 }
 
 .form-section h2 {
@@ -227,18 +228,21 @@ textarea {
 
 /* Submit Button */
 .submit-button {
-  width: 100%;
+  box-sizing: border-box;
+  width: calc(100% - 20px); 
   background: #0d9488;
   color: white;
   padding: 0.75rem;
   border-radius: 0.25rem;
   text-align: center;
-  margin-top: 1rem;
+  margin: 0 10px 20px 10px; 
   border: none;
   cursor: pointer;
   font-size: 1rem;
 }
-
-.ck.ck-content.ck-editor__editable {
-  color: #5A6684;
+.jodit-wysiwyg {
+  color: black !important;
+}
+.jodit-container {
+  min-height: 200px;
 }
