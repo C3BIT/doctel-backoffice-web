@@ -2,6 +2,7 @@ import { Box } from '@mui/system';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import Router from './routes/Router';
 import { useRoutes } from 'react-router-dom';
+import { TitleProvider } from './contexts/TitleContext';
 
 const theme = createTheme({
   typography: {
@@ -45,10 +46,12 @@ const App = () => {
   const routing = useRoutes(Router);
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box className="App">
-        {routing}
-      </Box>
+      <TitleProvider>
+        <CssBaseline />
+        <Box className="App">
+          {routing}
+        </Box>
+      </TitleProvider>
     </ThemeProvider>
   );
 };

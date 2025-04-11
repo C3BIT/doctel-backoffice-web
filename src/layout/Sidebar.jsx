@@ -24,6 +24,8 @@ import SignOutIcon from '../assets/sidebar/sign-out.svg';
 import DoctelLogo from '../assets/sidebar/doctel-logo.svg';
 import { useDispatch } from 'react-redux';
 import { logout } from '../redux/auth/authSlice';
+import { useEffect } from 'react';
+import { updateDocumentTitle } from '../utils/titleUtils';
 
 const navigationItems = [
   { id: 'dashboard', label: 'Dashboard', icon: DashboardIcon, path: '/dashboard' },
@@ -43,7 +45,7 @@ const Sidebar = ({ open, mobileOpen, handleDrawerToggle, isMobile }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const handleNavigation = (path) => {
     navigate(path);
     if (isMobile) {
@@ -56,6 +58,9 @@ const Sidebar = ({ open, mobileOpen, handleDrawerToggle, isMobile }) => {
   };
 
   const isActive = (path) => location.pathname === path || (path === '/dashboard' && location.pathname === '/');
+  useEffect(() => {
+    updateDocumentTitle(location.pathname, navigationItems);
+  }, [location.pathname]);
 
   const drawerContent = (
     <>
@@ -71,30 +76,30 @@ const Sidebar = ({ open, mobileOpen, handleDrawerToggle, isMobile }) => {
       >
         {open ? (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <img 
-              src={DoctelLogo} 
-              alt="DOCTEL" 
-              style={{ 
+            <img
+              src={DoctelLogo}
+              alt="DOCTEL"
+              style={{
                 height: '50px',
                 width: '120px'
-              }} 
+              }}
             />
           </Box>
         ) : (
-          <img 
-            src={DoctelLogo} 
-            alt="DOCTEL" 
-            style={{ 
+          <img
+            src={DoctelLogo}
+            alt="DOCTEL"
+            style={{
               height: '24px',
               width: '24px'
-            }} 
+            }}
           />
         )}
 
         {!isMobile && open && (
-          <IconButton 
+          <IconButton
             onClick={handleDrawerToggle}
-            sx={{ 
+            sx={{
               width: '24px',
               height: '24px',
               p: '4px',
@@ -106,17 +111,17 @@ const Sidebar = ({ open, mobileOpen, handleDrawerToggle, isMobile }) => {
         )}
       </Box>
 
-      <List sx={{ 
+      <List sx={{
         p: '16px',
         '& .MuiListItem-root': {
-          mb: '8px' 
+          mb: '8px'
         }
       }}>
         {navigationItems.map((item) => (
-          <ListItem 
+          <ListItem
             key={item.id}
-            disablePadding 
-            sx={{ 
+            disablePadding
+            sx={{
               display: 'block',
             }}
           >
@@ -143,27 +148,27 @@ const Sidebar = ({ open, mobileOpen, handleDrawerToggle, isMobile }) => {
                   color: 'inherit',
                 }}
               >
-                <img 
-                  src={item.icon} 
-                  alt={item.label} 
-                  style={{ 
-                    width: '20px', 
+                <img
+                  src={item.icon}
+                  alt={item.label}
+                  style={{
+                    width: '20px',
                     height: '20px',
                     filter: isActive(item.path) ? 'none' : 'opacity(0.7)'
-                  }} 
+                  }}
                 />
               </ListItemIcon>
               {open && (
-                <ListItemText 
-                  primary={item.label} 
-                  sx={{ 
+                <ListItemText
+                  primary={item.label}
+                  sx={{
                     '& .MuiTypography-root': {
                       fontSize: '16px',
                       fontWeight: isActive(item.path) ? 600 : 400,
                       lineHeight: '30px',
                       letterSpacing: '0.15px'
                     }
-                  }} 
+                  }}
                 />
               )}
             </ListItemButton>
