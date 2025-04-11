@@ -8,3 +8,4 @@ export const updateDocumentTitle = (pathname, items) => {
       document.title = 'Doctel';
     }
   };
+  
