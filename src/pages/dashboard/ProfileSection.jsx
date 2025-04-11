@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -9,15 +11,16 @@ import {
   Stack,
   styled,
   Skeleton,
+  Container
 } from '@mui/material';
-import { Link } from "react-router-dom";
 import { getUserDetails } from "../../redux/auth/authSlice";
-import { useEffect } from "react";
 
+// Styled components
 const ProfileCard = styled(Card)(({ theme }) => ({
   backgroundColor: '#F5F6F8',
   borderRadius: theme.spacing(1),
   boxShadow: 'none',
+  width: '100%'
 }));
 
 const DetailsButton = styled(Button)(({ theme }) => ({
@@ -40,65 +43,73 @@ const ProfileAvatar = styled(Avatar)(({ theme }) => ({
 const ProfileSection = () => {
   const { user, token, userDetails, isLoading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  
   useEffect(() => {
-    dispatch(getUserDetails(token));
+    if (token) {
+      dispatch(getUserDetails(token));
+    }
   }, [dispatch, token]);
+
   return (
-    <ProfileCard>
-      <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 3 }}>
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { md: 'center' } }}>
-
-          {isLoading ? (
-            <Box
-              sx={{
-                width: 120,
-                height: 120,
-                borderRadius: (theme) => theme.spacing(1),
-                border: (theme) => `1px solid ${theme.palette.grey[200]}`,
-                marginRight: (theme) => theme.spacing(2),
-              }}
-            >
-              <Skeleton variant="rectangular" width="100%" height="100%" />
-            </Box>
-          ) : (
-            <ProfileAvatar
-              src={userDetails?.profileImage}
-              alt="Profile"
-              variant="square"
-            />
-          )}
-          <Stack spacing={0.5} sx={{ mt: { xs: 2, md: 0 } }}>
-            <Typography variant="caption" color="text.secondary" align="left">
-              Welcome
-            </Typography>
-
+    <Container>
+      <ProfileCard>
+        <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { md: 'center' } }}>
             {isLoading ? (
-              <Skeleton variant="text" width="60%" />
+              <Box
+                sx={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: (theme) => theme.spacing(1),
+                  border: (theme) => `1px solid ${theme.palette.grey[200]}`,
+                  marginRight: (theme) => theme.spacing(2),
+                }}
+              >
+                <Skeleton variant="rectangular" width="100%" height="100%" animation="wave" />
+              </Box>
             ) : (
-              <Typography variant="h6" color="primary" fontWeight="medium" align="left">
-                {userDetails?.firstName || ""} {userDetails?.lastName || ""}
-              </Typography>
+              <ProfileAvatar
+                src={userDetails?.profileImage}
+                alt={`${userDetails?.firstName || 'User'} Profile`}
+                variant="square"
+              />
             )}
+            
+            <Stack spacing={0.5} sx={{ mt: { xs: 2, md: 0 } }}>
+              <Typography variant="caption" color="text.secondary" align="left">
+                Welcome
+              </Typography>
 
-            <Typography variant="body2" color="text.secondary" align="left">
-              {user?.phone || ''}
-            </Typography>
+              {isLoading ? (
+                <Skeleton variant="text" width="60%" animation="wave" />
+              ) : (
+                <Typography variant="h6" color="primary" fontWeight="medium" align="left">
+                  {`${userDetails?.firstName || ""} ${userDetails?.lastName || ""}`}
+                </Typography>
+              )}
 
-            <Typography variant="body2" color="text.secondary" align="left" sx={{ mt: 1 }}>
-              You are subscribe on <Box component="span" fontWeight="medium">Monthly Pack.</Box>
-            </Typography>
+              <Typography variant="body2" color="text.secondary" align="left">
+                {user?.phone || ''}
+              </Typography>
 
-            <Typography variant="body2" color="text.secondary" align="left">
-              Next renewal <Box component="span" color="primary.main" fontWeight="medium">31 December 2022</Box>
-            </Typography>
-          </Stack>
-        </Box>
-        <Link to='/doctor/profile'>
-          <DetailsButton variant="outlined">
-            Details
-          </DetailsButton></Link>
-      </CardContent>
-    </ProfileCard>
+              <Typography variant="body2" color="text.secondary" align="left" sx={{ mt: 1 }}>
+                You are subscribed to <Box component="span" fontWeight="medium">Monthly Pack.</Box>
+              </Typography>
+
+              <Typography variant="body2" color="text.secondary" align="left">
+                Next renewal <Box component="span" color="primary.main" fontWeight="medium">31 December 2022</Box>
+              </Typography>
+            </Stack>
+          </Box>
+          
+          <Link to='/doctor/profile' style={{ textDecoration: 'none' }}>
+            <DetailsButton variant="outlined">
+              Details
+            </DetailsButton>
+          </Link>
+        </CardContent>
+      </ProfileCard>
+    </Container>
   );
 };
 

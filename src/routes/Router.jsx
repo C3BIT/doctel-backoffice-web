@@ -92,6 +92,10 @@ const Router  = [
         path: 'verify-otp',
         element: <OtpVerify />,
       },
+      {
+        path: '*',
+        element: <NotFound />,
+      },
     ],
   },
 ];
