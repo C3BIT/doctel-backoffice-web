@@ -1,43 +1,58 @@
-import { Routes, Route } from 'react-router-dom';
 import { Box } from '@mui/system';
-import ProtectedRoute from './routes/ProtectedRoute';
-import PublicRoute from './routes/PublicRoute';
-import Layout from './layout/Layout';
-import Login from './pages/Login/Login';
-import NotFound from './pages/NotFound/NotFound';
-import OtpVerify from './pages/auth/OtpVerify';
-import DoctorProfile from './pages/DoctorProfile/DoctorProfile';
-import Home from './pages/Home/Home';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import Router from './routes/Router';
+import { useRoutes } from 'react-router-dom';
+import { TitleProvider } from './contexts/TitleContext';
 
-import Profile from './pages/profile/Profile';
-import LabReport from './pages/LabReport/LabReport';
-import PrescriptionReport from './pages/PrescriptionReport/PrescriptionReport';
-import ProfileUpdate from './pages/update/ProfileUpdate';
-import PrescriptionFormContent from './pages/CreatePrescription/PrescriptionFormContent'
+const theme = createTheme({
+  typography: {
+    fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
+  },
+  palette: {
+    primary: {
+      main: '#0052A8',
+    },
+    background: {
+      default: '#F9F9F9',
+    },
+    text: {
+      primary: '#375560',
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          textTransform: 'none',
+          boxShadow: 'none',
+          '&:hover': {
+            boxShadow: 'none',
+          },
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+        },
+      },
+    },
+  },
+});
+
 const App = () => {
+  const routing = useRoutes(Router);
   return (
-    <Box className="App">
-        <Routes>
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Layout />} >
-              <Route index element={<Home />} />
-              <Route path="/profile" element={<DoctorProfile />} />
-              <Route path="/doctor/profile" element={<Profile />} />
-              <Route path="/lab/report" element={<LabReport />} />
-              <Route path="/prescription/list" element={<PrescriptionReport/>} />
-              <Route path="/update/profile" element={<ProfileUpdate/>} />
-              <Route path="/create/call" element={<PrescriptionFormContent/>} />
-            </Route>
-          </Route>
-          
-          <Route element={<PublicRoute />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/verify-otp" element={<OtpVerify />} />
-          </Route>
-          
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-    </Box>
+    <ThemeProvider theme={theme}>
+      <TitleProvider>
+        <CssBaseline />
+        <Box className="App">
+          {routing}
+        </Box>
+      </TitleProvider>
+    </ThemeProvider>
   );
 };
 

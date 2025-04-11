@@ -1,4 +1,4 @@
-import { Box, Grid, Paper, Typography } from "@mui/material";
+import { Box, Grid, Paper } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import ProfileSection from "./ProfileSection";
 import DoctorOnDemand from "./DoctorOnDemand";
