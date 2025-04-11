@@ -29,7 +29,7 @@ const Layout = () => {
                 }}
             >
                 <Container
-                    maxWidth="xl"
+                    maxWidth="2xl"
                     sx={{
                         flexGrow: 1,
                         display: 'flex',

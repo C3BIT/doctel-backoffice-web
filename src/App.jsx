@@ -19,7 +19,8 @@ const App = () => {
     <Box className="App">
         <Routes>
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Layout />} >
+            <Route path="/" element={<Home />}/>
+            {/* <Route path="/" element={<Layout />} >
               <Route index element={<Home />} />
               <Route path="/profile" element={<DoctorProfile />} />
               <Route path="/doctor/profile" element={<Profile />} />
@@ -27,7 +28,7 @@ const App = () => {
               <Route path="/prescription/list" element={<PrescriptionReport/>} />
               <Route path="/update/profile" element={<ProfileUpdate/>} />
               <Route path="/create/call" element={<PrescriptionFormContent/>} />
-            </Route>
+            </Route> */}
           </Route>
           
           <Route element={<PublicRoute />}>
