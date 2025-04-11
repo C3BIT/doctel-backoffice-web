@@ -55,7 +55,7 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
             <div className="form-group">
               <label>Age</label>
               <input
-                type="number"
+                type="text"
                 name="age"
                 value={formData.age}
                 onChange={handleChange}
@@ -92,7 +92,7 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
                 placeholder="Weight"
               />
             </div>
-
+{/* 
             <div className="form-group">
               <label>Temperature (°F)</label>
               <input
@@ -102,7 +102,7 @@ const PrescriptionForm = ({ formData, handleChange, isGenerating, onSubmit }) =>
                 className="red-input"
                 placeholder="Temp °F"
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

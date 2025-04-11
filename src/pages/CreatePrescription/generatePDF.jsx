@@ -16,7 +16,6 @@ const parsePrescription = (text) => {
 
 const formatSectionContent = (htmlContent) => {
   if (!htmlContent) return "";
-  // Convert paragraphs to bullet points while preserving other formatting
   return htmlContent
     .replace(/<p[^>]*>/gi, '• ')
     .replace(/<\/p>/gi, '\n')
@@ -117,147 +116,153 @@ const generatePDF = async (formData) => {
 
 
 
-<div style="
-  background-image: url(${headerlogoSvg});
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  padding: 0px 20px 20px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  height:150px
-">
-  <div style="
-    background-color: white;
-    border-radius: 50%;
-    width: 150px;
-    height: 150px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 5px solid #203A71;
-    position: absolute;
-    left: 40px;
-    top: 20px;
-    z-index: 2;
-    margin-top: 15px;
-  ">
-    <img src="${logo}" alt="DOCTEL Logo" style="width: 80px; height: 80px;" />
-  </div>
-  <div style="margin-left: 250px; flex: 1;">
-    <div style="font-size: 20px; font-weight: 400; margin-bottom: 5px;">${doctorName}</div>
-    <div style="font-size: 9px; margin: 3px 0; color:#070707;"> ${doctorQualifications}</div>
-    <div style="font-size: 9px; margin: 3px 0; color:#070707;"> ${specialization}</div>
-    <div style="font-size: 9px; margin: 3px 0; color:#070707;">${clinicAddress} </div>
-  </div>
-</div>
-
-
-    <div style="display: flex; justify-content: flex-end; padding: 15px 20px; background: white;">
-      <div style="display: flex; gap: 30px;">
-        <div style="display: flex; align-items: center; gap: 5px; font-size: 12px;">
-          <span style="font-weight: 400; color: #20ACE2; font-size: 12px;">Date :</span>
-          <span style="font-weight: 400; color:#1A1818; font-size: 12px;">09 June 2024</span>
+        <div style="
+          background-image: url(${headerlogoSvg});
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          padding: 0px 20px 20px;
+          position: relative;
+          display: flex;
+          align-items: center;
+          height:120px
+        ">
+          <div style="
+            background-color: white;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 5px solid #203A71;
+            position: absolute;
+            left: 40px;
+            top: 20px;
+            z-index: 2;
+            margin-top: 15px;
+          ">
+            <img src="${logo}" alt="DOCTEL Logo" style="width: 80px; height: 80px;" />
+          </div>
+          <div style="margin-left: 250px; flex: 1;">
+            <div style="font-size: 20px; font-weight: 400; margin-bottom: 5px;">${doctorName}</div>
+            <div style="font-size: 9px; margin: 3px 0; color:#070707;"> ${doctorQualifications}</div>
+            <div style="font-size: 9px; margin: 3px 0; color:#070707;"> ${specialization}</div>
+            <div style="font-size: 9px; margin: 3px 0; color:#070707;">${clinicAddress} </div>
+          </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 5px;">
-          <span style="font-weight: 400; color: #20ACE2; font-size: 12px;">Time :</span>
-          <span style="font-weight: 400; color:#1A1818; font-size: 12px;">02:25 PM</span>
+
+
+            <div style="display: flex; justify-content: flex-end; padding: 15px 20px; background: white;">
+              <div style="display: flex; gap: 30px;">
+                <div style="display: flex; align-items: center; gap: 5px; font-size: 12px;">
+                  <span style="font-weight: 400; color: #20ACE2; font-size: 12px;">Date :</span>
+                  <span style="font-weight: 400; color:#1A1818; font-size: 12px;">09 June 2024</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                  <span style="font-weight: 400; color: #20ACE2; font-size: 12px;">Time :</span>
+                  <span style="font-weight: 400; color:#1A1818; font-size: 12px;">02:25 PM</span>
+                </div>
+              </div>
+            </div>
+
+
+        <div style="width: 90%; margin: 0 auto; margin-top: 10px;">
+            <div style="background-color: #F1F0F0; padding: 5px 10px 15px 10px; display: flex; flex-direction: row; align-items: center; border-radius: 6px; justify-content: space-between; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; min-width: fit-content;">
+                <span style="font-weight: 400; color: #0465AF; margin-right: 5px; font-size: 12px;">Patient:</span>
+                <span style="color: #1A1818; font-size: 12px;">${formData.patientName || "Not provided"}</span>
+              </div>
+            
+              ${formData.gender ? `
+                <div style="display: flex; align-items: center; min-width: fit-content;">
+                  <span style="font-weight: 400; color:#0465AF; margin-right: 5px; font-size: 12px;">Gender:</span>
+                  <span style="color:#1A1818; font-size: 12px;">${formData.gender}</span>
+                </div>
+              ` : ''}
+              ${formData.age ? `
+                <div style="display: flex; align-items: center; min-width: fit-content;">
+                  <span style="font-weight: 400; color:#0465AF; margin-right: 5px; font-size: 12px;">Age:</span>
+                  <span style="color:#1A1818; font-size: 12px;">${formData.age} Year(s)</span>
+                </div>
+              ` : ''}
+              ${formData.weight ? `
+                <div style="display: flex; align-items: center; min-width: fit-content;">
+                  <span style="font-weight: 400; color:#0465AF; margin-right: 5px; font-size: 12px;">Weight:</span>
+                  <span style="color:#1A1818; font-size: 12px;">${formData.weight}kg</span>
+                </div>
+              ` : ''}
+            </div>
         </div>
+
+
+      <div style="
+        color: #0057a8;
+        font-weight: bold;
+        margin-left:40px;
+        margin-top:20px
+      ">
+      <img src="${RxLogo}" alt="Rx" />
       </div>
-    </div>
-
-
-   <div style="width: 90%; margin: 0 auto; margin-top: 30px;">
-    <div style="background-color: #F1F0F0; padding: 10px 10px 20px 10px; display: flex; flex-direction: column; border-radius: 6px;">
-      <div style="margin-bottom: 15px; text-align: start;">
-        <span style="font-weight: 400; color: #0465AF; margin-right: 5px; font-size: 12px;"">Patient:</span>
-        <span style="color: #0465AF; font-size: 12px;"">${formData.patientName || "Not provided"}</span>
-      </div>
-      <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
-        ${formData.gender ? `
-          <div style="display: flex; align-items: center;">
-            <span style="font-weight: 400; color:#1A1818; margin-right: 5px; font-size: 12px;"">Gender:</span>
-            <span style="color:#1A1818; font-size: 12px;"">${formData.gender}</span>
-          </div>
-        ` : ''}
-        ${formData.age ? `
-          <div style="display: flex; align-items: center;">
-            <span style="font-weight: 400; color:#1A1818; margin-right: 5px; font-size: 12px;"">Age:</span>
-            <span style="color:#1A1818; font-size: 12px;"">${formData.age} Year(s)</span>
-          </div>
-        ` : ''}
-        ${formData.weight ? `
-          <div style="display: flex; align-items: center;">
-            <span style="font-weight: 400; color:#1A1818; margin-right: 5px; font-size: 12px;">Weight:</span>
-            <span style="color:#1A1818; font-size: 12px;">${formData.weight}kg</span>
-          </div>
-        ` : ''}
-      </div>
-    </div>
-  </div>
-
-
-<div style="
-  color: #0057a8;
-  font-weight: bold;
-  margin-left:40px;
-  margin-top:40px
-">
- <img src="${RxLogo}" alt="Rx" />
-</div>
 
   
 
 
-${formData.presentCondition ? `
-  <div style="margin-top: 30px;">
-    <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
-      Problem / Issue
-    </h3>
-    <div style="font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 40px; padding-top:10px;">
-      ${formatSectionContent(formData.presentCondition)}
-    </div>
-  </div>
-` : ""}
+      ${formData.presentCondition ? `
+        <div style="margin-top: 15px;">
+          <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
+            Problem / Issue
+          </h3>
+          <div style="font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 40px; padding-top:10px;">
+          
+            ${parsePrescription(formData.presentCondition)
+              .map(condition => `<div style="margin-bottom: 8px;">${condition}</div>`)
+              .join("")}
+          </div>
+        </div>
+      ` : ""}
 
 
 
-${formData.prescription ? `
-  <h3 style="color: #0063AF; margin: 20px 0 0 40px; font-size: 14px; font-weight: 700;">Medicine :</h3>
-  <div style="padding-left: 40px; padding-top:10px; margin-top:10px; font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818;">
-    ${parsePrescription(formData.prescription)
-        .map(medicine => `<div style="margin-bottom: 8px;">${medicine}</div>`)
-        .join("")}
-  </div>
-` : ""}
+      ${formData.prescription ? `
+        <h3 style="color: #0063AF; margin: 15px 0 0 40px; font-size: 14px; font-weight: 700;">Medicine :</h3>
+        <div style="padding-left: 40px; padding-top:10px; margin-top:10px; font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818;">
+          ${parsePrescription(formData.prescription)
+              .map(medicine => `<div style="margin-bottom: 8px;">${medicine}</div>`)
+              .join("")}
+        </div>
+      ` : ""}
    
 
 
-${formData.advice ? `
-  <div style="margin-top: 30px;">
-    <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
-      Advice :
-    </h3>
-    <div style="font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 40px; padding-top:10px;">
-      ${formatSectionContent(formData.advice)}
-    </div>
-  </div>
-` : ""}
+      ${formData.advice ? `
+        <div style="margin-top: 15px;">
+          <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
+            Advice :
+          </h3>
+          <div style="font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 40px; padding-top:10px;">
+                ${parsePrescription(formData.advice)
+              .map(adv => `<div style="margin-bottom: 8px;">${adv}</div>`)
+              .join("")}
+          </div>
+        </div>
+      ` : ""}
  
 
 
-${formData.investigation ? `
-  <div style="margin-top: 30px;">
-    <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
-      Investigation :
-    </h3>
-    <div style="font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 40px; padding-top:10px;">
-      ${formatSectionContent(formData.investigation)}
-    </div>
-  </div>
-` : ""}
-`;
+      ${formData.investigation ? `
+        <div style="margin-top: 15px;">
+          <h3 style="color: #0465AF; font-size: 14px; font-weight: 700; padding-left: 40px;">
+            Investigation :
+          </h3>
+          <div style="font-size: 12px; font-weight: 400; line-height: 1.6; color: #1A1818; padding-left: 40px; padding-top:10px;">
+            ${parsePrescription(formData.investigation)
+              .map(invs => `<div style="margin-bottom: 8px;">${invs}</div>`)
+              .join("")}
+          </div>
+        </div>
+      ` : ""}
+      `;
 
 
 
