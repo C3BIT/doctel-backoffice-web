@@ -20,6 +20,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -70,6 +71,7 @@ const StatusBadge = styled('span')(({ status }) => ({
 }));
 
 const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
+    const { userDetails } = useSelector((state) => state.user);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [statusAnchorEl, setStatusAnchorEl] = useState(null);
@@ -154,8 +156,8 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
             alignItems: 'center',
           }}>
             <Avatar 
-              src="../assets/avatar.png" 
-              alt="Dr. Musfiqur Rahman"
+              src={userDetails?.profileImage}
+              alt="Profile"
               sx={{ 
                 width: 40, 
                 height: 40,
@@ -177,7 +179,7 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
                     lineHeight: '20px'
                   }}
                 >
-                  Dr. Musfiqur Rahman
+                {userDetails?.firstName || ""} {userDetails?.lastName || ""}
                 </Typography>
                 <Box 
                   sx={{ 

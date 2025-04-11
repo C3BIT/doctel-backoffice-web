@@ -4,8 +4,7 @@ import {
   Box, 
   useTheme, 
   useMediaQuery, 
-  CircularProgress,
-  CssBaseline
+  CircularProgress
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Navbar from './Navbar';
@@ -60,7 +59,6 @@ const AppLayout = () => {
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      <CssBaseline />
       <Navbar 
         handleDrawerToggle={handleDrawerToggle} 
         drawerWidth={isMobile ? 0 : sidebarOpen ? drawerWidth : collapsedDrawerWidth} 

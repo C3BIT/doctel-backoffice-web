@@ -22,6 +22,8 @@ import WithdrawIcon from '../assets/sidebar/withdraw.svg';
 import SettingsIcon from '../assets/sidebar/settings.svg';
 import SignOutIcon from '../assets/sidebar/sign-out.svg';
 import DoctelLogo from '../assets/sidebar/doctel-logo.svg';
+import { useDispatch } from 'react-redux';
+import { logout } from '../redux/auth/authSlice';
 
 const navigationItems = [
   { id: 'dashboard', label: 'Dashboard', icon: DashboardIcon, path: '/dashboard' },
@@ -37,6 +39,7 @@ const drawerWidth = 240;
 const collapsedDrawerWidth = 70;
 
 const Sidebar = ({ open, mobileOpen, handleDrawerToggle, isMobile }) => {
+  const dispatch = useDispatch();
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,7 +52,7 @@ const Sidebar = ({ open, mobileOpen, handleDrawerToggle, isMobile }) => {
   };
 
   const handleLogout = () => {
-    navigate('/login');
+    dispatch(logout());
   };
 
   const isActive = (path) => location.pathname === path || (path === '/dashboard' && location.pathname === '/');
