@@ -12,13 +12,14 @@ import {
   useMediaQuery,
   Menu,
   MenuItem,
-  Tooltip
+  Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import PropTypes from 'prop-types';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -127,84 +128,93 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
       <Toolbar sx={{ 
         minHeight: '64px !important',
         paddingLeft: { xs: '16px', md: '24px' },
-        paddingRight: { xs: '16px', md: '24px' }
+        paddingRight: { xs: '16px', md: '24px' },
+        display: 'flex',
+        justifyContent: 'space-between'
       }}>
-        {isMobile && (
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ 
-              mr: 2, 
-              color: '#424242',
-              display: { md: 'none' } 
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-        )}
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {isMobile && (
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ 
+                mr: 2, 
+                color: '#424242',
+                display: { md: 'none' } 
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
 
-        {/* Left Side - Profile */}
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center',
-          mr: 2
-        }}>
-          <Avatar 
-            src="/path-to-profile-image.jpg" 
-            alt="Dr. Musfiqur Rahman"
-            sx={{ 
-              width: 40, 
-              height: 40,
-              borderRadius: '8px'
-            }}
-          />
-          {!isMobile && (
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column',
-              ml: '12px'
-            }}>
-              <Typography 
-                variant="subtitle2" 
-                component="div" 
-                sx={{ 
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  lineHeight: '20px'
-                }}
-              >
-                Dr. Musfiqur Rahman
-              </Typography>
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center',
-                  cursor: 'pointer'
-                }}
-                onClick={handleStatusClick}
-              >
-                <StatusBadge status={status} />
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center',
+          }}>
+            <Avatar 
+              src="/path-to-profile-image.jpg" 
+              alt="Dr. Musfiqur Rahman"
+              sx={{ 
+                width: 40, 
+                height: 40,
+                borderRadius: '8px'
+              }}
+            />
+            {!isMobile && (
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column',
+                ml: '12px'
+              }}>
                 <Typography 
-                  variant="caption" 
+                  variant="subtitle2" 
                   component="div" 
                   sx={{ 
-                    color: getStatusColor(),
-                    fontSize: '12px',
-                    lineHeight: '16px'
+                    fontWeight: 600,
+                    fontSize: '14px',
+                    lineHeight: '20px'
                   }}
                 >
-                  {getStatusText()}
+                  Dr. Musfiqur Rahman
                 </Typography>
-                <KeyboardArrowDownIcon sx={{ color: '#9E9E9E', fontSize: '14px', ml: 0.5 }} />
+                <Box 
+                  sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    cursor: 'pointer'
+                  }}
+                  onClick={handleStatusClick}
+                >
+                  <StatusBadge status={status} />
+                  <Typography 
+                    variant="caption" 
+                    component="div" 
+                    sx={{ 
+                      color: getStatusColor(),
+                      fontSize: '12px',
+                      lineHeight: '16px'
+                    }}
+                  >
+                    {getStatusText()}
+                  </Typography>
+                  <KeyboardArrowDownIcon sx={{ color: '#9E9E9E', fontSize: '14px', ml: 0.5 }} />
+                </Box>
               </Box>
-            </Box>
-          )}
+            )}
+          </Box>
         </Box>
 
-        {/* Center - Search Bar */}
-        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ 
+          position: 'absolute', 
+          left: '50%', 
+          transform: 'translateX(-50%)',
+          display: 'flex', 
+          justifyContent: 'center',
+          width: { xs: '40%', sm: 'auto' },
+          zIndex: {xs: -1, sm: 'auto'}
+        }}>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
@@ -216,15 +226,19 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
           </Search>
         </Box>
         
-        {/* Right Side - Notifications */}
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          pr: {xs: 0, sm: 2}
+        }}>
           <Tooltip title="Notifications">
             <IconButton 
               size="medium"
               aria-label="show notifications" 
               sx={{ 
-                color: '#424242',
-                backgroundColor: '#F5F5F5',
+                color: '#FFA412',
+                backgroundColor: '#FFFAF1',
                 '&:hover': {
                   backgroundColor: '#EEEEEE'
                 }
@@ -239,7 +253,6 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
         </Box>
       </Toolbar>
       
-      {/* Status Menu Dropdown */}
       <Menu
         anchorEl={statusAnchorEl}
         open={Boolean(statusAnchorEl)}
@@ -280,7 +293,6 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
         </MenuItem>
       </Menu>
 
-      {/* Notification Menu Dropdown */}
       <Menu
         anchorEl={notificationAnchorEl}
         open={Boolean(notificationAnchorEl)}
@@ -323,6 +335,14 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
       </Menu>
     </AppBar>
   );
+};
+Navbar.propTypes = {
+  drawerWidth: PropTypes.number,
+  handleDrawerToggle: PropTypes.func.isRequired
+};
+
+Navbar.defaultProps = {
+  drawerWidth: 240
 };
 
 export default Navbar;
