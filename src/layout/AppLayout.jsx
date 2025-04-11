@@ -1,9 +1,7 @@
 import { useState, Suspense } from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { 
   Box, 
-  Toolbar, 
-  Container, 
   useTheme, 
   useMediaQuery, 
   CircularProgress,
@@ -16,36 +14,27 @@ import { useSelector } from 'react-redux';
 
 const drawerWidth = 240;
 const collapsedDrawerWidth = 70;
+const navbarHeight = 64;
 
-// Main content area that adjusts based on sidebar state
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' && prop !== 'isMobile' })(
   ({ theme, open, isMobile }) => ({
     flexGrow: 1,
-    padding: theme.spacing(3),
-    marginLeft: isMobile ? 0 : collapsedDrawerWidth,
-    width: isMobile ? '100%' : `calc(100% - ${open ? drawerWidth : collapsedDrawerWidth}px)`,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    ...(open && {
-      marginLeft: isMobile ? 0 : drawerWidth,
-      width: isMobile ? '100%' : `calc(100% - ${drawerWidth}px)`,
-      transition: theme.transitions.create(['width', 'margin'], {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    }),
+    width: isMobile ? '100%' : `calc(100% - ${open ? drawerWidth : collapsedDrawerWidth}px)`,
+    marginLeft: isMobile ? 0 : open ? drawerWidth : collapsedDrawerWidth,
+    marginTop: navbarHeight,
     [theme.breakpoints.down('md')]: {
       marginLeft: 0,
       width: '100%',
-      padding: theme.spacing(2),
     },
   }),
 );
 
 const LoadingFallback = () => (
-  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
     <CircularProgress />
   </Box>
 );
@@ -56,7 +45,6 @@ const AppLayout = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const location = useLocation();
 
   const handleDrawerToggle = () => {
     if (isMobile) {
@@ -73,29 +61,27 @@ const AppLayout = () => {
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <CssBaseline />
+      <Navbar 
+        handleDrawerToggle={handleDrawerToggle} 
+        drawerWidth={isMobile ? 0 : sidebarOpen ? drawerWidth : collapsedDrawerWidth} 
+      />
       
-      {/* Sidebar first - takes full height */}
       <Sidebar 
         open={sidebarOpen}
         mobileOpen={mobileOpen} 
         handleDrawerToggle={handleDrawerToggle}
         isMobile={isMobile}
+        drawerWidth={drawerWidth}
+        collapsedWidth={collapsedDrawerWidth}
       />
       
-      {/* Content area with Navbar at top */}
       <Main open={sidebarOpen} isMobile={isMobile}>
-        {/* Navbar inside the main content area */}
-        <Navbar handleDrawerToggle={handleDrawerToggle} />
-        
-        {/* Content container */}
         <Box 
           sx={{ 
-            pt: 2, 
-            px: { xs: 2, sm: 3 }, 
-            pb: 3, 
-            height: 'calc(100vh - 64px)',
+            height: `calc(100vh - ${navbarHeight}px)`,
             overflow: 'auto',
-            backgroundColor: '#f5f8fa'
+            backgroundColor: '#f5f8fa',
+            p: { xs: 2, sm: 3 }
           }}
         >
           <Suspense fallback={<LoadingFallback />}>

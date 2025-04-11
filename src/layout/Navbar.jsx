@@ -154,7 +154,7 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
             alignItems: 'center',
           }}>
             <Avatar 
-              src="/path-to-profile-image.jpg" 
+              src="../assets/avatar.png" 
               alt="Dr. Musfiqur Rahman"
               sx={{ 
                 width: 40, 
