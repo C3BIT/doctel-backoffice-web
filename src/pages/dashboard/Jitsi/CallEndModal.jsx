@@ -46,7 +46,7 @@ const CallEndModal = ({ callTarget, jitsiRoom, callDuration, onClose }) => {
         <Box>
           <Typography variant="h6">{callTarget.name}</Typography>
           <Typography variant="body2" color="text.secondary">
-            ID: {callTarget.id}
+            Phone: {callTarget.phone}
           </Typography>
         </Box>
       </Box>
@@ -82,9 +82,6 @@ const CallEndModal = ({ callTarget, jitsiRoom, callDuration, onClose }) => {
         </Box>
 
         <Box sx={{ p: 3, bgcolor: "#f8f9fa", width: "100%", maxWidth: 400 }}>
-          <Typography variant="body2" sx={{ mb: 1 }}>
-            <strong>Room:</strong> {jitsiRoom}
-          </Typography>
           <Typography variant="body2" sx={{ mb: 1 }}>
             <strong>Date:</strong> {new Date().toLocaleDateString()}
           </Typography>
