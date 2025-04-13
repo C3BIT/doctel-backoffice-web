@@ -13,7 +13,7 @@ const Prescription = lazy(() => import('../pages/PrescriptionReport/Prescription
 // const CallHistory = lazy(() => import('./pages/CallHistory'));
 // const OnlineChat = lazy(() => import('./pages/OnlineChat'));
 // const Withdraw = lazy(() => import('./pages/Withdraw'));
-// const Settings = lazy(() => import('./pages/Settings'));
+const Settings = lazy(() => import('../pages/settings/Settings'));
 const NotFound = lazy(() => import('../pages/NotFound/NotFound'));
 const Login = lazy(() => import('../pages/Login/Login'));
 const OtpVerify = lazy(() => import('../pages/auth/OtpVerify'));
@@ -50,10 +50,10 @@ const Router  = [
     //     path: 'withdraw',
     //     element: <ProtectedRoute component={Withdraw} />,
     //   },
-    //   {
-    //     path: 'settings',
-    //     element: <ProtectedRoute component={Settings} />,
-    //   },
+      {
+        path: 'settings',
+        element: <Settings />,
+      },
       {
         path: 'profile',
         element: <DoctorProfile />,
