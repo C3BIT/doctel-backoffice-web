@@ -75,7 +75,7 @@ const LoginScreen = () => {
       navigate('/');
     }
     
-    if (success) {
+    if (success && !isAuthenticated) {
       setShowOtpVerify(true);
       showToast('success', 'OTP sent successfully');
     }

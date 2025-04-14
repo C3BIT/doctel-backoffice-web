@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   Box,
@@ -21,6 +21,7 @@ const OtpVerificationForm = ({ phone, handleClear, isLoading }) => {
   const [token, setToken] = useState('');
   const [timer, setTimer] = useState(OTP_RESEND_TIMEOUT);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
+  const otpRef = useRef(null); 
 
   const handleVerify = () => {
     const trimmedToken = token?.toString().trim();
@@ -65,6 +66,13 @@ const OtpVerificationForm = ({ phone, handleClear, isLoading }) => {
     setIsInputDisabled(timer === 0);
   }, [timer]);
 
+  useEffect(() => {
+    if (otpRef.current) {
+      const input = otpRef.current.querySelector('input');
+      input?.focus();
+    }
+  }, []);
+
   return (
     <Box sx={{ mb: 4 }}>
       <Typography
@@ -86,6 +94,7 @@ const OtpVerificationForm = ({ phone, handleClear, isLoading }) => {
       </Typography>
 
       <Box
+        ref={otpRef}
         sx={{
           display: 'flex',
           justifyContent: 'center',
