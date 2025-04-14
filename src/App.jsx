@@ -3,6 +3,8 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import Router from './routes/Router';
 import { useRoutes } from 'react-router-dom';
 import { TitleProvider } from './contexts/TitleContext';
+import { Toaster } from 'react-hot-toast';
+import { PrimeReactProvider } from 'primereact/api';
 
 const theme = createTheme({
   typography: {
@@ -47,10 +49,23 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <TitleProvider>
+      <PrimeReactProvider>
         <CssBaseline />
         <Box className="App">
           {routing}
         </Box>
+        <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 2000,
+          style: {
+            borderRadius: '8px',
+            padding: '12px 16px',
+            fontSize: '14px',
+          },
+        }}
+      />
+      </PrimeReactProvider>
       </TitleProvider>
     </ThemeProvider>
   );

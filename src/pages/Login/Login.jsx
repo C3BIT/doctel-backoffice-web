@@ -4,20 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Container,
-  Typography,
-  TextField,
-  Button,
-  Divider,
-  Link,
-  useMediaQuery,
-  InputAdornment,
-  CircularProgress,
-  Paper
+  Paper,
+  useMediaQuery
 } from '@mui/material';
-import { errorClean, savePhone, sendOtp } from '../../redux/auth/authSlice';
-import logo from '../../assets/images/Logo.svg';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { errorClean, resetState } from '../../redux/auth/authSlice';
 import Loader from '../../components/loader/Loader';
+import showToast from '../../utils/toast';
+import HeaderSection from './HeaderSection';
+import TitleSection from './TitleSection';
+import PhoneLoginForm from './PhoneLoginForm';
+import OtpVerificationForm from './OtpVerificationForm';
+import FooterSection from './FooterSection';
 
 const theme = createTheme({
   typography: {
@@ -34,41 +32,54 @@ const theme = createTheme({
       primary: '#375560',
     },
   },
+  components: {
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#0052A8',
+          },
+        },
+      },
+    },
+  },
 });
 
-const Login = () => {
+const LoginScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { isAuthenticated, isLoading, success, error, errorMessage } = useSelector((state) => state.user);
 
+  const [showOtpVerify, setShowOtpVerify] = useState(false);
   const [phone, setPhone] = useState('');
-  const { isLoading, success, error, errorMessage } = useSelector((state) => state.user);
 
-  const handlePhoneChange = (e) => {
-    const input = e.target.value;
-    if (input.length <= 11) {
-      setPhone(input);
-    }
-  };
-
-  const handleLogin = async () => {
-    if (phone.length === 11) {
-      dispatch(savePhone(phone));
-      dispatch(sendOtp(phone));
-    }
+  const handleClear = () => {
+    setShowOtpVerify(false);
+    dispatch(resetState());
+    showToast('info', 'Verification cancelled. You can try again.');
   };
 
   useEffect(() => {
     if (error) {
+      showToast('error', errorMessage || 'An error occurred');
       const timer = setTimeout(() => {
         dispatch(errorClean());
-      }, 2000);
+      }, 5000);
       return () => clearTimeout(timer);
     }
-    if (success) {
-      navigate('/verify-otp');
+  }, [error, errorMessage, dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
     }
-  }, [navigate, success, dispatch, error]);
+    
+    if (success && !isAuthenticated) {
+      setShowOtpVerify(true);
+      showToast('success', 'OTP sent successfully');
+    }
+  }, [isAuthenticated, success, navigate]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -95,160 +106,30 @@ const Login = () => {
               width: '100%'
             }}
           >
-            <Box sx={{ mb: { xs: 4, sm: 5, md: 6 }, alignSelf: 'flex-start' }}>
-              <img
-                src={logo}
-                alt="Doctor Logo"
-                style={{
-                  width: isMobile ? '80px' : '110px',
-                  height: 'auto'
-                }}
+            <HeaderSection isMobile={isMobile} />
+            <TitleSection isMobile={isMobile} showOtpVerify={showOtpVerify} />
+            
+            {!showOtpVerify ? (
+              <PhoneLoginForm 
+                phone={phone}
+                setPhone={setPhone}
+                setShowOtpVerify={setShowOtpVerify}
+                isLoading={isLoading}
               />
-            </Box>
-            <Box sx={{ mb: { xs: 3, sm: 4 } }}>
-              <Typography
-                variant={isMobile ? "h6" : "h5"}
-                component="h2"
-                sx={{
-                  display: 'inline-block',
-                  borderBottom: `2px solid #0052A8`,
-                  paddingBottom: 0.5,
-                  marginBottom: 2,
-                  fontSize: { xs: '24px', sm: '30px', md: '35px' },
-                  fontWeight: 700,
-                  color: '#0052A8'
-                }}
-              >
-                Login
-              </Typography>
-
-              <Typography
-                variant={isMobile ? "h6" : "h3"}
-                component="h3"
-                sx={{
-                  fontWeight: 700,
-                  mb: 0.5,
-                  color: '#375560',
-                  textAlign: 'left',
-                  fontSize: { xs: '24px', sm: '30px', md: '35px' },
-                  lineHeight: { xs: '32px', sm: '42px', md: '52px' },
-                  textTransform: 'capitalize',
-                  letterSpacing: '0%'
-                }}
-              >
-                Premium Telemedicine Platform
-              </Typography>
-
-              <Typography
-                variant="h6"
-                sx={{
-                  mb: 3,
-                  color: '#0052A8',
-                  fontWeight: 700,
-                  textAlign: 'left',
-                  fontSize: { xs: '16px', sm: '19px', md: '22px' },
-                  lineHeight: '22px',
-                  letterSpacing: '0%'
-                }}
-              >
-                Video consultation 24 x7
-              </Typography>
-            </Box>
-
-            <Box sx={{ mb: 4 }}>
-              <Typography
-                variant="body2"
-                color="#375560"
-                sx={{
-                  mb: 2,
-                  textAlign: 'left',
-                  fontSize: { xs: '0.875rem', sm: '0.9rem', md: '1rem' }
-                }}
-              >
-                Talk to a doctor, therapist or medical expert anywhere you are by phone or video.
-              </Typography>
-
-              <TextField
-                fullWidth
-                placeholder="017 x xxxxxxxx"
-                value={phone}
-                onChange={handlePhoneChange}
-                margin="normal"
-                variant="outlined"
-                sx={{
-                  mb: 3,
-                  mt: 2,
-                  '& .MuiOutlinedInput-root': {
-                    backgroundColor: '#F9F9F9',
-                    '&:hover fieldset': {
-                      borderColor: '#0052A8',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#0052A8',
-                    },
-                  }
-                }}
-                InputProps={{
-                  startAdornment: isLoading ? (
-                    <InputAdornment position="start">
-                      <CircularProgress size={20} />
-                    </InputAdornment>
-                  ) : null,
-                }}
+            ) : (
+              <OtpVerificationForm
+                phone={phone}
+                handleClear={handleClear}
+                isLoading={isLoading}
               />
-
-              <Button
-                fullWidth
-                variant="contained"
-                onClick={handleLogin}
-                disabled={phone.length !== 11 || isLoading}
-                sx={{
-                  py: 1.5,
-                  textTransform: 'none',
-                  fontWeight: 500,
-                  fontSize: { xs: '0.9rem', sm: '1rem' },
-                  backgroundColor: phone.length === 11 && !isLoading ? '#0052A8' : undefined,
-                  '&:hover': {
-                    backgroundColor: phone.length === 11 && !isLoading ? '#00438a' : undefined,
-                  }
-                }}
-              >
-                Login Now
-              </Button>
-
-              {error && (
-                <Typography
-                  variant="body2"
-                  color="error"
-                  sx={{ mt: 1, textAlign: 'left' }}
-                >
-                  {errorMessage}
-                </Typography>
-              )}
-            </Box>
-
-            <Box sx={{ mt: { xs: 4, sm: 5, md: 6 } }}>
-              <Divider sx={{ my: 2 }} />
-              <Box sx={{ textAlign: 'left' }}>
-                <Typography variant="body2">
-                  <Link
-                    href="#"
-                    color="#0052A8"
-                    underline="hover"
-                    sx={{ fontWeight: 500 }}
-                  >
-                    Learn more
-                  </Link>
-                  <Typography component="span" variant="body2" color="#375560">
-                    {' '}about MyDoc
-                  </Typography>
-                </Typography>
-              </Box>
-            </Box>
+            )}
+            
+            <FooterSection />
           </Paper>
         </Container>
       </Box>
     </ThemeProvider>
   );
 };
-export default Login;
+
+export default LoginScreen;
