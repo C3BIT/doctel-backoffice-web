@@ -157,8 +157,8 @@ export default function CallDataTable() {
                                             fontWeight: 500,
                                             fontSize: '13px',
                                             color: row.status === 'Completed' ? '#4ade80' : '#f97316',
-                                            bgcolor: row.status === 'Completed' ? '#dcfce7' : '#ffedd5',
-                                            border: row.status === 'Completed' ? '1px solid #4ade80' : '1px solid #f97316',
+                                            bgcolor: row.status === 'Completed' ? '#F0FDF4' : '#ffedd5',
+                                            border: row.status === 'Completed' ? '1px solid #00E58F' : '1px solid #f97316',
                                             '& .MuiChip-label': { px: 2 }
                                         }}
                                     />

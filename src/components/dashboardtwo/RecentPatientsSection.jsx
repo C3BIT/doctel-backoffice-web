@@ -52,7 +52,9 @@ const RecentPatientsSection = () => {
                         </Typography>
                     </Box>
                     <StatusChip
-                        bgcolor={patient.status === 'Completed' ? '#4caf50' : '#ff9800'}
+                      sx={{  color: patient.status === 'Completed' ? '#4ade80' : '#f97316',
+                        bgcolor: patient.status === 'Completed' ? '#F0FDF4' : '#ffedd5',
+                        border: patient.status === 'Completed' ? '1px solid #00E58F' : '1px solid #f97316',}}
                     >
                         {patient.status}
                     </StatusChip>
