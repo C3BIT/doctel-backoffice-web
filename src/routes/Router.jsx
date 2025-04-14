@@ -10,13 +10,14 @@ import PrescriptionFormContent from '../pages/CreatePrescription/PrescriptionFor
 const Dashboard = lazy(() => import('../pages/Home/Home'));
 
 const Prescription = lazy(() => import('../pages/PrescriptionReport/PrescriptionReport'));
-// const CallHistory = lazy(() => import('./pages/CallHistory'));
+const CallHistory = lazy(() => import('../pages/CallHistory/CallHistory'));
 // const OnlineChat = lazy(() => import('./pages/OnlineChat'));
 // const Withdraw = lazy(() => import('./pages/Withdraw'));
 const Settings = lazy(() => import('../pages/settings/Settings'));
 const NotFound = lazy(() => import('../pages/NotFound/NotFound'));
 const Login = lazy(() => import('../pages/Login/Login'));
 const OtpVerify = lazy(() => import('../pages/auth/OtpVerify'));
+import ProtectedRoute from './ProtectedRoute';
 
 
 
@@ -38,10 +39,10 @@ const Router  = [
         path: '/prescription/list',
         element: <Prescription />,
       },
-    //   {
-    //     path: 'call-history',
-    //     element: <ProtectedRoute component={CallHistory} />,
-    //   },
+      {
+        path: 'call-history',
+        element: <CallHistory />,
+      },
     //   {
     //     path: 'online-chat',
     //     element: <ProtectedRoute component={OnlineChat} />,
