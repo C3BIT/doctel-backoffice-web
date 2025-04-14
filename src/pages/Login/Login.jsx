@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -21,11 +20,13 @@ import {
   savePhone, 
   sendOtp, 
   createPatientLogin,
+  resetState,
 } from '../../redux/auth/authSlice';
 import logo from '../../assets/images/Logo.svg';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Loader from '../../components/loader/Loader';
 import showToast from '../../utils/toast';
+import { createRef } from 'react';
 
 const theme = createTheme({
   typography: {
@@ -57,6 +58,7 @@ const theme = createTheme({
 
 const OTP_RESEND_TIMEOUT = 150;
 const OTP_COOLDOWN_PERIOD = 30000;
+const OTP_LENGTH = 4;
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -66,17 +68,16 @@ const Login = () => {
 
   const [showOtpVerify, setShowOtpVerify] = useState(false);
   const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '']);
+  const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
   const [timer, setTimer] = useState(OTP_RESEND_TIMEOUT);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
   const [lastOtpRequest, setLastOtpRequest] = useState(0);
+  const [focusLocked, setFocusLocked] = useState(false);
 
-  const inputRefs = [
-    useRef(null),
-    useRef(null),
-    useRef(null),
-    useRef(null)
-  ];
+  const inputRefs = useRef([]);
+  useEffect(() => {
+    inputRefs.current = Array(OTP_LENGTH).fill().map((_, i) => inputRefs.current[i] || createRef());
+  }, []);
 
   const isValidPhone = (phone) => {
     return /^01[3-9]\d{8}$/.test(phone);
@@ -91,13 +92,14 @@ const Login = () => {
 
   const handleLogin = async () => {
     if (!isValidPhone(phone)) {
-      showToast('error', "Please enter a valid Bangladeshi phone number (e.g. 01712345678)")
+      showToast('error', "Please enter a valid Bangladeshi phone number (e.g. 01712345678)");
       return;
     }
 
     const now = Date.now();
     if (now - lastOtpRequest < OTP_COOLDOWN_PERIOD) {
-      showToast('error', (`Please wait ${Math.ceil((OTP_COOLDOWN_PERIOD - (now - lastOtpRequest)) / 1000)} seconds before requesting another OTP`))
+      const waitTime = Math.ceil((OTP_COOLDOWN_PERIOD - (now - lastOtpRequest)) / 1000);
+      showToast('error', `Please wait ${waitTime} seconds before requesting another OTP`);
       return;
     }
 
@@ -107,20 +109,56 @@ const Login = () => {
   };
 
   const handleOtpChange = (index, value) => {
-    if (value.length <= 1 && /^\d*$/.test(value)) {
+    if (value === '' || /^\d$/.test(value)) {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
       
-      if (value !== '' && index < 3) {
-        inputRefs[index + 1].current.focus();
+      if (value !== '' && index < OTP_LENGTH - 1) {
+        inputRefs.current[index + 1].current?.focus();
       }
     }
   };
 
+  const handleOtpPaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text/plain').trim();
+    
+    if (/^\d+$/.test(pastedData)) {
+      const digits = pastedData.split('').slice(0, OTP_LENGTH);
+      const newOtp = [...otp];
+      
+      digits.forEach((digit, index) => {
+        if (index < OTP_LENGTH) {
+          newOtp[index] = digit;
+        }
+      });
+      
+      setOtp(newOtp);
+      
+      const nextFocusIndex = Math.min(digits.length, OTP_LENGTH - 1);
+      inputRefs.current[nextFocusIndex].current?.focus();
+    }
+  };
+
   const handleOtpKeyDown = (index, e) => {
-    if (e.key === 'Backspace' && otp[index] === '' && index > 0) {
-      inputRefs[index - 1].current.focus();
+    if (e.key === 'Backspace') {
+      if (otp[index] === '' && index > 0) {
+        inputRefs.current[index - 1].current?.focus();
+        const newOtp = [...otp];
+        newOtp[index - 1] = '';
+        setOtp(newOtp);
+      } else if (otp[index] !== '') {
+        const newOtp = [...otp];
+        newOtp[index] = '';
+        setOtp(newOtp);
+      }
+    }
+    
+    if (e.key === 'ArrowLeft' && index > 0) {
+      inputRefs.current[index - 1].current?.focus();
+    } else if (e.key === 'ArrowRight' && index < OTP_LENGTH - 1) {
+      inputRefs.current[index + 1].current?.focus();
     }
   };
 
@@ -133,9 +171,13 @@ const Login = () => {
 
   const handleVerify = () => {
     const otpCode = otp.join('');
-    if (otpCode.length === 4) {
-      const data = { phone, otp: otpCode };
-      dispatch(createPatientLogin(data));
+    if (otpCode.length === OTP_LENGTH) {
+      const data = { phone: phone || localStorage.getItem("phone"), otp: otpCode };
+      if(data.phone && data.otp){
+        dispatch(createPatientLogin(data));
+      }
+    } else {
+      showToast('error', 'Please enter all digits of the OTP');
     }
   };
 
@@ -143,21 +185,40 @@ const Login = () => {
     if (timer === 0) {
       setTimer(OTP_RESEND_TIMEOUT);
       setIsInputDisabled(false);
-      setOtp(['', '', '', '']);
+      setOtp(Array(OTP_LENGTH).fill(''));
       dispatch(sendOtp(phone));
-      inputRefs[0].current.focus();
+      
+      setFocusLocked(true);
+      setTimeout(() => {
+        inputRefs.current[0].current?.focus();
+        setFocusLocked(false);
+      }, 100);
     }
   };
 
+  const handleClear = () => {
+    setShowOtpVerify(false);
+    setOtp(Array(OTP_LENGTH).fill(''));
+    setIsInputDisabled(false);
+    dispatch(resetState());
+    showToast('info', 'Verification cancelled. You can try again.');
+  };
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  };
+
   useEffect(() => {
-    if (showOtpVerify) {
-      const interval = setInterval(() => {
+    let interval;
+    if (showOtpVerify && timer > 0) {
+      interval = setInterval(() => {
         setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
       }, 1000);
-
-      return () => clearInterval(interval);
     }
-  }, [showOtpVerify]);
+    return () => clearInterval(interval);
+  }, [showOtpVerify, timer]);
 
   useEffect(() => {
     setIsInputDisabled(timer === 0);
@@ -165,12 +226,13 @@ const Login = () => {
 
   useEffect(() => {
     if (error) {
+      showToast('error', errorMessage || 'An error occurred');
       const timer = setTimeout(() => {
         dispatch(errorClean());
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [error, dispatch]);
+  }, [error, errorMessage, dispatch]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -181,14 +243,26 @@ const Login = () => {
       setShowOtpVerify(true);
       setTimer(OTP_RESEND_TIMEOUT);
       setIsInputDisabled(false);
+      setOtp(Array(OTP_LENGTH).fill(''));
+      
+      setFocusLocked(true);
+      setTimeout(() => {
+        inputRefs.current[0].current?.focus();
+        setFocusLocked(false);
+      }, 100);
+      
+      showToast('success', 'OTP sent successfully');
     }
-  }, [isAuthenticated, success, navigate]);
+  }, [isAuthenticated, success, navigate, dispatch]);
 
   useEffect(() => {
-    if (showOtpVerify && inputRefs[0].current) {
-      inputRefs[0].current.focus();
+    if (showOtpVerify && !focusLocked) {
+      const focusTimer = setTimeout(() => {
+        inputRefs.current[0].current?.focus();
+      }, 100);
+      return () => clearTimeout(focusTimer);
     }
-  }, [inputRefs, showOtpVerify]);
+  }, [showOtpVerify, focusLocked]);
 
   const HeaderSection = () => (
     <Box sx={{ mb: { xs: 4, sm: 5, md: 6 }, alignSelf: 'flex-start' }}>
@@ -336,7 +410,7 @@ const Login = () => {
           component="span"
           sx={{ color: '#0052A8', fontWeight: 500 }}
         >
-          {phone}
+          +88{phone || localStorage.getItem("phone")}
         </Typography>
       </Typography>
 
@@ -349,32 +423,43 @@ const Login = () => {
         {otp.map((digit, index) => (
           <TextField
             key={index}
-            inputRef={inputRefs[index]}
+            inputRef={inputRefs.current[index]}
             variant="outlined"
+            autoComplete="off"
             inputProps={{
               maxLength: 1,
               style: {
                 textAlign: 'center',
-                fontSize: '1.25rem',
-                padding: '10px 0'
-              }
+                fontSize: '1.5rem',
+                fontWeight: 600,
+                padding: '10px 0',
+                caretColor: '#0052A8'
+              },
+              'aria-label': `OTP digit ${index + 1}`,
             }}
             sx={{
               width: '60px',
               '& .MuiOutlinedInput-root': {
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: error ? '#d32f2f' : '#0052A8',
+                backgroundColor: '#F9F9F9',
+                transition: 'all 0.2s ease-in-out',
+                '&.Mui-focused': {
+                  transform: 'scale(1.05)',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#0052A8',
+                    borderWidth: '2px',
+                  },
                 },
                 '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: error ? '#d32f2f' : '#0052A8',
+                  borderColor: '#0052A8',
                 },
               }
             }}
             value={digit}
             onChange={(e) => handleOtpChange(index, e.target.value)}
             onKeyDown={(e) => handleOtpKeyDown(index, e)}
+            onPaste={index === 0 ? handleOtpPaste : undefined}
             disabled={isInputDisabled || isLoading}
-            error={error}
+            onFocus={(e) => e.target.select()}
           />
         ))}
       </Stack>
@@ -398,9 +483,20 @@ const Login = () => {
         {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Verify'}
       </Button>
 
-      <Box sx={{ textAlign: 'center', mt: 3 }}>
-        <Typography variant="body2" color="text.secondary">
-          Did not receive OTP?{' '}
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          mt: 3,
+          gap: 1
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="body2" color="text.secondary">
+            Did not receive OTP?
+          </Typography>
           <Button
             variant="text"
             disabled={timer > 0}
@@ -409,7 +505,7 @@ const Login = () => {
               color: timer === 0 ? '#0052A8' : 'text.disabled',
               fontWeight: 500,
               minWidth: 'auto',
-              padding: 0,
+              padding: '0 8px',
               textTransform: 'none',
               '&:hover': {
                 backgroundColor: 'transparent',
@@ -417,10 +513,26 @@ const Login = () => {
               }
             }}
           >
-            Resend OTP
+            {timer > 0 ? `Resend in ${formatTime(timer)}` : 'Resend OTP'}
           </Button>
-          {timer > 0 && ` (${Math.floor(timer / 60)}:${timer % 60 < 10 ? '0' : ''}${timer % 60})`}
-        </Typography>
+        </Box>
+        
+        <Button
+          variant="text"
+          onClick={handleClear}
+          sx={{
+            color: '#757575',
+            fontWeight: 500,
+            textTransform: 'none',
+            '&:hover': {
+              backgroundColor: 'transparent',
+              textDecoration: 'underline',
+              color: '#555555'
+            }
+          }}
+        >
+          Clear and go back
+        </Button>
       </Box>
     </Box>
   );
@@ -474,16 +586,6 @@ const Login = () => {
             <HeaderSection />
             <TitleSection />
             
-            {error && (
-              <Typography
-                variant="body2"
-                color="error"
-                sx={{ textAlign: 'left', mb: 2 }}
-              >
-                {errorMessage}
-              </Typography>
-            )}
-
             {!showOtpVerify ? <PhoneLoginForm /> : <OtpVerificationForm />}
             <FooterSection />
           </Paper>

@@ -49,20 +49,22 @@ export const getUserDetails = createAsyncThunk(
   }
 );
 
+const initialState = {
+  isAuthenticated: false,
+  isLoading: false,
+  user: {},
+  error: false,
+  errorMessage: "",
+  phone: "",
+  success: false,
+  updatedUser: false,
+  token: "",
+  userDetails: {},
+};
+
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    isAuthenticated: false,
-    isLoading: false,
-    user: {},
-    error: false,
-    errorMessage: "",
-    phone: "",
-    success: false,
-    updatedUser: false,
-    token: "",
-    userDetails: {},
-  },
+  initialState,
   reducers: {
     savePhone: (state, action) => {
       state.phone = action.payload;
@@ -93,7 +95,12 @@ const authSlice = createSlice({
       state.error = false;
       state.errorMessage = "";
       state.updatedUser = false;
+      state.success = false;
     },
+    resetState: () => {
+      localStorage.removeItem("phone");
+      return initialState;
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(createPatientLogin.pending, (state) => {
@@ -168,5 +175,5 @@ const authSlice = createSlice({
     });
   },
 });
-export const { savePhone, clearPhone, login, logout, errorClean } = authSlice.actions;
+export const { savePhone, clearPhone, login, logout, errorClean, resetState } = authSlice.actions;
 export default authSlice.reducer;
