@@ -4,6 +4,7 @@ import Router from './routes/Router';
 import { useRoutes } from 'react-router-dom';
 import { TitleProvider } from './contexts/TitleContext';
 import { Toaster } from 'react-hot-toast';
+import { PrimeReactProvider } from 'primereact/api';
 
 const theme = createTheme({
   typography: {
@@ -48,6 +49,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <TitleProvider>
+      <PrimeReactProvider>
         <CssBaseline />
         <Box className="App">
           {routing}
@@ -63,6 +65,7 @@ const App = () => {
           },
         }}
       />
+      </PrimeReactProvider>
       </TitleProvider>
     </ThemeProvider>
   );
