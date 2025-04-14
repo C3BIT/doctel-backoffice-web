@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { publicPost, privatePutFile, privateGet } from '../../services/apiCaller';
 
-// Async thunk for sending OTP
 export const sendOtp = createAsyncThunk(
   "auth/sendOtp",
   async (phone, { rejectWithValue }) => {
@@ -14,7 +13,6 @@ export const sendOtp = createAsyncThunk(
   }
 );
 
-// Async thunk for updating user profile
 export const updateUserProfile = createAsyncThunk(
   "user/updateUserProfile",
   async ({ token, formData }, { rejectWithValue }) => {
@@ -28,7 +26,6 @@ export const updateUserProfile = createAsyncThunk(
   }
 );
 
-// Async thunk for patient login
 export const createPatientLogin = createAsyncThunk(
   "user/login",
   async (data, { rejectWithValue }) => {
@@ -51,7 +48,7 @@ export const getUserDetails = createAsyncThunk(
     }
   }
 );
-// Auth slice
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -118,7 +115,6 @@ const authSlice = createSlice({
       state.errorMessage = action.payload?.data?.message || "OTP verification failed";
     });
 
-    // sendOtp cases
     builder.addCase(sendOtp.pending, (state) => {
       state.isLoading = true;
       state.success = false;

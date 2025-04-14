@@ -3,6 +3,7 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import Router from './routes/Router';
 import { useRoutes } from 'react-router-dom';
 import { TitleProvider } from './contexts/TitleContext';
+import { Toaster } from 'react-hot-toast';
 
 const theme = createTheme({
   typography: {
@@ -51,6 +52,17 @@ const App = () => {
         <Box className="App">
           {routing}
         </Box>
+        <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 2000,
+          style: {
+            borderRadius: '8px',
+            padding: '12px 16px',
+            fontSize: '14px',
+          },
+        }}
+      />
       </TitleProvider>
     </ThemeProvider>
   );
