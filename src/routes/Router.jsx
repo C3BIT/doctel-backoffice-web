@@ -6,9 +6,7 @@ import Profile from '../pages/profile/Profile';
 import LabReport from '../pages/LabReport/LabReport';
 import ProfileUpdate from '../pages/update/ProfileUpdate';
 import PrescriptionFormContent from '../pages/CreatePrescription/PrescriptionFormContent';
-
 const Dashboard = lazy(() => import('../pages/Home/Home'));
-
 const Prescription = lazy(() => import('../pages/PrescriptionReport/PrescriptionReport'));
 const CallHistory = lazy(() => import('../pages/CallHistory/CallHistory'));
 // const OnlineChat = lazy(() => import('./pages/OnlineChat'));
@@ -17,7 +15,7 @@ const Settings = lazy(() => import('../pages/settings/Settings'));
 const NotFound = lazy(() => import('../pages/NotFound/NotFound'));
 const Login = lazy(() => import('../pages/Login/Login'));
 const OtpVerify = lazy(() => import('../pages/auth/OtpVerify'));
-import ProtectedRoute from './ProtectedRoute';
+
 
 
 
