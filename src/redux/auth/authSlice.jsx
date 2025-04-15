@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { publicPost, privatePutFile, privateGet } from '../../services/apiCaller';
 
-// Async thunk for sending OTP
 export const sendOtp = createAsyncThunk(
   "auth/sendOtp",
   async (phone, { rejectWithValue }) => {
@@ -14,7 +13,6 @@ export const sendOtp = createAsyncThunk(
   }
 );
 
-// Async thunk for updating user profile
 export const updateUserProfile = createAsyncThunk(
   "user/updateUserProfile",
   async ({ token, formData }, { rejectWithValue }) => {
@@ -28,7 +26,6 @@ export const updateUserProfile = createAsyncThunk(
   }
 );
 
-// Async thunk for patient login
 export const createPatientLogin = createAsyncThunk(
   "user/login",
   async (data, { rejectWithValue }) => {
@@ -51,21 +48,23 @@ export const getUserDetails = createAsyncThunk(
     }
   }
 );
-// Auth slice
+
+const initialState = {
+  isAuthenticated: false,
+  isLoading: false,
+  user: {},
+  error: false,
+  errorMessage: "",
+  phone: "",
+  success: false,
+  updatedUser: false,
+  token: "",
+  userDetails: {},
+};
+
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    isAuthenticated: false,
-    isLoading: false,
-    user: {},
-    error: false,
-    errorMessage: "",
-    phone: "",
-    success: false,
-    updatedUser: false,
-    token: "",
-    userDetails: {},
-  },
+  initialState,
   reducers: {
     savePhone: (state, action) => {
       state.phone = action.payload;
@@ -96,7 +95,12 @@ const authSlice = createSlice({
       state.error = false;
       state.errorMessage = "";
       state.updatedUser = false;
+      state.success = false;
     },
+    resetState: () => {
+      localStorage.removeItem("phone");
+      return initialState;
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(createPatientLogin.pending, (state) => {
@@ -118,7 +122,6 @@ const authSlice = createSlice({
       state.errorMessage = action.payload?.data?.message || "OTP verification failed";
     });
 
-    // sendOtp cases
     builder.addCase(sendOtp.pending, (state) => {
       state.isLoading = true;
       state.success = false;
@@ -172,5 +175,5 @@ const authSlice = createSlice({
     });
   },
 });
-export const { savePhone, clearPhone, login, logout, errorClean } = authSlice.actions;
+export const { savePhone, clearPhone, login, logout, errorClean, resetState } = authSlice.actions;
 export default authSlice.reducer;

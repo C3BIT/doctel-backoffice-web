@@ -21,15 +21,15 @@ const Dashboard = () => {
   const [callingScreen, setCallingScreen] = useState(false);
   const [callTarget, setCallTarget] = useState(null);
   const [callEnded, setCallEnded] = useState(false);
-  const [callDuration, setCallDuration] = useState(0);
+  const [callDurationTime, setCallDurationTime] = useState(0);
 
   useEffect(() => {
     if (incomingCall) {
       console.log("📞 Incoming Call Request:", incomingCall);
       setCallTarget({
         name: incomingCall.patientName || `${incomingCall.patientId}`,
-        phone: incomingCall.patientId,
-        image: "https://avatars.githubusercontent.com/u/50502837?v=4",
+        phone: incomingCall.patientPhone,
+        image: incomingCall.patientImage || "https://cdn.pixabay.com/photo/2014/04/03/10/44/avatar-311292_1280.png",
       });
       setCallingScreen(true);
       playRingtone();
@@ -116,7 +116,6 @@ const Dashboard = () => {
     setCallEnded(false);
   };
   const isCallingScreenActive = () => callingScreen && !!incomingCall;
-
   return (
     <Box
       sx={{
@@ -182,6 +181,7 @@ const Dashboard = () => {
                   onLeave={handleEndCall}
                   showInHalfScreen={true}
                   isIncoming={!!incomingCall}
+                  setCallDurationTime={setCallDurationTime}
                 />
               )}
               {callEnded && (
@@ -192,7 +192,7 @@ const Dashboard = () => {
                   <CallEndModal
                     callTarget={callTarget}
                     jitsiRoom={jitsiRoom}
-                    callDuration={callDuration}
+                    callDuration={callDurationTime}
                     onClose={handleCloseModal}
                   />
                 </Paper>

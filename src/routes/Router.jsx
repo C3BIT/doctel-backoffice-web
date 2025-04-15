@@ -9,6 +9,9 @@ import PrescriptionFormContent from '../pages/CreatePrescription/PrescriptionFor
 const Dashboard = lazy(() => import('../pages/Home/Home'));
 const Prescription = lazy(() => import('../pages/PrescriptionReport/PrescriptionReport'));
 const CallHistory = lazy(() => import('../pages/CallHistory/CallHistory'));
+
+const PrescriptionHistory = lazy(() => import('../pages/prescription/Prescription.jsx'));
+// const CallHistory = lazy(() => import('./pages/CallHistory'));
 // const OnlineChat = lazy(() => import('./pages/OnlineChat'));
 // const Withdraw = lazy(() => import('./pages/Withdraw'));
 const Settings = lazy(() => import('../pages/settings/Settings'));
@@ -35,7 +38,7 @@ const Router  = [
       },
       {
         path: '/prescription/list',
-        element: <Prescription />,
+        element: <PrescriptionHistory />,
       },
       {
         path: 'call-history',
