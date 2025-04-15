@@ -202,6 +202,9 @@ function Prescription() {
                                             {item.time}
                                         </Typography>
                                         <StatusChip
+                                          sx={{  color: item.status === 'Completed' ? '#4ade80' : '#f97316',
+                                            bgcolor: item.status === 'Completed' ? '#F0FDF4' : '#ffedd5',
+                                            border: item.status === 'Completed' ? '1px solid #00E58F' : '1px solid #f97316',}}
                                             label={item.status}
                                             status={item.status}
                                             size="small"
@@ -214,7 +217,7 @@ function Prescription() {
                             </Box>
                         ))}
 
-                        {/* Pagination */}
+                        {/* Pagination - Updated to show only 1, 2, 3 pages */}
                         <Box
                             sx={{
                                 display: "flex",
@@ -245,20 +248,11 @@ function Prescription() {
                                     ‹ Back
                                 </PaginationButton>
 
-                                {[1, 2, 3, 4, 5].map((page) => (
+                                {[1, 2, 3].map((page) => (
                                     <PaginationButton key={page} active={page === 1}>
                                         {page}
                                     </PaginationButton>
                                 ))}
-
-                                {!isSmallScreen && (
-                                    <>
-                                        <Typography sx={{ color: "text.secondary" }}>...</Typography>
-                                        <PaginationButton>
-                                            25
-                                        </PaginationButton>
-                                    </>
-                                )}
 
                                 <PaginationButton>
                                     Next ›

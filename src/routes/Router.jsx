@@ -6,17 +6,19 @@ import Profile from '../pages/profile/Profile';
 import LabReport from '../pages/LabReport/LabReport';
 import ProfileUpdate from '../pages/update/ProfileUpdate';
 import PrescriptionFormContent from '../pages/CreatePrescription/PrescriptionFormContent';
-
 const Dashboard = lazy(() => import('../pages/Home/Home'));
+const Prescription = lazy(() => import('../pages/PrescriptionReport/PrescriptionReport'));
+const CallHistory = lazy(() => import('../pages/CallHistory/CallHistory'));
 
-const Prescription = lazy(() => import('../pages/prescription/Prescription.jsx'));
+const PrescriptionHistory = lazy(() => import('../pages/prescription/Prescription.jsx'));
 // const CallHistory = lazy(() => import('./pages/CallHistory'));
 // const OnlineChat = lazy(() => import('./pages/OnlineChat'));
 // const Withdraw = lazy(() => import('./pages/Withdraw'));
-// const Settings = lazy(() => import('./pages/Settings'));
+const Settings = lazy(() => import('../pages/settings/Settings'));
 const NotFound = lazy(() => import('../pages/NotFound/NotFound'));
 const Login = lazy(() => import('../pages/Login/Login'));
 const OtpVerify = lazy(() => import('../pages/auth/OtpVerify'));
+
 
 
 
@@ -36,12 +38,12 @@ const Router  = [
       },
       {
         path: '/prescription/list',
-        element: <Prescription />,
+        element: <PrescriptionHistory />,
       },
-    //   {
-    //     path: 'call-history',
-    //     element: <ProtectedRoute component={CallHistory} />,
-    //   },
+      {
+        path: 'call-history',
+        element: <CallHistory />,
+      },
     //   {
     //     path: 'online-chat',
     //     element: <ProtectedRoute component={OnlineChat} />,
@@ -50,10 +52,10 @@ const Router  = [
     //     path: 'withdraw',
     //     element: <ProtectedRoute component={Withdraw} />,
     //   },
-    //   {
-    //     path: 'settings',
-    //     element: <ProtectedRoute component={Settings} />,
-    //   },
+      {
+        path: 'settings',
+        element: <Settings />,
+      },
       {
         path: 'profile',
         element: <DoctorProfile />,
