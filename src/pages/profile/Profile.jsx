@@ -1,4 +1,4 @@
-import { ArrowBack, Visibility, Edit, Delete, InsertDriveFile } from "@mui/icons-material";
+import {Visibility, Edit, Delete, InsertDriveFile } from "@mui/icons-material";
 import {
     Box,
     Button,
@@ -10,7 +10,7 @@ import {
     IconButton,
     CircularProgress,
 } from "@mui/material";
-import { useNavigate, Link } from "react-router-dom";
+import {  Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserDetails } from "../../redux/auth/authSlice";
 import { useEffect } from "react";
@@ -150,8 +150,6 @@ const UploadButton = () => (
 );
 
 const ProfileContent = ({ userDetails }) => {
-    const navigate = useNavigate();
-
     return (
         <Box
         sx={{
@@ -162,22 +160,7 @@ const ProfileContent = ({ userDetails }) => {
             fontFamily: "sans-serif",
           }}
         >
-            <Box sx={{ marginBottom: "16px" }}>
-                <Button
-                    startIcon={<ArrowBack />}
-                    onClick={() => navigate(-1)}
-                    sx={{
-                        color: "#0052A8",
-                        backgroundColor: "#E2F1FF",
-                        borderRadius: "6px",
-                        textTransform: "none",
-                        fontSize: "14px",
-                        padding: "8px 12px",
-                    }}
-                >
-                    Back
-                </Button>
-            </Box>
+            
 
             <Box sx={{ marginBottom: "16px" }}>
                 <Typography variant="h5" sx={{ color: "#10b981", fontWeight: "500" }}>

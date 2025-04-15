@@ -58,6 +58,7 @@ const Sidebar = ({ open, mobileOpen, handleDrawerToggle, isMobile }) => {
   };
 
   const isActive = (path) => location.pathname === path || (path === '/dashboard' && location.pathname === '/');
+  
   useEffect(() => {
     updateDocumentTitle(location.pathname, navigationItems);
   }, [location.pathname]);
@@ -135,7 +136,12 @@ const Sidebar = ({ open, mobileOpen, handleDrawerToggle, isMobile }) => {
                 backgroundColor: isActive(item.path) ? '#20ACE2' : 'transparent',
                 color: isActive(item.path) ? '#FFFFFF' : '#737791',
                 '&:hover': {
-                  backgroundColor: '#20ACE2',
+                  backgroundColor: isActive(item.path) ? '#20ACE2' : '#F9FAFB',
+                  '& .MuiListItemIcon-root img': {
+                    filter: isActive(item.path) 
+                      ? 'brightness(0) invert(1)' // White for active items
+                      : 'brightness(0) saturate(100%) invert(48%) sepia(9%) saturate(669%) hue-rotate(202deg) brightness(93%) contrast(89%)'
+                  }
                 },
               }}
               onClick={() => item.id === 'sign-out' ? handleLogout() : handleNavigation(item.path)}
@@ -146,17 +152,16 @@ const Sidebar = ({ open, mobileOpen, handleDrawerToggle, isMobile }) => {
                   mr: open ? '12px' : 0,
                   justifyContent: 'center',
                   color: 'inherit',
-                }}
-              >
-                <img
-                  src={item.icon}
-                  alt={item.label}
-                  style={{
+                  '& img': {
                     width: '20px',
                     height: '20px',
-                    filter: isActive(item.path) ? 'none' : 'opacity(0.7)'
-                  }}
-                />
+                    filter: isActive(item.path)
+                      ? 'brightness(0) invert(1)' // White filter for active items
+                      : 'brightness(0) saturate(100%) invert(48%) sepia(9%) saturate(669%) hue-rotate(202deg) brightness(93%) contrast(89%)'
+                  }
+                }}
+              >
+                <img src={item.icon} alt={item.label} />
               </ListItemIcon>
               {open && (
                 <ListItemText

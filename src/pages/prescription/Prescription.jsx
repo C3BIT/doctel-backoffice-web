@@ -46,7 +46,7 @@ const PaginationButton = styled(Box)(({ theme, active }) => ({
     padding: theme.spacing(0.5, 1.5),
     border: active ? "none" : "1px solid #e0e0e0",
     borderRadius: 4,
-    backgroundColor: active ? theme.palette.primary.main : "transparent",
+    backgroundColor: active ? '#20ACE2': "transparent",
     color: active ? "white" : theme.palette.text.secondary,
     cursor: "pointer",
     fontSize: "0.875rem",
