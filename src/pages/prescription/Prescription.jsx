@@ -202,6 +202,9 @@ function Prescription() {
                                             {item.time}
                                         </Typography>
                                         <StatusChip
+                                          sx={{  color: item.status === 'Completed' ? '#4ade80' : '#f97316',
+                                            bgcolor: item.status === 'Completed' ? '#F0FDF4' : '#ffedd5',
+                                            border: item.status === 'Completed' ? '1px solid #00E58F' : '1px solid #f97316',}}
                                             label={item.status}
                                             status={item.status}
                                             size="small"
