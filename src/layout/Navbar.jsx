@@ -21,7 +21,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-
+import { Link } from "react-router-dom";
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: '8px',
@@ -61,17 +61,17 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const StatusBadge = styled('span')(({ status }) => ({
   width: 8,
   height: 8,
-  backgroundColor: 
-    status === 'online' ? '#4CAF50' : 
-    status === 'busy' ? '#FF9800' : 
-    '#9E9E9E',
+  backgroundColor:
+    status === 'online' ? '#4CAF50' :
+      status === 'busy' ? '#FF9800' :
+        '#9E9E9E',
   borderRadius: '50%',
   display: 'inline-block',
   marginRight: 8,
 }));
 
 const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
-    const { userDetails } = useSelector((state) => state.user);
+  const { userDetails } = useSelector((state) => state.user);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [statusAnchorEl, setStatusAnchorEl] = useState(null);
@@ -100,7 +100,7 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
   };
 
   const getStatusColor = () => {
-    switch(status) {
+    switch (status) {
       case 'online': return '#4CAF50';
       case 'busy': return '#FF9800';
       case 'offline': return '#9E9E9E';
@@ -113,9 +113,9 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
   };
 
   return (
-    <AppBar 
+    <AppBar
       position="fixed"
-      sx={{ 
+      sx={{
         width: { md: `calc(100% - ${drawerWidth}px)` },
         ml: { md: `${drawerWidth}px` },
         boxShadow: 'none',
@@ -127,7 +127,7 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
       }}
       elevation={0}
     >
-      <Toolbar sx={{ 
+      <Toolbar sx={{
         minHeight: '64px !important',
         paddingLeft: { xs: '16px', md: '24px' },
         paddingRight: { xs: '16px', md: '24px' },
@@ -141,59 +141,65 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
-              sx={{ 
-                mr: 2, 
+              sx={{
+                mr: 2,
                 color: '#424242',
-                display: { md: 'none' } 
+                display: { md: 'none' }
               }}
             >
               <MenuIcon />
             </IconButton>
           )}
 
-          <Box sx={{ 
-            display: 'flex', 
+          <Box sx={{
+            display: 'flex',
             alignItems: 'center',
           }}>
-            <Avatar 
-              src={userDetails?.profileImage}
-              alt="Profile"
-              sx={{ 
-                width: 40, 
-                height: 40,
-                borderRadius: '8px'
-              }}
-            />
+            <Link to='/doctor/profile'>
+              <Avatar
+                src={userDetails?.profileImage}
+                alt="Profile"
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    opacity: 0.8,
+                  },
+                }}
+              />
+            </Link>
             {!isMobile && (
-              <Box sx={{ 
-                display: 'flex', 
+              <Box sx={{
+                display: 'flex',
                 flexDirection: 'column',
                 ml: '12px'
               }}>
-                <Typography 
-                  variant="subtitle2" 
-                  component="div" 
-                  sx={{ 
+                <Typography
+                  variant="subtitle2"
+                  component="div"
+                  sx={{
                     fontWeight: 600,
                     fontSize: '14px',
                     lineHeight: '20px'
                   }}
                 >
-                {userDetails?.firstName || ""} {userDetails?.lastName || ""}
+                  {userDetails?.firstName || ""} {userDetails?.lastName || ""}
                 </Typography>
-                <Box 
-                  sx={{ 
-                    display: 'flex', 
+                <Box
+                  sx={{
+                    display: 'flex',
                     alignItems: 'center',
                     cursor: 'pointer'
                   }}
                   onClick={handleStatusClick}
                 >
                   <StatusBadge status={status} />
-                  <Typography 
-                    variant="caption" 
-                    component="div" 
-                    sx={{ 
+                  <Typography
+                    variant="caption"
+                    component="div"
+                    sx={{
                       color: getStatusColor(),
                       fontSize: '12px',
                       lineHeight: '16px'
@@ -208,14 +214,14 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
           </Box>
         </Box>
 
-        <Box sx={{ 
-          position: 'absolute', 
-          left: '50%', 
+        <Box sx={{
+          position: 'absolute',
+          left: '50%',
           transform: 'translateX(-50%)',
-          display: 'flex', 
+          display: 'flex',
           justifyContent: 'center',
           width: { xs: '40%', sm: 'auto' },
-          zIndex: {xs: -1, sm: 'auto'}
+          zIndex: { xs: -1, sm: 'auto' }
         }}>
           <Search>
             <SearchIconWrapper>
@@ -227,18 +233,18 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
             />
           </Search>
         </Box>
-        
-        <Box sx={{ 
-          display: 'flex', 
+
+        <Box sx={{
+          display: 'flex',
           alignItems: 'center',
           justifyContent: 'flex-end',
-          pr: {xs: 0, sm: 2}
+          pr: { xs: 0, sm: 2 }
         }}>
           <Tooltip title="Notifications">
-            <IconButton 
+            <IconButton
               size="medium"
-              aria-label="show notifications" 
-              sx={{ 
+              aria-label="show notifications"
+              sx={{
                 color: '#FFA412',
                 backgroundColor: '#FFFAF1',
                 '&:hover': {
@@ -254,7 +260,7 @@ const Navbar = ({ drawerWidth = 240, handleDrawerToggle }) => {
           </Tooltip>
         </Box>
       </Toolbar>
-      
+
       <Menu
         anchorEl={statusAnchorEl}
         open={Boolean(statusAnchorEl)}
